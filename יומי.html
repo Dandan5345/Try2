@@ -151,7 +151,7 @@
   
   <footer>©️doronnakache</footer>
   
-  <!-- סקריפטים – ניווט ואירוע גלילה -->
+  <!-- סקריפטים לעדכון מצב המשתמש ואירועי גלילה -->
   <script>
     function goHome() {
       window.location.href = "index.html";
@@ -166,7 +166,38 @@
       }
     });
     
-    // כאן יש להכניס את אותו קוד ניהול הלוזים כמו בדף "בניית לוז למידה"
+    // פונקציית עדכון מצב המשתמש
+    function updateUserGreeting(user) {
+      let currentHour = new Date().getHours();
+      let greeting = "בוקר טוב";
+      if (currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
+      else if (currentHour >= 18) { greeting = "ערב טוב"; }
+      const authLink = document.getElementById("authLink");
+      let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
+      authLink.innerText = greeting + " " + firstName + "!";
+      
+      authLink.onclick = function(event) {
+        event.preventDefault();
+        if (confirm("להתנתק?")) {
+          firebase.auth().signOut().then(() => {
+            authLink.innerText = "התחברות";
+            authLink.onclick = null;
+          }).catch((error) => {
+            alert("שגיאה בהתנתקות: " + error.message);
+          });
+        }
+      };
+    }
+    
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        updateUserGreeting(user);
+      } else {
+        document.getElementById("authLink").innerText = "התחברות";
+      }
+    });
+    
+    // כאן יש לשלב גם את קוד ניהול הלוזים – אותו קוד ניתן להעתיק מ-"learning-schedule.html"
   </script>
 </body>
 </html>
