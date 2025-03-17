@@ -3,19 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>זמן זהב - בחר סוג לו״ז</title>
-
+  <title>זמן זהב - לוז חדש</title>
+  
+  <!-- קישור ל-manifest -->
   <link rel="manifest" href="manifest.json">
+  <!-- קישור ל-favicon -->
   <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
-
+  
+  <!-- ספריות וסקריפטים (כולל Firebase) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
+  
+  <!-- קוד Firebase והגדרות האתר -->
   <script>
-    // עדכן את הקונפיגורציה לפי הפרויקט שלך
     const firebaseConfig = {
       apiKey: "AIzaSyCsp7xKutteUAxmjYQsQWDlrjK7URg-MR8",
       authDomain: "zman-zhav.firebaseapp.com",
@@ -27,10 +30,10 @@
     };
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
-    // אתחל את Firestore
     const db = firebase.firestore();
   </script>
-
+  
+  <!-- רישום Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
@@ -44,7 +47,8 @@
       });
     }
   </script>
-
+  
+  <!-- העיצוב – זהה לשאר הדפים -->
   <style>
     /* Reset בסיסי */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -53,8 +57,8 @@
       line-height: 1.6;
       background: linear-gradient(135deg, #e0eafc, #cfdef3);
       direction: rtl;
-      padding-bottom: 40px;
       padding-top: 120px;
+      padding-bottom: 40px;
       text-align: center;
     }
     .topbar {
@@ -89,107 +93,43 @@
       font-weight: bold;
       color: #ecf0f1;
       border-right: 1px solid rgba(236,240,241,0.5);
+      text-decoration: none;
     }
     .nav-links a:last-child { border-right: none; }
     .nav-links a:hover {
       background-color: #3d566e;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-    main { padding: 20px; margin-top: 20px; min-height: 70vh; text-align: center; }
-    footer { text-align: center; padding: 10px; color: #7f8c8d; font-size: 14px; }
-    .action-buttons { display: inline-flex; align-items: center; gap: 10px; margin-top: 10px; position: relative; }
-    .btn { display: inline-block; padding: 10px 20px; background-color: #3a506b; color: #fff; border: none; cursor: pointer; font-size: 16px; border-radius: 8px; transition: background-color 0.3s; }
-    .btn:hover { background-color: #2a3e56; }
-    #templateMenuButton { background-color: #3a506b; border: none; border-radius: 8px; font-size: 24px; cursor: pointer; color: #ecf0f1; padding: 5px 10px; }
-    #templateDropdown {
-      position: absolute; bottom: 100%; right: 0;
-      background: #f8f8f8; border: 1px solid #ccc; border-radius: 8px;
-      display: none; z-index: 1500; box-shadow: 0 2px 6px rgba(0,0,0,0.2); min-width: 200px;
-    }
-    #templateDropdown button {
-      background: none; border: none; width: 100%; padding: 10px; text-align: right; cursor: pointer;
-      transition: background 0.2s; font-weight: normal; color: #2c3e50;
-    }
-    #templateDropdown button:first-child {
-      background-color: #cce5ff; border-radius: 6px; margin-bottom: 5px;
-    }
-    #templateDropdown button:hover { background: #e6f2ff; }
-    .schedule-item {
-      position: relative; background-color: rgba(255,255,255,0.9); padding: 15px; margin: 10px auto;
-      border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer;
-      text-align: center; max-width: 400px; transition: transform 0.2s; overflow: hidden;
-    }
-    .schedule-item:hover { transform: scale(1.02); }
-    .schedule-item h3 { margin-bottom: 5px; color: #2c3e50; }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.5);
-    }
-    .modal-content {
-      background-color: #fff;
-      margin: 10% auto;
+    main {
       padding: 20px;
-      border-radius: 6px;
-      width: 90%;
-      max-width: 500px;
-      position: relative;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      margin-top: 20px;
+      min-height: 70vh;
       text-align: center;
     }
-    .close {
-      color: #aaa;
-      position: absolute;
-      left: 15px;
-      top: 10px;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .close:hover { color: #000; }
-    .form-group { margin-bottom: 15px; text-align: center; }
-    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
-      color: #2c3e50;
-      background-color: #f9f9f9;
-      text-align: right;
-    }
-    .modal-elegant { border: 2px solid #d4af37; }
-    .modal-elegant h2 { color: #2c3e50; }
-    .modal-elegant .btn { background-color: #2c3e50; }
-    .modal-elegant .btn:hover { background-color: #1a242f; }
-    .saved-schedule-item {
-      background-color: #fff;
-      margin: 10px auto;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      cursor: pointer;
-      text-align: center;
-      font-weight: bold;
-      color: #2c3e50;
-      max-width: 400px;
-    }
-    /* מחלקת כפתורים עם מרווח */
     .button-group {
       margin-top: 20px;
       display: flex;
       justify-content: center;
       gap: 10px;
       flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #3a506b;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+    .btn:hover { background-color: #2a3e56; }
+    footer {
+      text-align: center;
+      padding: 10px;
+      color: #7f8c8d;
+      font-size: 14px;
     }
     @media (max-width: 600px) {
       .topbar { flex-direction: column; gap: 10px; }
@@ -199,6 +139,7 @@
   </style>
 </head>
 <body>
+  <!-- תפריט ראשי -->
   <nav class="topbar">
     <div class="site-name" onclick="goHome()">זמן זהב</div>
     <div class="nav-links">
@@ -208,87 +149,25 @@
       <a href="auth.html" id="authLink">התחברות</a>
     </div>
   </nav>
-
+  
+  <!-- תוכן עמוד "לוז חדש" -->
   <main id="content">
-    <h2>איזה לוז תרצה ליצור:</h2>
+    <h2>איזה לוז תרצה ליצור?</h2>
     <div class="button-group">
       <button class="btn" onclick="window.location.href='learning-schedule.html'">לוז למידה 📘</button>
-      <button class="btn" onclick="window.location.href='chofsha.html'">לוז חופשה ✈️</button>
-      <button class="btn" onclick="window.location.href='yomi.html'">לוז ניהול יום ✅</button>
+      <button class="btn" onclick="window.location.href='חופשה.html'">לוז חופשה ✈️</button>
+      <button class="btn" onclick="window.location.href='יומי.html'">לוז ניהול יום ✅</button>
     </div>
   </main>
-
+  
   <footer>©️doronnakache</footer>
-
+  
+  <!-- סקריפטים – ניווט ואירוע גלילה -->
   <script>
-    // משתנים גלובליים לניהול לוזים
-    let scheduleItems =;
-    let scheduleName = null;
-    let savedSchedules =;
-    let editingIndex = -1;
-    let constantTemplates =;
-    let selectedTemplate = null;
-    let permanentSubjects =;
-
-    // משתנים לעריכת לוז שמור
-    let editingSavedScheduleIndex = -1;
-    let originalScheduleItems =;
-    let originalScheduleName = "";
-
-    // מיפוי נושאים לאמוג'ים
-    const subjectEmojis = {
-      "קריאה של חומר לימוד": "📖",
-      "תרגול": "📝",
-      "מעבר על חומר מהיר": "⏩",
-      "למידה עמוקה": "🔍",
-      "לקום": "⏰",
-      "הפסקה": "☕",
-      "ללכת לישון": "😴",
-      "אוכל": "🍽️"
-    };
-
-    // פונקציות התחברות והצגת שם המשתמש
-    function login() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      firebase.auth().signInWithPopup(provider)
-        .then((result) => { updateUserGreeting(result.user); })
-        .catch((error) => { alert("שגיאה בהתחברות: " + error.message); });
-    }
-
-    function updateUserGreeting(user) {
-      let currentHour = new Date().getHours();
-      let greeting = "בוקר טוב";
-      if (currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
-      else if (currentHour >= 18) { greeting = "ערב טוב"; }
-      const authLink = document.getElementById("authLink");
-      let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
-      authLink.innerText = greeting + "\n" + firstName + "!";
-      authLink.onclick = function(event) {
-        event.preventDefault();
-        if (confirm("להתנתק?")) {
-          firebase.auth().signOut().then(() => {
-            authLink.innerText = "התחברות";
-            authLink.onclick = function() { window.location.href = "auth.html"; };
-          });
-        }
-      };
-    }
-
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        updateUserGreeting(user);
-        // אין צורך לטעון לוזים שמורים בדף בחירת סוג לוז
-      } else {
-        // טיפול במצב של משתמש לא מחובר
-      }
-    });
-
-    // ניווט בין דפים
     function goHome() {
       window.location.href = "index.html";
     }
-
-    // הוספת אירוע גלילה לתפריט הראשי
+    
     window.addEventListener("scroll", function() {
       const nav = document.querySelector(".topbar");
       if (window.scrollY > 50) {
