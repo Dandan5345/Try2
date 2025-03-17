@@ -38,20 +38,15 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/service-worker.js')
-          .then(function(registration) {
-            console.log('Service Worker registered with scope:', registration.scope);
-          })
-          .catch(function(err) {
-            console.log('Service Worker registration failed:', err);
-          });
+          .then(registration => console.log('Service Worker registered with scope:', registration.scope))
+          .catch(err => console.log('Service Worker registration failed:', err));
       });
     }
   </script>
   
-  <!-- העיצוב – זהה לשאר הדפים -->
+  <!-- עיצוב זהה לשאר הדפים -->
   <style>
-    /* Reset בסיסי */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin:0; padding:0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
@@ -68,8 +63,8 @@
       align-items: center;
       padding: 10px 20px;
       position: fixed;
-      top: 0;
-      left: 0;
+      top:0;
+      left:0;
       width: 100%;
       z-index: 1000;
       transition: transform 0.3s;
@@ -101,7 +96,7 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     main {
-      padding: 20px;
+      padding:20px;
       margin-top: 20px;
       min-height: 70vh;
       text-align: center;
@@ -131,10 +126,10 @@
       color: #7f8c8d;
       font-size: 14px;
     }
-    @media (max-width: 600px) {
-      .topbar { flex-direction: column; gap: 10px; }
-      .site-name { font-size: 24px; }
-      .nav-links a { padding: 10px; width: 100%; text-align: center; }
+    @media (max-width:600px) {
+      .topbar { flex-direction: column; gap:10px; }
+      .site-name { font-size:24px; }
+      .nav-links a { padding:10px; width:100%; text-align:center; }
     }
   </style>
 </head>
@@ -149,8 +144,6 @@
       <a href="auth.html" id="authLink">התחברות</a>
     </div>
   </nav>
-  
-  <!-- תוכן עמוד "לוז חדש" -->
   <main id="content">
     <h2>איזה לוז תרצה ליצור?</h2>
     <div class="button-group">
@@ -159,22 +152,38 @@
       <button class="btn" onclick="window.location.href='יומי.html'">לוז ניהול יום ✅</button>
     </div>
   </main>
-  
   <footer>©️doronnakache</footer>
-  
-  <!-- סקריפטים – ניווט ואירוע גלילה -->
   <script>
     function goHome() {
       window.location.href = "index.html";
     }
-    
     window.addEventListener("scroll", function() {
       const nav = document.querySelector(".topbar");
-      if (window.scrollY > 50) {
-        nav.style.transform = "translateY(-100%)";
-      } else {
-        nav.style.transform = "translateY(0)";
-      }
+      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
+    });
+    function updateUserGreeting(user) {
+      let currentHour = new Date().getHours();
+      let greeting = "בוקר טוב";
+      if(currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
+      else if(currentHour >= 18) { greeting = "ערב טוב"; }
+      const authLink = document.getElementById("authLink");
+      let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
+      authLink.innerText = greeting + " " + firstName + "!";
+      authLink.onclick = function(event) {
+        event.preventDefault();
+        if(confirm("להתנתק?")) {
+          firebase.auth().signOut().then(() => {
+            authLink.innerText = "התחברות";
+            authLink.onclick = null;
+          }).catch(error => {
+            alert("שגיאה בהתנתקות: " + error.message);
+          });
+        }
+      };
+    }
+    firebase.auth().onAuthStateChanged(user => {
+      if(user) { updateUserGreeting(user); }
+      else { document.getElementById("authLink").innerText = "התחברות"; }
     });
   </script>
 </body>
