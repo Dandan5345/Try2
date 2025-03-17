@@ -208,7 +208,7 @@
   <!-- תוכן עמוד "הלוזים שלי" -->
   <main id="content">
     <h2>הלוזים שלי</h2>
-    <!-- כל קטגוריה בתוך div נפרד -->
+    <!-- כל קטגוריה עטופה במכולה עם לחצן ותפריט נפתח -->
     <div class="category-item">
       <button class="category-btn" onclick="toggleCategory('למידה')">
         <span>📖 למידה</span>
@@ -285,8 +285,16 @@
           .then((doc) => {
             if (doc.exists) {
               savedSchedules = doc.data().schedules || [];
-              // נניח שכל הלוזים נשמרים תחת "למידה" כרגע
-              savedSchedules.forEach(sch => { sch.category = "למידה"; });
+              // קביעת קטגוריה לפי שם הלוז:
+              savedSchedules.forEach(sch => {
+                if (sch.name.includes("חופשה")) {
+                  sch.category = "חופשה";
+                } else if (sch.name.includes("ניהול")) {
+                  sch.category = "ניהול יום";
+                } else {
+                  sch.category = "למידה";
+                }
+              });
               renderSavedSchedules();
             } else {
               savedSchedules = [];
@@ -300,17 +308,23 @@
     }
     
     function renderSavedSchedules() {
+      // סינון לפי קטגוריות
+      const schedulesLearning = savedSchedules.filter(sch => sch.category === "למידה");
+      const schedulesVacation = savedSchedules.filter(sch => sch.category === "חופשה");
+      const schedulesDaily = savedSchedules.filter(sch => sch.category === "ניהול יום");
+      
       // קטגוריה "למידה"
       const containerLearning = document.getElementById("category-למידה");
       let htmlLearning = "";
-      if (savedSchedules.length === 0) {
+      if (schedulesLearning.length === 0) {
         htmlLearning = `
           <p>עדיין לא שמרת לוז למידה.</p>
           <button class="btn" onclick="window.location.href='learning-schedule.html'">התחל לבנות כאן</button>
         `;
       } else {
         htmlLearning += "<ul style='list-style: none; padding:0;'>";
-        savedSchedules.forEach((sch, idx) => {
+        schedulesLearning.forEach((sch, idx) => {
+          // idx כאן צריך להתאים למיקום בלוח השמור – יש לטפל בזה לפי הצורך
           htmlLearning += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${idx})">
                              <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${idx})">🗑️</span>
                              ${sch.name}
@@ -320,15 +334,45 @@
       }
       containerLearning.innerHTML = htmlLearning;
       
-      // עבור "חופשה" ו"ניהול יום" – אם אין לוזים, מציגים הודעה עם לחצן
-      document.getElementById("category-חופשה").innerHTML = `
-        <p>עדיין לא שמרת לוז חופשה.</p>
-        <button class="btn" onclick="window.location.href='חופשה.html'">התחל לבנות כאן</button>
-      `;
-      document.getElementById("category-ניהול יום").innerHTML = `
-        <p>עדיין לא שמרת לוז ניהול יום.</p>
-        <button class="btn" onclick="window.location.href='יומי.html'">התחל לבנות כאן</button>
-      `;
+      // קטגוריה "חופשה"
+      const containerVacation = document.getElementById("category-חופשה");
+      let htmlVacation = "";
+      if (schedulesVacation.length === 0) {
+        htmlVacation = `
+          <p>עדיין לא שמרת לוז חופשה.</p>
+          <button class="btn" onclick="window.location.href='חופשה.html'">התחל לבנות כאן</button>
+        `;
+      } else {
+        htmlVacation += "<ul style='list-style: none; padding:0;'>";
+        schedulesVacation.forEach((sch, idx) => {
+          htmlVacation += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${idx})">
+                             <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${idx})">🗑️</span>
+                             ${sch.name}
+                           </li>`;
+        });
+        htmlVacation += "</ul>";
+      }
+      containerVacation.innerHTML = htmlVacation;
+      
+      // קטגוריה "ניהול יום"
+      const containerDaily = document.getElementById("category-ניהול יום");
+      let htmlDaily = "";
+      if (schedulesDaily.length === 0) {
+        htmlDaily = `
+          <p>עדיין לא שמרת לוז ניהול יום.</p>
+          <button class="btn" onclick="window.location.href='יומי.html'">התחל לבנות כאן</button>
+        `;
+      } else {
+        htmlDaily += "<ul style='list-style: none; padding:0;'>";
+        schedulesDaily.forEach((sch, idx) => {
+          htmlDaily += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${idx})">
+                             <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${idx})">🗑️</span>
+                             ${sch.name}
+                           </li>`;
+        });
+        htmlDaily += "</ul>";
+      }
+      containerDaily.innerHTML = htmlDaily;
     }
     
     function toggleCategory(cat) {
