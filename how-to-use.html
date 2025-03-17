@@ -38,24 +38,15 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/service-worker.js')
-          .then(function(registration) {
-            console.log('Service Worker registered with scope:', registration.scope);
-          })
-          .catch(function(err) {
-            console.log('Service Worker registration failed:', err);
-          });
+          .then(registration => console.log('Service Worker registered with scope:', registration.scope))
+          .catch(err => console.log('Service Worker registration failed:', err));
       });
     }
   </script>
   
-  <!-- העיצוב – זהה לשאר הדפים -->
+  <!-- עיצוב זהה לשאר הדפים -->
   <style>
-    /* Reset בסיסי */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
@@ -99,9 +90,7 @@
       border-right: 1px solid rgba(236,240,241,0.5);
       text-decoration: none;
     }
-    .nav-links a:last-child {
-      border-right: none;
-    }
+    .nav-links a:last-child { border-right: none; }
     .nav-links a:hover {
       background-color: #3d566e;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
@@ -119,18 +108,9 @@
       font-size: 14px;
     }
     @media (max-width: 600px) {
-      .topbar {
-        flex-direction: column;
-        gap: 10px;
-      }
-      .site-name {
-        font-size: 24px;
-      }
-      .nav-links a {
-        padding: 10px;
-        width: 100%;
-        text-align: center;
-      }
+      .topbar { flex-direction: column; gap: 10px; }
+      .site-name { font-size: 24px; }
+      .nav-links a { padding: 10px; width: 100%; text-align: center; }
     }
   </style>
 </head>
@@ -149,32 +129,51 @@
   <!-- תוכן עמוד "איך משתמשים" -->
   <main id="content">
     <h2>איך משתמשים</h2>
-    <p>ברוכים הבאים לאתר "זמן זהב". כאן תמצאו מדריכים והסברים כיצד ליצור, לשמור ולנהל את הלוזים שלכם.</p>
+    <p>ברוכים הבאים לאתר "זמן זהב". כאן תוכלו למצוא מדריכים והסברים כיצד ליצור, לשמור ולנהל את הלוזים שלכם.</p>
     <p>
       <strong>שלבים לשימוש:</strong><br>
-      1. בחרו "לו״ז חדש" מהתפריט ליצירת לוז חדש.<br>
+      1. בחרו "לו״ז חדש" ליצירת לוז חדש.<br>
       2. בחרו את סוג הלוז (למידה, חופשה, ניהול יום).<br>
       3. מלאו את הפרטים, הוסיפו חלקים ללוז ולבסוף שמרו אותו.<br>
       4. בדף "הלוזים שלי" תוכלו לצפות, לערוך או למחוק את הלוזים השמורים.
     </p>
-    <p>בנוסף, תוכלו לצלם מסך של הלוז, להעתיקו להודעה ולשתף אותו בקלות.</p>
+    <p>בנוסף, ניתן לצלם מסך של הלוז, להעתיקו להודעה ולשתף אותו בקלות.</p>
   </main>
   
   <footer>©️doronnakache</footer>
   
-  <!-- סקריפט ניווט ואירוע גלילה -->
+  <!-- סקריפטים לעדכון מצב המשתמש ואירועי גלילה -->
   <script>
     function goHome() {
       window.location.href = "index.html";
     }
-    
     window.addEventListener("scroll", function() {
       const nav = document.querySelector(".topbar");
-      if (window.scrollY > 50) {
-        nav.style.transform = "translateY(-100%)";
-      } else {
-        nav.style.transform = "translateY(0)";
-      }
+      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
+    });
+    function updateUserGreeting(user) {
+      let currentHour = new Date().getHours();
+      let greeting = "בוקר טוב";
+      if(currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
+      else if(currentHour >= 18) { greeting = "ערב טוב"; }
+      const authLink = document.getElementById("authLink");
+      let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
+      authLink.innerText = greeting + " " + firstName + "!";
+      authLink.onclick = function(event) {
+        event.preventDefault();
+        if(confirm("להתנתק?")) {
+          firebase.auth().signOut().then(() => {
+            authLink.innerText = "התחברות";
+            authLink.onclick = null;
+          }).catch(error => {
+            alert("שגיאה בהתנתקות: " + error.message);
+          });
+        }
+      };
+    }
+    firebase.auth().onAuthStateChanged(user => {
+      if(user) { updateUserGreeting(user); }
+      else { document.getElementById("authLink").innerText = "התחברות"; }
     });
   </script>
 </body>
