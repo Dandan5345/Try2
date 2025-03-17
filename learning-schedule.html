@@ -58,8 +58,8 @@
       line-height: 1.6;
       background: linear-gradient(135deg, #e0eafc, #cfdef3);
       direction: rtl;
-      padding-bottom: 40px;
       padding-top: 120px;
+      padding-bottom: 40px;
       text-align: center;
     }
     .topbar {
@@ -103,6 +103,36 @@
     }
     main { padding: 20px; margin-top: 20px; min-height: 70vh; text-align: center; }
     footer { text-align: center; padding: 10px; color: #7f8c8d; font-size: 14px; }
+    
+    /* סגנונות ללוז – הוספת רקע לאמוג'י */
+    .schedule-item {
+      position: relative;
+      background-color: rgba(255,255,255,0.9);
+      padding: 15px;
+      margin: 10px auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      cursor: pointer;
+      text-align: center;
+      max-width: 400px;
+      transition: transform 0.2s;
+      overflow: hidden;
+    }
+    .schedule-item:hover { transform: scale(1.02); }
+    .schedule-item h3 { margin-bottom: 5px; color: #2c3e50; position: relative; z-index: 1; }
+    .schedule-item p { position: relative; z-index: 1; }
+    .emoji-background {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 100px;
+      opacity: 0.1;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    /* שאר הסגנונות (כפתורים, מודלים וכו') נשארים כפי שהוגדרו */
     .action-buttons { display: inline-flex; align-items: center; gap: 10px; margin-top: 10px; position: relative; }
     .btn { display: inline-block; padding: 10px 20px; background-color: #3a506b; color: #fff; border: none; cursor: pointer; font-size: 16px; border-radius: 8px; transition: background-color 0.3s; }
     .btn:hover { background-color: #2a3e56; }
@@ -120,13 +150,6 @@
       background-color: #cce5ff; border-radius: 6px; margin-bottom: 5px;
     }
     #templateDropdown button:hover { background: #e6f2ff; }
-    .schedule-item {
-      position: relative; background-color: rgba(255,255,255,0.9); padding: 15px; margin: 10px auto;
-      border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer;
-      text-align: center; max-width: 400px; transition: transform 0.2s; overflow: hidden;
-    }
-    .schedule-item:hover { transform: scale(1.02); }
-    .schedule-item h3 { margin-bottom: 5px; color: #2c3e50; }
     .modal {
       display: none;
       position: fixed;
@@ -189,7 +212,10 @@
       color: #2c3e50;
       max-width: 400px;
     }
-    /* מחלקת כפתורים עם מרווח */
+    .saved-schedule-item span:first-child {
+      float: left;
+      cursor: pointer;
+    }
     .button-group {
       margin-top: 20px;
       display: flex;
@@ -205,6 +231,7 @@
   </style>
 </head>
 <body>
+  <!-- תפריט ראשי -->
   <nav class="topbar">
     <div class="site-name" onclick="goHome()">זמן זהב</div>
     <div class="nav-links">
@@ -215,6 +242,7 @@
     </div>
   </nav>
 
+  <!-- תוכן עמוד "בניית לוז למידה" -->
   <main id="content">
     <h2>בניית לוז למידה חדש</h2>
     <p>להוספת חלק ללו״ז, לחץ על הכפתור +</p>
@@ -263,7 +291,7 @@
         <label>נושא:</label>
         <select id="modalSubject" onchange="subjectChangeHandler()">
           <option value="קריאה של חומר לימוד">📖 קריאה של חומר לימוד</option>
-          <option value="תרגול">📝 תרגול</option>
+          <option value="תרגול📝">תרגול📝</option>
           <option value="מעבר על חומר מהיר">⏩ מעבר על חומר מהיר</option>
           <option value="למידה עמוקה">🔍 למידה עמוקה</option>
           <option value="לקום">⏰ לקום</option>
@@ -293,6 +321,7 @@
       <div class="button-group">
         <button class="btn" onclick="captureScreenshot()">צילום מסך של הלו״ז</button>
         <button class="btn" onclick="copyScheduleToClipboard()">העתקת הלו״ז להודעה</button>
+        <!-- בעת לחיצה על "סיום", נסגור את החלון ונעביר לעמוד הבית -->
         <button class="btn" onclick="closeFinalScheduleModal()">סיום</button>
       </div>
     </div>
@@ -306,7 +335,7 @@
         <label>נושא:</label>
         <select id="templateSubjectSelect">
           <option value="קריאה של חומר לימוד">📖 קריאה של חומר לימוד</option>
-          <option value="תרגול">📝 תרגול</option>
+          <option value="תרגול📝">תרגול📝</option>
           <option value="מעבר על חומר מהיר">⏩ מעבר על חומר מהיר</option>
           <option value="למידה עמוקה">🔍 למידה עמוקה</option>
           <option value="לקום">⏰ לקום</option>
@@ -373,13 +402,14 @@
       else if (currentHour >= 18) { greeting = "ערב טוב"; }
       const authLink = document.getElementById("authLink");
       let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
-      authLink.innerText = greeting + "\n" + firstName + "!";
+      authLink.innerText = greeting + " " + firstName + "!";
+      
       authLink.onclick = function(event) {
         event.preventDefault();
         if (confirm("להתנתק?")) {
           firebase.auth().signOut().then(() => {
             authLink.innerText = "התחברות";
-            authLink.onclick = function() { window.location.href = "auth.html"; };
+            authLink.onclick = null;
           });
         }
       };
@@ -388,51 +418,10 @@
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         updateUserGreeting(user);
-        loadSchedulesFromFirestore(user);
       } else {
-        savedSchedules = [];
-        if(document.getElementById("scheduleContainer"))
-          document.getElementById("scheduleContainer").innerHTML = "";
+        document.getElementById("authLink").innerText = "התחברות";
       }
     });
-    
-    function loadSchedulesFromFirestore(user) {
-      db.collection("schedules").doc(user.uid).get()
-        .then((doc) => {
-          if (doc.exists) {
-            savedSchedules = doc.data().schedules || [];
-            renderScheduleItems();
-          } else {
-            savedSchedules = [];
-          }
-        })
-        .catch((error) => {
-          console.error("Error loading schedules: ", error);
-        });
-    }
-    
-    function saveSchedulesToFirestore() {
-      const user = firebase.auth().currentUser;
-      if (user) {
-        db.collection("schedules").doc(user.uid).set({
-          schedules: savedSchedules
-        })
-        .then(() => { console.log("Schedules saved successfully"); })
-        .catch((error) => { console.error("Error saving schedules: ", error); });
-      }
-    }
-    
-    // מיפוי נושאים לאמוג'ים
-    const subjectEmojis = {
-      "קריאה של חומר לימוד": "📖",
-      "תרגול": "📝",
-      "מעבר על חומר מהיר": "⏩",
-      "למידה עמוקה": "🔍",
-      "לקום": "⏰",
-      "הפסקה": "☕",
-      "ללכת לישון": "😴",
-      "אוכל": "🍽️"
-    };
     
     // ניווט בין דפים
     function goHome() {
@@ -440,18 +429,6 @@
     }
     
     /* שינוי – עדכון קטע "לוז חדש" */
-    function loadNewScheduleExplanation(event) {
-      event.preventDefault();
-      document.getElementById("content").innerHTML = `
-        <h2>איזה לוז תרצה ליצור:</h2>
-        <div class="button-group">
-          <button class="btn" onclick="loadNewScheduleBuilder()">לוז למידה 📘</button>
-          <button class="btn" onclick="window.location.href='חופשה.html'">לוז חופשה ✈️</button>
-          <button class="btn" onclick="window.location.href='יומי.html'">לוז ניהול יום ✅</button>
-        </div>
-      `;
-    }
-    
     function loadNewScheduleBuilder() {
       scheduleItems = [];
       scheduleName = null;
@@ -477,7 +454,7 @@
     
     function loadMySchedules(event) {
       event.preventDefault();
-      let html = `<h2>הלוזי״ם שלי</h2>`;
+      let html = `<h2>הלוזים שלי</h2>`;
       if (savedSchedules.length === 0) {
         html += `<p>אין לוזים שמורים.</p>`;
       } else {
@@ -497,19 +474,20 @@
       if (confirm("האם אתה בטוח שברצונך למחוק את הלו״ז הזה?")) {
         savedSchedules.splice(index, 1);
         saveSchedulesToFirestore();
-        loadMySchedules(event);
-        alert("הלו״ז נמחק.");
+        loadMySchedules();
+        alert("החלק נמחק מהלו״ז.");
       }
     }
     
-    // צפייה בלוז שמור עם אפשרות עריכה
     function viewSavedSchedule(idx) {
       const sch = savedSchedules[idx];
       let finalHtml = "";
       sch.scheduleItems.forEach(item => {
-        const emoji = subjectEmojis[item.subject] || "";
-        finalHtml += `<div class="schedule-item" data-subject="${item.subject}">
-                        <h3>${item.startTime} - ${item.endTime} : ${item.subject} ${emoji}</h3>
+        const bgEmoji = getBackgroundEmoji(item.subject);
+        // כאן מוצג הטקסט כפי שהוזן (כולל האמוג׳י אם קיים)
+        finalHtml += `<div class="saved-schedule-item">
+                        <div class="emoji-background">${bgEmoji}</div>
+                        <h3>${item.startTime} - ${item.endTime} : ${item.subject}</h3>
                         <p>${item.description}</p>
                       </div>`;
       });
@@ -520,16 +498,46 @@
           <button class="btn" onclick="captureScreenshotFromElement('finalScheduleDisplay', '${sch.name}')">צילום מסך של הלו״ז</button>
           <button class="btn" onclick="copyScheduleToClipboardFromSchedule(${idx})">העתקת הלו״ז להודעה</button>
           <button class="btn" onclick="editSavedSchedule(${idx})">ערוך לוז</button>
-          <button class="btn" onclick="closeFinalScheduleModal(); goHome();">סיום</button>
+          <button class="btn" onclick="goHome()">סיום</button>
         </div>
       `;
     }
     
-    function loadHowToUse(event) {
-      event.preventDefault();
-      document.getElementById("content").innerHTML = '<h2>איך משתמשים</h2><p>כאן תמצא הסברים והדרכות לשימוש באתר.</p>';
+    function saveSchedulesToFirestore() {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        db.collection("schedules").doc(user.uid).set({
+          schedules: savedSchedules
+        })
+        .then(() => { console.log("Schedules saved successfully"); })
+        .catch((error) => { console.error("Error saving schedules: ", error); });
+      }
     }
     
+    // עזר: הפונקציה getBackgroundEmoji בודקת אם סוף הטקסט הוא אמוג׳י (בהנחה שקוד נקודתיות > 10000)
+    function getBackgroundEmoji(subject) {
+      // בדיקה פשוטה – נניח שאם התו האחרון הוא בעל קוד נקודתי גבוה, הוא אמוג׳י
+      let lastChar = subject.slice(-1);
+      if (lastChar.codePointAt(0) > 10000) {
+        return lastChar;
+      }
+      // אם לא, נסה להסתמך על מילון האמוג׳ים
+      return subjectEmojis[subject] || "";
+    }
+    
+    // מילון אמוג׳ים – יש לעדכן לפי הצורך (שים לב: במפתחות נוספו האמוג׳ים בהתאם למה שמופיע בטקסט, לדוגמה "תרגול📝")
+    const subjectEmojis = {
+      "קריאה של חומר לימוד": "📖",
+      "תרגול📝": "📝",
+      "מעבר על חומר מהיר": "⏩",
+      "למידה עמוקה": "🔍",
+      "לקום": "⏰",
+      "הפסקה": "☕",
+      "ללכת לישון": "😴",
+      "אוכל": "🍽️"
+    };
+    
+    // פונקציות ניהול לוזים – דוגמאות (יש להעתיק את שאר הפונקציות מ-"learning-schedule.html" במידת הצורך)
     function addOneMinute(timeStr) {
       let [h, m] = timeStr.split(":").map(Number);
       m++;
@@ -670,17 +678,21 @@
       saveSchedulesToFirestore();
     }
     
+    // עדכון renderScheduleItems – מוסיף גם את הרקע של האמוג׳י וגם משאיר את הטקסט כפי שהוזן
     function renderScheduleItems() {
       const container = document.getElementById("scheduleContainer");
       container.innerHTML = "";
       scheduleItems.forEach((item, idx) => {
-        const emoji = subjectEmojis[item.subject] || "";
+        const bgEmoji = getBackgroundEmoji(item.subject);
         const div = document.createElement("div");
         div.className = "schedule-item";
         div.setAttribute("data-subject", item.subject);
-        div.innerHTML = `<span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteScheduleItem(${idx})">🗑️</span>
-                         <h3>${item.startTime} - ${item.endTime} : ${item.subject} ${emoji}</h3>
-                         <p>${item.description}</p>`;
+        div.innerHTML = `
+          <div class="emoji-background">${bgEmoji}</div>
+          <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteScheduleItem(${idx})">🗑️</span>
+          <h3>${item.startTime} - ${item.endTime} : ${item.subject}</h3>
+          <p>${item.description}</p>
+        `;
         div.onclick = function() {
           editingIndex = idx;
           document.getElementById("modalStartTime").value = item.startTime;
@@ -705,6 +717,7 @@
       }
     }
     
+    // בעת לחיצה על "שומר וסיים לו״ז" – מציג חלון סופי, ולחיצה על כפתור "סיום" או האיקס תעביר לעמוד הבית
     function openFinalSchedule() {
       if (!scheduleName) {
         alert("עליך להזין שם ללו״ז ולבנות לפחות חלק אחד.");
@@ -724,13 +737,20 @@
       document.getElementById("finalScheduleTitle").innerText = scheduleName;
       let finalHtml = "";
       scheduleItems.forEach(item => {
-        const emoji = subjectEmojis[item.subject] || "";
+        const bgEmoji = getBackgroundEmoji(item.subject);
         finalHtml += `<div class="schedule-item" data-subject="${item.subject}">
-                        <h3>${item.startTime} - ${item.endTime} : ${item.subject} ${emoji}</h3>
+                        <div class="emoji-background">${bgEmoji}</div>
+                        <h3>${item.startTime} - ${item.endTime} : ${item.subject}</h3>
                         <p>${item.description}</p>
                       </div>`;
       });
       document.getElementById("finalScheduleDisplay").innerHTML = finalHtml;
+    }
+    
+    // בעת לחיצה על כפתור "סיום" או האיקס בחלון הסופי, נסגור את החלון ונעביר לעמוד הבית
+    function closeFinalScheduleModal() {
+      document.getElementById("finalScheduleModal").style.display = "none";
+      goHome();
     }
     
     function captureScreenshot() {
@@ -753,8 +773,8 @@
       const sch = savedSchedules[idx];
       let text = sch.name + "\n\n";
       sch.scheduleItems.forEach(item => {
-        const emoji = subjectEmojis[item.subject] || "";
-        text += `*${item.startTime} - ${item.endTime} : ${item.subject} ${emoji}*\n~ ${item.description}\n\n`;
+        const bgEmoji = getBackgroundEmoji(item.subject);
+        text += `*${item.startTime} - ${item.endTime} : ${item.subject} ${bgEmoji}*\n~ ${item.description}\n\n`;
       });
       navigator.clipboard.writeText(text).then(() => {
         alert("הלוז הועתק בהצלחה!");
@@ -766,8 +786,8 @@
     function copyScheduleToClipboard() {
       let text = scheduleName + "\n\n";
       scheduleItems.forEach(item => {
-        const emoji = subjectEmojis[item.subject] || "";
-        text += `*${item.startTime} - ${item.endTime} : ${item.subject} ${emoji}*\n~ ${item.description}\n\n`;
+        const bgEmoji = getBackgroundEmoji(item.subject);
+        text += `*${item.startTime} - ${item.endTime} : ${item.subject} ${bgEmoji}*\n~ ${item.description}\n\n`;
       });
       navigator.clipboard.writeText(text).then(() => {
         alert("הלוז הועתק בהצלחה!");
@@ -825,7 +845,7 @@
       const subjectDropdown = document.getElementById("modalSubject");
       subjectDropdown.innerHTML = `
         <option value="קריאה של חומר לימוד">📖 קריאה של חומר לימוד</option>
-        <option value="תרגול">📝 תרגול</option>
+        <option value="תרגול📝">תרגול📝</option>
         <option value="מעבר על חומר מהיר">⏩ מעבר על חומר מהיר</option>
         <option value="למידה עמוקה">🔍 למידה עמוקה</option>
         <option value="לקום">⏰ לקום</option>
@@ -945,15 +965,20 @@
       alert("תבנית לוז קבוע נשמרה!");
     }
     
-    // הוספת אירוע גלילה לתפריט הראשי
+    // אירוע גלילה לתפריט הראשי
     window.addEventListener("scroll", function() {
       const nav = document.querySelector(".topbar");
-      if (window.scrollY > 50) {
-        nav.style.transform = "translateY(-100%)";
-      } else {
-        nav.style.transform = "translateY(0)";
-      }
+      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
     });
+    
+    // העזר getBackgroundEmoji – אם הסוף של הטקסט הוא אמוג׳י, מחזיר אותו, אחרת משתמש במילון
+    function getBackgroundEmoji(subject) {
+      let lastChar = subject.slice(-1);
+      if (lastChar.codePointAt(0) > 10000) {
+        return lastChar;
+      }
+      return subjectEmojis[subject] || "";
+    }
   </script>
 </body>
 </html>
