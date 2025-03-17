@@ -4,35 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>זמן זהב - עמוד הבית</title>
-  
-  <!-- קישור ל-manifest -->
+
+  <!-- קישור ל-manifest + favicon -->
   <link rel="manifest" href="manifest.json">
-  <!-- קישור ל-favicon עם התמונה שסיפקת -->
   <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
-  
-  <!-- ספריות וסקריפטים -->
+
+  <!-- ספריות וסקריפטים (Firebase, html2canvas וכו') -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  
-  <!-- קוד Firebase והגדרות האתר -->
+
+  <!-- אתחול Firebase -->
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyCsp7xKutteUAxmjYQsQWDlrjK7URg-MR8",
-      authDomain: "zman-zhav.firebaseapp.com",
-      projectId: "zman-zhav",
-      storageBucket: "zman-zhav.firebasestorage.app",
-      messagingSenderId: "685099855512",
-      appId: "1:685099855512:web:c3ad456591e1d92e436aed",
-      measurementId: "G-XJ3LKJSW16"
+      apiKey: "XXXXXX",
+      authDomain: "XXXXXX.firebaseapp.com",
+      projectId: "XXXXXX",
+      storageBucket: "XXXXXX.appspot.com",
+      messagingSenderId: "XXXXXX",
+      appId: "XXXXXX",
+      measurementId: "XXXXXX"
     };
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
     const db = firebase.firestore();
   </script>
-  
+
   <!-- רישום Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
@@ -47,10 +46,14 @@
       });
     }
   </script>
-  
+
   <style>
-    /* CSS משותף */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* סגנון זהה לזה שהיה לנו בקוד האחרון (תפריט עליון שנעלם, וכו') */
+    * {
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box;
+    }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
@@ -92,26 +95,31 @@
       font-weight: bold;
       color: #ecf0f1;
       border-right: 1px solid rgba(236,240,241,0.5);
+      text-decoration: none;
     }
-    .nav-links a:last-child { border-right: none; }
+    .nav-links a:last-child {
+      border-right: none;
+    }
     .nav-links a:hover {
       background-color: #3d566e;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-    main { padding: 20px; margin-top: 20px; min-height: 70vh; text-align: center; }
-    footer { text-align: center; padding: 10px; color: #7f8c8d; font-size: 14px; }
-    /* מחלקת כפתורים עם מרווח */
-    .button-group {
+    main {
+      padding: 20px;
       margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      min-height: 70vh;
+      text-align: center;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      color: #7f8c8d;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <!-- Header משותף -->
+  <!-- תפריט עליון -->
   <nav class="topbar">
     <div class="site-name" onclick="window.location.href='index.html'">זמן זהב</div>
     <div class="nav-links">
@@ -121,14 +129,24 @@
       <a href="auth.html" id="authLink">התחברות</a>
     </div>
   </nav>
-  
-  <!-- תוכן העמוד -->
+
   <main id="content">
-    <h1>ברוכים הבאים לאתר זמן זהב</h1>
+    <h1>ברוכים הבאים לאתר "זמן זהב"</h1>
     <p>בחר אחת מהאפשרויות בתפריט כדי להתחיל.</p>
   </main>
-  
-  <!-- Footer משותף -->
+
   <footer>©️doronnakache</footer>
+
+  <!-- העלמת התפריט בעת גלילה -->
+  <script>
+    window.addEventListener("scroll", function() {
+      const nav = document.querySelector(".topbar");
+      if (window.scrollY > 50) {
+        nav.style.transform = "translateY(-100%)";
+      } else {
+        nav.style.transform = "translateY(0)";
+      }
+    });
+  </script>
 </body>
 </html>
