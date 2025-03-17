@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>זמן זהב - הלוזים שלי</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCsp7xKutteUAxmjYQsQWDlrjK7URg-MR8",
+      authDomain: "zman-zhav.firebaseapp.com",
+      projectId: "zman-zhav",
+      storageBucket: "zman-zhav.firebasestorage.app",
+      messagingSenderId: "685099855512",
+      appId: "1:685099855512:web:c3ad456591e1d92e436aed",
+      measurementId: "G-XJ3LKJSW16"
+    };
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    const db = firebase.firestore();
+  </script>
+  
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => { console.log('Service Worker registered:', registration.scope); })
+          .catch(err => { console.log('Service Worker registration failed:', err); });
+      });
+    }
+  </script>
+  
+  <style>
+    /* העתקו את אותו CSS המשותף כפי שבקבצים הקודמים */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height:1.6;
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      direction:rtl;
+      padding-bottom:40px;
+      padding-top:120px;
+      text-align:center;
+    }
+    .topbar { background-color:#34495e; display:flex; justify-content:space-between; align-items:center; padding:10px 20px; position:fixed; top:0; left:0; width:100%; z-index:1000; transition:transform 0.3s; border-bottom:2px solid #2c3e50; }
+    .site-name { font-size:28px; color:#ecf0f1; cursor:pointer; font-weight:bold; }
+    .nav-links { display:flex; gap:10px; }
+    .nav-links a { background-color:#2c3e50; padding:10px 15px; border-radius:8px; transition:background-color 0.3s, box-shadow 0.3s; font-weight:bold; color:#ecf0f1; border-right:1px solid rgba(236,240,241,0.5); }
+    .nav-links a:last-child { border-right:none; }
+    .nav-links a:hover { background-color:#3d566e; box-shadow:0 2px 6px rgba(0,0,0,0.2); }
+    main { padding:20px; margin-top:20px; min-height:70vh; text-align:center; }
+    footer { text-align:center; padding:10px; color:#7f8c8d; font-size:14px; }
+    .button-group { margin-top:20px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+    .saved-schedule-item {
+      background-color:#fff;
+      margin:10px auto;
+      padding:10px;
+      border-radius:8px;
+      box-shadow:0 2px 4px rgba(0,0,0,0.1);
+      cursor:pointer;
+      text-align:center;
+      font-weight:bold;
+      color:#2c3e50;
+      max-width:400px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="topbar">
+    <div class="site-name" onclick="window.location.href='index.html'">זמן זהב</div>
+    <div class="nav-links">
+      <a href="choose-schedule.html">לוז חדש</a>
+      <a href="my-schedules.html">הלוזים שלי</a>
+      <a href="how-to-use.html">איך משתמשים</a>
+      <a href="auth.html" id="authLink">התחברות</a>
+    </div>
+  </nav>
+  
+  <main id="content">
+    <!-- כאן נטען הקוד באמצעות loadMySchedules -->
+    <script>
+      // קריאה לפונקציה לטעינת הלוזים – ניתן להעתיק את הקוד מהגרסה הקודמת
+      function loadMySchedules() {
+        // פונקציה זו צריכה למשוך את הנתונים מ-Firestore ולהציג אותם
+        // כאן נשתמש בדוגמה פשוטה (במקרה שהנתונים כבר נטענו ל-savedSchedules)
+        let html = `<h2>הלוזים שלי</h2>`;
+        if (savedSchedules.length === 0) {
+          html += `<p>אין לוזים שמורים.</p>`;
+        } else {
+          html += `<ul style="list-style:none; padding:0;">`;
+          savedSchedules.forEach((sch, idx) => {
+            html += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${idx})">
+                       <span style="float:left; cursor:pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${idx})">🗑️</span>
+                       ${sch.name}
+                     </li>`;
+          });
+          html += `</ul>`;
+        }
+        document.getElementById("content").innerHTML = html;
+      }
+      // נניח שהנתונים כבר נטענו – או אפשר להוסיף קריאה ל-loadSchedulesFromFirestore
+      loadMySchedules();
+    </script>
+  </main>
+  
+  <footer>©️doronnakache</footer>
+  
+  <script>
+    // כל הקוד לניהול לוזים (העתק את אותו הקוד מהקובץ learning-schedule.html במידת הצורך)
+    // במקרה זה, פונקציות כמו viewSavedSchedule, deleteSavedSchedule יהיו חלק מהקוד המשותף.
+  </script>
+</body>
+</html>
