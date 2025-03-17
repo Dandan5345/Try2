@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>זמן זהב - בניית לוז למידה</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCsp7xKutteUAxmjYQsQWDlrjK7URg-MR8",
+      authDomain: "zman-zhav.firebaseapp.com",
+      projectId: "zman-zhav",
+      storageBucket: "zman-zhav.firebasestorage.app",
+      messagingSenderId: "685099855512",
+      appId: "1:685099855512:web:c3ad456591e1d92e436aed",
+      measurementId: "G-XJ3LKJSW16"
+    };
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    const db = firebase.firestore();
+  </script>
+  
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => { console.log('Service Worker registered:', registration.scope); })
+          .catch(err => { console.log('Service Worker registration failed:', err); });
+      });
+    }
+  </script>
+  
+  <style>
+    /* השתמשו באותו CSS משותף כמו בקבצים הקודמים */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      direction: rtl;
+      padding-bottom: 40px;
+      padding-top: 120px;
+      text-align: center;
+    }
+    .topbar {
+      background-color: #34495e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      transition: transform 0.3s;
+      border-bottom: 2px solid #2c3e50;
+    }
+    .site-name { font-size: 28px; color: #ecf0f1; cursor: pointer; font-weight: bold; }
+    .nav-links { display: flex; gap: 10px; }
+    .nav-links a {
+      background-color: #2c3e50;
+      padding: 10px 15px;
+      border-radius: 8px;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      font-weight: bold;
+      color: #ecf0f1;
+      border-right: 1px solid rgba(236,240,241,0.5);
+    }
+    .nav-links a:last-child { border-right: none; }
+    .nav-links a:hover { background-color: #3d566e; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    main { padding: 20px; margin-top: 20px; min-height: 70vh; text-align: center; }
+    footer { text-align: center; padding: 10px; color: #7f8c8d; font-size: 14px; }
+    .action-buttons { display: inline-flex; align-items: center; gap: 10px; margin-top: 10px; position: relative; }
+    .btn { display: inline-block; padding: 10px 20px; background-color: #3a506b; color: #fff; border: none; cursor: pointer; font-size: 16px; border-radius: 8px; transition: background-color 0.3s; }
+    .btn:hover { background-color: #2a3e56; }
+    #templateMenuButton { background-color: #3a506b; border: none; border-radius: 8px; font-size: 24px; cursor: pointer; color: #ecf0f1; padding: 5px 10px; }
+    #templateDropdown {
+      position: absolute; bottom: 100%; right: 0;
+      background: #f8f8f8; border: 1px solid #ccc; border-radius: 8px;
+      display: none; z-index: 1500; box-shadow: 0 2px 6px rgba(0,0,0,0.2); min-width: 200px;
+    }
+    #templateDropdown button {
+      background: none; border: none; width: 100%; padding: 10px; text-align: right; cursor: pointer;
+      transition: background 0.2s; font-weight: normal; color: #2c3e50;
+    }
+    #templateDropdown button:first-child {
+      background-color: #cce5ff; border-radius: 6px; margin-bottom: 5px;
+    }
+    #templateDropdown button:hover { background: #e6f2ff; }
+    .schedule-item {
+      position: relative; background-color: rgba(255,255,255,0.9); padding: 15px; margin: 10px auto;
+      border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer;
+      text-align: center; max-width: 400px; transition: transform 0.2s; overflow: hidden;
+    }
+    .schedule-item:hover { transform: scale(1.02); }
+    .schedule-item h3 { margin-bottom: 5px; color: #2c3e50; }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 6px;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    .close {
+      color: #aaa;
+      position: absolute;
+      left: 15px;
+      top: 10px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover { color: #000; }
+    .form-group { margin-bottom: 15px; text-align: center; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      color: #2c3e50;
+      background-color: #f9f9f9;
+      text-align: right;
+    }
+    .modal-elegant { border: 2px solid #d4af37; }
+    .modal-elegant h2 { color: #2c3e50; }
+    .modal-elegant .btn { background-color: #2c3e50; }
+    .modal-elegant .btn:hover { background-color: #1a242f; }
+    .saved-schedule-item {
+      background-color: #fff;
+      margin: 10px auto;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      cursor: pointer;
+      text-align: center;
+      font-weight: bold;
+      color: #2c3e50;
+      max-width: 400px;
+    }
+    .button-group {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <nav class="topbar">
+    <div class="site-name" onclick="window.location.href='index.html'">זמן זהב</div>
+    <div class="nav-links">
+      <a href="choose-schedule.html">לוז חדש</a>
+      <a href="my-schedules.html">הלוזים שלי</a>
+      <a href="how-to-use.html">איך משתמשים</a>
+      <a href="auth.html" id="authLink">התחברות</a>
+    </div>
+  </nav>
+  
+  <main id="content">
+    <h2>בניית לוז למידה חדש</h2>
+    <p>להוספת חלק ללו״ז, לחץ על הכפתור +</p>
+    <div class="action-buttons">
+      <button class="btn" onclick="openAddItemModal()">+</button>
+      <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
+      <div id="templateDropdown">
+        <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+        <div id="templateList"></div>
+      </div>
+    </div>
+    <div id="scheduleContainer"></div>
+    <div class="button-group">
+      <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
+    </div>
+  </main>
+  
+  <footer>©️doronnakache</footer>
+  
+  <!-- מודלים (אותו הקוד כמו בדוגמא הקודמת) -->
+  <div id="scheduleNameModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeScheduleNameModal()">&times;</span>
+      <h2>הזן שם ללו״ז שלך</h2>
+      <div class="form-group">
+        <label>שם הלו״ז:</label>
+        <input type="text" id="scheduleNameInput" placeholder="למשל: לוז למידה - יום שלישי">
+      </div>
+      <button class="btn" onclick="saveScheduleName()">המשך ושמירה</button>
+    </div>
+  </div>
+  
+  <div id="addItemModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeAddItemModal()">&times;</span>
+      <h2 id="addItemModalTitle">הוספת חלק ללו״ז</h2>
+      <div class="form-group">
+        <label>שעת התחלה:</label>
+        <input type="time" id="modalStartTime" onchange="setDefaultEndTime()">
+      </div>
+      <div class="form-group">
+        <label>שעת סיום:</label>
+        <input type="time" id="modalEndTime">
+      </div>
+      <div class="form-group" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+        <label>נושא:</label>
+        <select id="modalSubject" onchange="subjectChangeHandler()">
+          <option value="קריאה של חומר לימוד">📖 קריאה של חומר לימוד</option>
+          <option value="תרגול">📝 תרגול</option>
+          <option value="מעבר על חומר מהיר">⏩ מעבר על חומר מהיר</option>
+          <option value="למידה עמוקה">🔍 למידה עמוקה</option>
+          <option value="לקום">⏰ לקום</option>
+          <option value="הפסקה">☕ הפסקה</option>
+          <option value="ללכת לישון">😴 ללכת לישון</option>
+          <option value="אוכל">🍽️ אוכל</option>
+          <option value="addSubject">🖋️ הוספת נושא</option>
+        </select>
+        <div style="position: relative; display: inline-block;">
+          <button id="subjectsToggleBtn" onclick="togglePermanentSubjectsList()" style="background: none; border: none; font-size: 24px; cursor: pointer;">⋮</button>
+          <div id="permanentSubjectsList" style="display: none; position: absolute; right: 0; top: 30px; background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 5px; z-index: 2000;"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>תיאור:</label>
+        <textarea id="modalDescription" rows="3" placeholder="תאר מה תלמד או מה הפעילות"></textarea>
+      </div>
+      <button class="btn" id="addItemBtn" onclick="saveItem()">סיום והוסף</button>
+    </div>
+  </div>
+  
+  <div id="finalScheduleModal" class="modal">
+    <div class="modal-content" id="finalScheduleContent">
+      <span class="close" onclick="closeFinalScheduleModal()">&times;</span>
+      <h2 id="finalScheduleTitle"></h2>
+      <div id="finalScheduleDisplay"></div>
+      <div class="button-group">
+        <button class="btn" onclick="captureScreenshot()">צילום מסך של הלו״ז</button>
+        <button class="btn" onclick="copyScheduleToClipboard()">העתקת הלו״ז להודעה</button>
+        <button class="btn" onclick="closeFinalScheduleModal()">סיום</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="constantTemplateModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeConstantTemplateModal()">&times;</span>
+      <h2>צור לוז קבוע</h2>
+      <div class="form-group">
+        <label>נושא:</label>
+        <select id="templateSubjectSelect">
+          <option value="קריאה של חומר לימוד">📖 קריאה של חומר לימוד</option>
+          <option value="תרגול">📝 תרגול</option>
+          <option value="מעבר על חומר מהיר">⏩ מעבר על חומר מהיר</option>
+          <option value="למידה עמוקה">🔍 למידה עמוקה</option>
+          <option value="לקום">⏰ לקום</option>
+          <option value="הפסקה">☕ הפסקה</option>
+          <option value="ללכת לישון">😴 ללכת לישון</option>
+          <option value="אוכל">🍽️ אוכל</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>משך (בדקות):</label>
+        <input type="number" id="templateDurationInput" value="90" min="1">
+      </div>
+      <div class="form-group">
+        <label>תיאור:</label>
+        <textarea id="templateDescriptionInput" rows="2" placeholder="תאר את תבנית הלוז"></textarea>
+      </div>
+      <button class="btn" onclick="saveConstantTemplate()">שמור תבנית</button>
+    </div>
+  </div>
+  
+  <div id="addSubjectModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeAddSubjectModal()">&times;</span>
+      <h2>הוספת נושא</h2>
+      <div class="form-group">
+        <label>אנא בחר שם לנושא (מומלץ להוסיף סמיילי):</label>
+        <input type="text" id="newSubjectNameInput" placeholder="למשל: תרגול מהיר 20 דקות 🧮">
+      </div>
+      <div class="form-group" style="display: flex; justify-content: space-around;">
+        <button class="btn" onclick="addSubjectOneTime()">הוספה חד פעמית</button>
+        <button class="btn" onclick="addSubjectPermanent()">הוספה קבועה</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- קוד JavaScript לניהול הלוזים, התחברות, עריכה ושמירה (העתקנו את כל הקוד כפי שהיה) -->
+  <script>
+    let scheduleItems = [];
+    let scheduleName = null;
+    let savedSchedules = [];
+    let editingIndex = -1;
+    let constantTemplates = [];
+    let selectedTemplate = null;
+    let permanentSubjects = [];
+    
+    let editingSavedScheduleIndex = -1;
+    let originalScheduleItems = [];
+    let originalScheduleName = "";
+    
+    function login() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then(result => { updateUserGreeting(result.user); })
+        .catch(error => { alert("שגיאה בהתחברות: " + error.message); });
+    }
+    
+    function updateUserGreeting(user) {
+      let currentHour = new Date().getHours();
+      let greeting = "בוקר טוב";
+      if (currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
+      else if (currentHour >= 18) { greeting = "ערב טוב"; }
+      const authLink = document.getElementById("authLink");
+      let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
+      authLink.innerText = greeting + "\n" + firstName + "!";
+      authLink.onclick = function(event) {
+        event.preventDefault();
+        if (confirm("להתנתק?")) {
+          firebase.auth().signOut().then(() => {
+            authLink.innerText = "התחברות";
+            authLink.onclick = function() { window.location.href = "auth.html"; };
+          });
+        }
+      };
+    }
+    
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        updateUserGreeting(user);
+        loadSchedulesFromFirestore(user);
+      } else {
+        savedSchedules = [];
+        document.getElementById("scheduleContainer").innerHTML = "";
+      }
+    });
+    
+    function loadSchedulesFromFirestore(user) {
+      db.collection("schedules").doc(user.uid).get()
+        .then(doc => {
+          if (doc.exists) {
+            savedSchedules = doc.data().schedules || [];
+            renderScheduleItems();
+          } else {
+            savedSchedules = [];
+          }
+        })
+        .catch(error => { console.error("Error loading schedules: ", error); });
+    }
+    
+    function saveSchedulesToFirestore() {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        db.collection("schedules").doc(user.uid).set({ schedules: savedSchedules })
+          .then(() => { console.log("Schedules saved successfully"); })
+          .catch(error => { console.error("Error saving schedules: ", error); });
+      }
+    }
+    
+    const subjectEmojis = {
+      "קריאה של חומר לימוד": "📖",
+      "תרגול": "📝",
+      "מעבר על חומר מהיר": "⏩",
+      "למידה עמוקה": "🔍",
+      "לקום": "⏰",
+      "הפסקה": "☕",
+      "ללכת לישון": "😴",
+      "אוכל": "🍽️"
+    };
+    
+    function goHome() {
+      document.getElementById("content").innerHTML = '<p>ברוכים הבאים לאתר "זמן זהב". בחר אחת מהאפשרויות בתפריט כדי להתחיל.</p>';
+    }
+    
+    function loadNewScheduleExplanation(event) {
+      // לא בשימוש בדף זה – בשימוש ב-choose-schedule.html
+    }
+    
+    function loadNewScheduleBuilder() {
+      scheduleItems = [];
+      scheduleName = null;
+      editingIndex = -1;
+      selectedTemplate = null;
+      document.getElementById("content").innerHTML = `
+        <h2>בניית לוז למידה חדש</h2>
+        <p>להוספת חלק ללו״ז, לחץ על הכפתור +</p>
+        <div class="action-buttons">
+          <button class="btn" onclick="openAddItemModal()">+</button>
+          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
+          <div id="templateDropdown">
+            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+            <div id="templateList"></div>
+          </div>
+        </div>
+        <div id="scheduleContainer"></div>
+        <div class="button-group">
+          <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
+        </div>
+      `;
+    }
+    
+    function loadMySchedules(event) {
+      event.preventDefault();
+      let html = `<h2>הלוזים שלי</h2>`;
+      if (savedSchedules.length === 0) {
+        html += `<p>אין לוזים שמורים.</p>`;
+      } else {
+        html += `<ul style="list-style: none; padding:0;">`;
+        savedSchedules.forEach((sch, idx) => {
+          html += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${idx})">
+                     <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${idx})">🗑️</span>
+                     ${sch.name}
+                   </li>`;
+        });
+        html += `</ul>`;
+      }
+      document.getElementById("content").innerHTML = html;
+    }
+    
+    function deleteSavedSchedule(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את הלו״ז הזה?")) {
+        savedSchedules.splice(index, 1);
+        saveSchedulesToFirestore();
+        loadMySchedules(event);
+        alert("הלו״ז נמחק.");
+      }
+    }
+    
+    function viewSavedSchedule(idx) {
+      const sch = savedSchedules[idx];
+      let finalHtml = "";
+      sch.scheduleItems.forEach(item => {
+        const emoji = subjectEmojis[item.subject] || "";
+        finalHtml += `<div class="schedule-item" data-subject="${item.subject}">
+                        <h3>${item.startTime} - ${item.endTime} : ${item.subject} ${emoji}</h3>
+                        <p>${item.description}</p>
+                      </div>`;
+      });
+      document.getElementById("content").innerHTML = `
+        <h2>${sch.name}</h2>
+        <div id="finalScheduleDisplay">${finalHtml}</div>
+        <div class="button-group">
+          <button class="btn" onclick="captureScreenshotFromElement('finalScheduleDisplay', '${sch.name}')">צילום מסך של הלו״ז</button>
+          <button class="btn" onclick="copyScheduleToClipboardFromSchedule(${idx})">העתקת הלו״ז להודעה</button>
+          <button class="btn" onclick="editSavedSchedule(${idx})">ערוך לוז</button>
+          <button class="btn" onclick="closeFinalScheduleModal(); goHome();">סיום</button>
+        </div>
+      `;
+    }
+    
+    function loadHowToUse(event) {
+      event.preventDefault();
+      document.getElementById("content").innerHTML = '<h2>איך משתמשים</h2><p>כאן תמצא הסברים והדרכות לשימוש באתר.</p>';
+    }
+    
+    function addOneMinute(timeStr) {
+      let [h, m] = timeStr.split(":").map(Number);
+      m++;
+      if (m >= 60) { m = 0; h = (h + 1) % 24; }
+      return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+    }
+    
+    function openAddItemModal() {
+      if (!scheduleName) {
+        document.getElementById("scheduleNameModal").style.display = "block";
+      } else {
+        editingIndex = -1;
+        document.getElementById("addItemModalTitle").innerText = "הוספת חלק ללו״ז";
+        document.getElementById("addItemBtn").innerText = "סיום והוסף";
+        if (scheduleItems.length > 0) {
+          let lastItem = scheduleItems[scheduleItems.length - 1];
+          let nextStart = addOneMinute(lastItem.endTime);
+          document.getElementById("modalStartTime").value = nextStart;
+        } else {
+          document.getElementById("modalStartTime").value = "";
+        }
+        setDefaultEndTime();
+        if (selectedTemplate) {
+          document.getElementById("modalSubject").value = selectedTemplate.subject;
+          if (selectedTemplate.description) {
+            document.getElementById("modalDescription").value = selectedTemplate.description;
+          }
+        }
+        updateSubjectDropdownOptions();
+        updatePermanentSubjectsList();
+        if (document.getElementById("modalSubject").value === "addSubject") {
+          openAddSubjectModal();
+          document.getElementById("modalSubject").value = "קריאה של חומר לימוד";
+        } else {
+          document.getElementById("addItemModal").style.display = "block";
+        }
+      }
+    }
+    
+    function closeScheduleNameModal() {
+      document.getElementById("scheduleNameModal").style.display = "none";
+    }
+    
+    function saveScheduleName() {
+      const nameInput = document.getElementById("scheduleNameInput").value.trim();
+      if (nameInput === "") {
+        alert("אנא הזן שם ללו״ז.");
+        return;
+      }
+      if (savedSchedules.some(sch => sch.name === nameInput)) {
+        alert("לוז עם שם זה כבר קיים. אנא בחר שם אחר.");
+        return;
+      }
+      scheduleName = nameInput;
+      closeScheduleNameModal();
+      document.getElementById("content").innerHTML = `
+        <h2>${scheduleName}</h2>
+        <p>להוספת חלק חדש, לחץ על הכפתור +</p>
+        <div class="action-buttons">
+          <button class="btn" onclick="openAddItemModal()">+</button>
+          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
+          <div id="templateDropdown">
+            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+            <div id="templateList"></div>
+          </div>
+        </div>
+        <div id="scheduleContainer"></div>
+        <div class="button-group">
+          <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
+        </div>
+      `;
+      openAddItemModal();
+    }
+    
+    function closeAddItemModal() {
+      document.getElementById("addItemModal").style.display = "none";
+      clearAddItemForm();
+    }
+    
+    function clearAddItemForm() {
+      document.getElementById("modalStartTime").value = "";
+      document.getElementById("modalEndTime").value = "";
+      document.getElementById("modalDescription").value = "";
+      document.getElementById("modalSubject").value = "קריאה של חומר לימוד";
+    }
+    
+    function setDefaultEndTime() {
+      const startTime = document.getElementById("modalStartTime").value;
+      if (startTime) {
+        let endTime;
+        if (selectedTemplate) {
+          let [h, m] = startTime.split(":").map(Number);
+          let total = h * 60 + m + selectedTemplate.duration;
+          total = total % (24 * 60);
+          let newH = Math.floor(total / 60);
+          let newM = total % 60;
+          endTime = (newH < 10 ? "0" + newH : newH) + ":" + (newM < 10 ? "0" + newM : newM);
+        } else {
+          let [h, m] = startTime.split(":").map(Number);
+          h = (h + 1) % 24;
+          endTime = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+        }
+        const endInput = document.getElementById("modalEndTime");
+        endInput.value = endTime;
+        endInput.min = startTime;
+      }
+    }
+    
+    function saveItem() {
+      const startTime = document.getElementById("modalStartTime").value;
+      const endTime = document.getElementById("modalEndTime").value;
+      const subjectSelect = document.getElementById("modalSubject");
+      const subject = subjectSelect.value;
+      const description = document.getElementById("modalDescription").value;
+    
+      if (!startTime || !endTime) {
+        alert("אנא בחר שעת התחלה ושעת סיום.");
+        return;
+      }
+      if (startTime >= endTime) {
+        alert("שעת ההתחלה חייבת להיות מוקדמת משעת הסיום.");
+        return;
+      }
+      if (editingIndex === -1 && scheduleItems.some(item => item.startTime === startTime)) {
+        alert("כבר קיים פריט עם שעת התחלה זו.");
+        return;
+      }
+    
+      const newItem = { startTime, endTime, subject, description };
+      if (editingIndex === -1) {
+        scheduleItems.push(newItem);
+      } else {
+        scheduleItems[editingIndex] = newItem;
+      }
+      scheduleItems.sort((a, b) => a.startTime.localeCompare(b.startTime));
+      renderScheduleItems();
+      closeAddItemModal();
+      saveSchedulesToFirestore();
+    }
+    
+    function renderScheduleItems() {
+      const container = document.getElementById("scheduleContainer");
+      container.innerHTML = "";
+      scheduleItems.forEach((item, idx) => {
+        const emoji = subjectEmojis[item.subject] || "";
+        const div = document.createElement("div");
+        div.className = "schedule-item";
+        div.setAttribute("data-subject", item.subject);
+        div.innerHTML = `<span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteScheduleItem(${idx})">🗑️</span>
+                         <h3>${item.startTime} - ${item.endTime} : ${item.subject} ${emoji}</h3>
+                         <p>${item.description}</p>`;
+        div.onclick = function() {
+          editingIndex = idx;
+          document.getElementById("modalStartTime").value = item.startTime;
+          document.getElementById("modalEndTime").value = item.endTime;
+          document.getElementById("modalDescription").value = item.description;
+          const options = Array.from(document.getElementById("modalSubject").options);
+          document.getElementById("modalSubject").selectedIndex = options.findIndex(option => option.value === item.subject);
+          document.getElementById("addItemModalTitle").innerText = "עריכת חלק בלו״ז";
+          document.getElementById("addItemBtn").innerText = "שמור שינויים";
+          document.getElementById("addItemModal").style.display = "block";
+        };
+        container.appendChild(div);
+      });
+    }
+    
+    function deleteScheduleItem(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את החלק הזה מהלו״ז?")) {
+        scheduleItems.splice(index, 1);
+        renderScheduleItems();
+        saveSchedulesToFirestore();
+        alert("החלק נמחק מהלו״ז.");
+      }
+    }
+    
+    function openFinalSchedule() {
+      if (!scheduleName) {
+        alert("עליך להזין שם ללו״ז ולבנות לפחות חלק אחד.");
+        return;
+      }
+      if (scheduleItems.length === 0) {
+        alert("עליך להוסיף לפחות חלק אחד ללו״ז.");
+        return;
+      }
+      const newSchedule = {
+        name: scheduleName,
+        scheduleItems: JSON.parse(JSON.stringify(scheduleItems))
+      };
+      savedSchedules.push(newSchedule);
+      saveSchedulesToFirestore();
+      document.getElementById("finalScheduleModal").style.display = "block";
+      document.getElementById("finalScheduleTitle").innerText = scheduleName;
+      let finalHtml = "";
+      scheduleItems.forEach(item => {
+        const emoji = subjectEmojis[item.subject] || "";
+        finalHtml += `<div class="schedule-item" data-subject="${item.subject}">
+                        <h3>${item.startTime} - ${item.endTime} : ${item.subject} ${emoji}</h3>
+                        <p>${item.description}</p>
+                      </div>`;
+      });
+      document.getElementById("finalScheduleDisplay").innerHTML = finalHtml;
+    }
+    
+    function editSavedSchedule(idx) {
+      editingSavedScheduleIndex = idx;
+      const sch = savedSchedules[idx];
+      originalScheduleItems = JSON.parse(JSON.stringify(sch.scheduleItems));
+      originalScheduleName = sch.name;
+      scheduleName = sch.name;
+      scheduleItems = JSON.parse(JSON.stringify(sch.scheduleItems));
+      loadEditingScheduleBuilder();
+      renderScheduleItems();
+    }
+    
+    function loadEditingScheduleBuilder() {
+      document.getElementById("content").innerHTML = `
+        <h2>עריכת לוז: ${scheduleName}</h2>
+        <p>להוספת חלק ללו״ז, לחץ על הכפתור +</p>
+        <div class="action-buttons">
+          <button class="btn" onclick="openAddItemModal()">+</button>
+          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
+          <div id="templateDropdown">
+            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+            <div id="templateList"></div>
+          </div>
+        </div>
+        <div id="scheduleContainer"></div>
+        <div class="button-group">
+          <button class="btn" onclick="finishEditingSchedule()">סיים עריכה</button>
+        </div>
+      `;
+    }
+    
+    function finishEditingSchedule() {
+      if (confirm("האם תרצה לשמור את השינויים שביצעת?")) {
+        savedSchedules[editingSavedScheduleIndex] = {
+          name: scheduleName,
+          scheduleItems: JSON.parse(JSON.stringify(scheduleItems))
+        };
+        saveSchedulesToFirestore();
+        alert("השינויים נשמרו בהצלחה!");
+        let idx = editingSavedScheduleIndex;
+        editingSavedScheduleIndex = -1;
+        originalScheduleItems = [];
+        originalScheduleName = "";
+        viewSavedSchedule(idx);
+      } else {
+        scheduleName = originalScheduleName;
+        scheduleItems = JSON.parse(JSON.stringify(originalScheduleItems));
+        alert("השינויים בוטלו.");
+        let idx = editingSavedScheduleIndex;
+        editingSavedScheduleIndex = -1;
+        originalScheduleItems = [];
+        originalScheduleName = "";
+        viewSavedSchedule(idx);
+      }
+    }
+    
+    function closeFinalScheduleModal() {
+      document.getElementById("finalScheduleModal").style.display = "none";
+      goHome();
+    }
+    
+    function captureScreenshot() {
+      captureScreenshotFromElement("finalScheduleContent", scheduleName);
+    }
+    
+    function captureScreenshotFromElement(elementId, name) {
+      const elem = document.getElementById(elementId);
+      html2canvas(elem).then(canvas => {
+        canvas.toBlob(function(blob) {
+          const link = document.createElement("a");
+          link.download = name + ".png";
+          link.href = URL.createObjectURL(blob);
+          link.click();
+        });
+      });
+    }
+    
+    function copyScheduleToClipboardFromSchedule(idx) {
+      const sch = savedSchedules[idx];
+      let text = sch.name + "\n\n";
+      sch.scheduleItems.forEach(item => {
+        const emoji = subjectEmojis[item.subject] || "";
+        text += `*${item.startTime} - ${item.endTime} : ${item.subject} ${emoji}*\n~ ${item.description}\n\n`;
+      });
+      navigator.clipboard.writeText(text).then(() => {
+        alert("הלוז הועתק בהצלחה!");
+      }).catch(err => {
+        alert("התרחשה שגיאה בהעתקה.");
+      });
+    }
+    
+    function copyScheduleToClipboard() {
+      let text = scheduleName + "\n\n";
+      scheduleItems.forEach(item => {
+        const emoji = subjectEmojis[item.subject] || "";
+        text += `*${item.startTime} - ${item.endTime} : ${item.subject} ${emoji}*\n~ ${item.description}\n\n`;
+      });
+      navigator.clipboard.writeText(text).then(() => {
+        alert("הלוז הועתק בהצלחה!");
+      }).catch(err => {
+        alert("התרחשה שגיאה בהעתקה.");
+      });
+    }
+    
+    function openAddSubjectModal() {
+      document.getElementById("addItemModal").style.display = "none";
+      document.getElementById("addSubjectModal").style.display = "block";
+    }
+    
+    function closeAddSubjectModal() {
+      document.getElementById("addSubjectModal").style.display = "none";
+      document.getElementById("addItemModal").style.display = "block";
+    }
+    
+    function addSubjectOneTime() {
+      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+      if (newSubjectName === "") {
+        alert("אנא הזן שם לנושא.");
+        return;
+      }
+      const subjectDropdown = document.getElementById("modalSubject");
+      const newOption = document.createElement("option");
+      newOption.value = newSubjectName;
+      newOption.text = newSubjectName;
+      subjectDropdown.add(newOption);
+      subjectDropdown.value = newSubjectName;
+      subjectDropdown.dispatchEvent(new Event('change'));
+      closeAddSubjectModal();
+    }
+    
+    function addSubjectPermanent() {
+      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+      if (newSubjectName === "") {
+        alert("אנא הזן שם לנושא.");
+        return;
+      }
+      if (permanentSubjects.includes(newSubjectName)) {
+        alert("נושא זה כבר קיים ברשימת הנושאים הקבועים.");
+        return;
+      }
+      permanentSubjects.push(newSubjectName);
+      updateSubjectDropdownOptions();
+      updatePermanentSubjectsList();
+      document.getElementById("modalSubject").value = newSubjectName;
+      closeAddSubjectModal();
+      alert("הנושא '" + newSubjectName + "' נוסף לנושאים הקבועים!");
+    }
+    
+    function updateSubjectDropdownOptions() {
+      const subjectDropdown = document.getElementById("modalSubject");
+      subjectDropdown.innerHTML = `
+        <option value="קריאה של חומר לימוד">📖 קריאה של חומר לימוד</option>
+        <option value="תרגול">📝 תרגול</option>
+        <option value="מעבר על חומר מהיר">⏩ מעבר על חומר מהיר</option>
+        <option value="למידה עמוקה">🔍 למידה עמוקה</option>
+        <option value="לקום">⏰ לקום</option>
+        <option value="הפסקה">☕ הפסקה</option>
+        <option value="ללכת לישון">😴 ללכת לישון</option>
+        <option value="אוכל">🍽️ אוכל</option>
+        <option value="addSubject">🖋️ הוספת נושא</option>
+      `;
+      permanentSubjects.forEach(subject => {
+        const option = document.createElement("option");
+        option.value = subject;
+        option.text = subject;
+        subjectDropdown.add(option);
+      });
+      const addSubjectOption = subjectDropdown.querySelector('option[value="addSubject"]');
+      subjectDropdown.appendChild(addSubjectOption);
+    }
+    
+    function updatePermanentSubjectsList() {
+      const container = document.getElementById("permanentSubjectsList");
+      container.innerHTML = "";
+      permanentSubjects.forEach(subject => {
+        const span = document.createElement("span");
+        span.style.display = "block";
+        span.style.margin = "5px 0";
+        span.style.padding = "5px 10px";
+        span.style.backgroundColor = "#f0f0f0";
+        span.style.borderRadius = "5px";
+        span.innerText = subject + " ";
+        const trash = document.createElement("span");
+        trash.style.cursor = "pointer";
+        trash.innerText = "🗑️";
+        trash.onclick = function() {
+          if (confirm("האם אתה בטוח שברצונך למחוק את הנושא '" + subject + "'?")) {
+            const index = permanentSubjects.indexOf(subject);
+            if (index > -1) {
+              permanentSubjects.splice(index, 1);
+              updatePermanentSubjectsList();
+              updateSubjectDropdownOptions();
+              alert("הנושא נמחק.");
+            }
+          }
+        };
+        span.appendChild(trash);
+        container.appendChild(span);
+      });
+    }
+    
+    function subjectChangeHandler() {
+      if (document.getElementById("modalSubject").value === "addSubject") {
+        openAddSubjectModal();
+      }
+    }
+    
+    function togglePermanentSubjectsList() {
+      const container = document.getElementById("permanentSubjectsList");
+      if (container.style.display === "none" || container.style.display === "") {
+        container.style.display = "block";
+        updatePermanentSubjectsList();
+      } else {
+        container.style.display = "none";
+      }
+    }
+    
+    function toggleTemplateDropdown() {
+      const dropdown = document.getElementById("templateDropdown");
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      updateTemplateList();
+    }
+    
+    function updateTemplateList() {
+      const listDiv = document.getElementById("templateList");
+      listDiv.innerHTML = "";
+      constantTemplates.forEach((template, idx) => {
+        const btn = document.createElement("button");
+        btn.innerHTML = `<span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteConstantTemplate(${idx})">🗑️</span>${template.subject} (${template.duration} דק)`;
+        btn.onclick = function() {
+          selectedTemplate = template;
+          openAddItemModal();
+          document.getElementById("modalSubject").value = template.subject;
+          if (template.description) {
+            document.getElementById("modalDescription").value = template.description;
+          }
+        };
+        listDiv.appendChild(btn);
+      });
+    }
+    
+    function deleteConstantTemplate(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את התבנית הקבועה הזו?")) {
+        constantTemplates.splice(index, 1);
+        updateTemplateList();
+        alert("התבנית הקבועה נמחקה.");
+      }
+    }
+    
+    function openConstantTemplateModal() {
+      document.getElementById("constantTemplateModal").style.display = "block";
+      document.getElementById("templateDropdown").style.display = "none";
+    }
+    
+    function closeConstantTemplateModal() {
+      document.getElementById("constantTemplateModal").style.display = "none";
+    }
+    
+    function saveConstantTemplate() {
+      const subject = document.getElementById("templateSubjectSelect").value;
+      const duration = parseInt(document.getElementById("templateDurationInput").value);
+      const description = document.getElementById("templateDescriptionInput").value.trim();
+      if (!subject || isNaN(duration) || duration < 1) {
+        alert("אנא הזן נושא ומשך תקין (בדקות).");
+        return;
+      }
+      constantTemplates.push({ subject, duration, description });
+      closeConstantTemplateModal();
+      updateTemplateList();
+      alert("תבנית לוז קבוע נשמרה!");
+    }
+    
+    window.addEventListener("scroll", function() {
+      const nav = document.querySelector(".topbar");
+      if (window.scrollY > 50) {
+        nav.style.transform = "translateY(-100%)";
+      } else {
+        nav.style.transform = "translateY(0)";
+      }
+    });
+  </script>
+</body>
+</html>
