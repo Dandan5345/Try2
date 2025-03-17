@@ -10,7 +10,7 @@
   <!-- קישור ל-favicon -->
   <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
   
-  <!-- ספריות וסקריפטים -->
+  <!-- ספריות וסקריפטים (כולל Firebase) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
@@ -48,7 +48,7 @@
     }
   </script>
   
-  <!-- העיצוב – אותו עיצוב כמו בדפים האחרים -->
+  <!-- עיצוב זהה לשאר הדפים -->
   <style>
     /* Reset בסיסי */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -159,13 +159,14 @@
   
   <footer>©️doronnakache</footer>
   
-  <!-- הסקריפטים לניהול והצגת הלוזים -->
+  <!-- סקריפטים לעדכון מצב המשתמש ואירועי גלילה -->
   <script>
+    // ניווט לעמוד הבית
     function goHome() {
       window.location.href = "index.html";
     }
     
-    // אירוע גלילה להעלמת התפריט – כמו בעמודים האחרים
+    // אירוע גלילה להעלמת ה-topbar
     window.addEventListener("scroll", function() {
       const nav = document.querySelector(".topbar");
       if (window.scrollY > 50) {
@@ -175,7 +176,41 @@
       }
     });
     
-    // ניהול הלוזים מה-Firestore
+    // פונקציה לעדכון כפתור ההתחברות עם שם המשתמש והברכה
+    function updateUserGreeting(user) {
+      let currentHour = new Date().getHours();
+      let greeting = "בוקר טוב";
+      if (currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
+      else if (currentHour >= 18) { greeting = "ערב טוב"; }
+      const authLink = document.getElementById("authLink");
+      let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
+      authLink.innerText = greeting + " " + firstName + "!";
+      
+      // שינוי התנהגות לחיצה להתנתקות
+      authLink.onclick = function(event) {
+        event.preventDefault();
+        if (confirm("להתנתק?")) {
+          firebase.auth().signOut().then(() => {
+            authLink.innerText = "התחברות";
+            authLink.onclick = null;
+          }).catch((error) => {
+            alert("שגיאה בהתנתקות: " + error.message);
+          });
+        }
+      };
+    }
+    
+    // מאזין לשינויים במצב ההתחברות
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        updateUserGreeting(user);
+        loadMySchedules();
+      } else {
+        document.getElementById("authLink").innerText = "התחברות";
+      }
+    });
+    
+    // טעינת הלוזים מה-Firestore
     let savedSchedules = [];
     
     function loadMySchedules() {
@@ -265,12 +300,8 @@
       }
     }
     
-    // טען לוזים לאחר טעינת הדף אם המשתמש מחובר
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        loadMySchedules();
-      }
-    });
+    // יש לשלב כאן גם את פונקציות ניהול הלוזים (לדוגמא openAddItemModal, toggleTemplateDropdown, openConstantTemplateModal, openFinalSchedule וכו')
+    // ניתן להעתיק את הפונקציות מ-"learning-schedule.html" אם הן זהות.
   </script>
 </body>
 </html>
