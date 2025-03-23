@@ -418,10 +418,25 @@
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         updateUserGreeting(user);
+        loadSchedulesFromFirestore();
       } else {
         document.getElementById("authLink").innerText = "התחברות";
       }
     });
+    
+    // טעינת לוזים קיימים מ-Firestore
+    function loadSchedulesFromFirestore() {
+      const user = firebase.auth().currentUser;
+      if(user) {
+        db.collection("schedules").doc(user.uid).get().then(doc => {
+          if(doc.exists) {
+            savedSchedules = doc.data().schedules || [];
+          }
+        }).catch(error => {
+          console.error("Error loading schedules: ", error);
+        });
+      }
+    }
     
     // ניווט בין דפים
     function goHome() {
@@ -473,9 +488,15 @@
     function deleteSavedSchedule(index) {
       if (confirm("האם אתה בטוח שברצונך למחוק את הלו״ז הזה?")) {
         savedSchedules.splice(index, 1);
-        saveSchedulesToFirestore();
-        loadMySchedules();
-        alert("החלק נמחק מהלו״ז.");
+        // עדכון במסד הנתונים לאחר המחיקה
+        db.collection("schedules").doc(firebase.auth().currentUser.uid).set({
+          schedules: savedSchedules
+        }).then(() => {
+          loadMySchedules(new Event("click"));
+          alert("הלוז נמחק.");
+        }).catch(error => {
+          console.error("Error deleting schedule: ", error);
+        });
       }
     }
     
@@ -484,7 +505,6 @@
       let finalHtml = "";
       sch.scheduleItems.forEach(item => {
         const bgEmoji = getBackgroundEmoji(item.subject);
-        // כאן מוצג הטקסט כפי שהוזן (כולל האמוג׳י אם קיים)
         finalHtml += `<div class="saved-schedule-item">
                         <div class="emoji-background">${bgEmoji}</div>
                         <h3>${item.startTime} - ${item.endTime} : ${item.subject}</h3>
@@ -503,217 +523,22 @@
       `;
     }
     
-    function saveSchedulesToFirestore() {
+    // פונקציה לשמירת לוז חדש ל-Firestore מבלי למחוק את הקודמים – שימוש ב-arrayUnion
+    function saveScheduleToFirestore(newSchedule) {
       const user = firebase.auth().currentUser;
       if (user) {
-        db.collection("schedules").doc(user.uid).set({
-          schedules: savedSchedules
+        db.collection("schedules").doc(user.uid).update({
+          schedules: firebase.firestore.FieldValue.arrayUnion(newSchedule)
         })
-        .then(() => { console.log("Schedules saved successfully"); })
-        .catch((error) => { console.error("Error saving schedules: ", error); });
-      }
-    }
-    
-    // עזר: הפונקציה getBackgroundEmoji בודקת אם סוף הטקסט הוא אמוג׳י (בהנחה שקוד נקודתיות > 10000)
-    function getBackgroundEmoji(subject) {
-      // בדיקה פשוטה – נניח שאם התו האחרון הוא בעל קוד נקודתי גבוה, הוא אמוג׳י
-      let lastChar = subject.slice(-1);
-      if (lastChar.codePointAt(0) > 10000) {
-        return lastChar;
-      }
-      // אם לא, נסה להסתמך על מילון האמוג׳ים
-      return subjectEmojis[subject] || "";
-    }
-    
-    // מילון אמוג׳ים – יש לעדכן לפי הצורך (שים לב: במפתחות נוספו האמוג׳ים בהתאם למה שמופיע בטקסט, לדוגמה "תרגול📝")
-    const subjectEmojis = {
-      "קריאה של חומר לימוד": "📖",
-      "תרגול📝": "📝",
-      "מעבר על חומר מהיר": "⏩",
-      "למידה עמוקה": "🔍",
-      "לקום": "⏰",
-      "הפסקה": "☕",
-      "ללכת לישון": "😴",
-      "אוכל": "🍽️"
-    };
-    
-    // פונקציות ניהול לוזים – דוגמאות (יש להעתיק את שאר הפונקציות מ-"learning-schedule.html" במידת הצורך)
-    function addOneMinute(timeStr) {
-      let [h, m] = timeStr.split(":").map(Number);
-      m++;
-      if (m >= 60) { m = 0; h = (h + 1) % 24; }
-      return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
-    }
-    
-    function openAddItemModal() {
-      if (!scheduleName) {
-        document.getElementById("scheduleNameModal").style.display = "block";
-      } else {
-        editingIndex = -1;
-        document.getElementById("addItemModalTitle").innerText = "הוספת חלק ללו״ז";
-        document.getElementById("addItemBtn").innerText = "סיום והוסף";
-        if (scheduleItems.length > 0) {
-          let lastItem = scheduleItems[scheduleItems.length - 1];
-          let nextStart = addOneMinute(lastItem.endTime);
-          document.getElementById("modalStartTime").value = nextStart;
-        } else {
-          document.getElementById("modalStartTime").value = "";
-        }
-        setDefaultEndTime();
-        if (selectedTemplate) {
-          document.getElementById("modalSubject").value = selectedTemplate.subject;
-          if(selectedTemplate.description) {
-            document.getElementById("modalDescription").value = selectedTemplate.description;
-          }
-        }
-        updateSubjectDropdownOptions();
-        updatePermanentSubjectsList();
-        if (document.getElementById("modalSubject").value === "addSubject") {
-          openAddSubjectModal();
-          document.getElementById("modalSubject").value = "קריאה של חומר לימוד";
-        } else {
-          document.getElementById("addItemModal").style.display = "block";
-        }
-      }
-    }
-    
-    function closeScheduleNameModal() {
-      document.getElementById("scheduleNameModal").style.display = "none";
-    }
-    
-    function saveScheduleName() {
-      const nameInput = document.getElementById("scheduleNameInput").value.trim();
-      if (nameInput === "") {
-        alert("אנא הזן שם ללו״ז.");
-        return;
-      }
-      if (savedSchedules.some(sch => sch.name === nameInput)) {
-        alert("לוז עם שם זה כבר קיים. אנא בחר שם אחר.");
-        return;
-      }
-      scheduleName = nameInput;
-      closeScheduleNameModal();
-      document.getElementById("content").innerHTML = `
-        <h2>${scheduleName}</h2>
-        <p>להוספת חלק חדש, לחץ על הכפתור +</p>
-        <div class="action-buttons">
-          <button class="btn" onclick="openAddItemModal()">+</button>
-          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
-          <div id="templateDropdown">
-            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
-            <div id="templateList"></div>
-          </div>
-        </div>
-        <div id="scheduleContainer"></div>
-        <div class="button-group">
-          <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
-        </div>
-      `;
-      openAddItemModal();
-    }
-    
-    function closeAddItemModal() {
-      document.getElementById("addItemModal").style.display = "none";
-      clearAddItemForm();
-    }
-    
-    function clearAddItemForm() {
-      document.getElementById("modalStartTime").value = "";
-      document.getElementById("modalEndTime").value = "";
-      document.getElementById("modalDescription").value = "";
-      document.getElementById("modalSubject").value = "קריאה של חומר לימוד";
-    }
-    
-    function setDefaultEndTime() {
-      const startTime = document.getElementById("modalStartTime").value;
-      if (startTime) {
-        let endTime;
-        if (selectedTemplate) {
-          let [h, m] = startTime.split(":").map(Number);
-          let total = h * 60 + m + selectedTemplate.duration;
-          total = total % (24 * 60);
-          let newH = Math.floor(total / 60);
-          let newM = total % 60;
-          endTime = (newH < 10 ? "0" + newH : newH) + ":" + (newM < 10 ? "0" + newM : newM);
-        } else {
-          let [h, m] = startTime.split(":").map(Number);
-          h = (h + 1) % 24;
-          endTime = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
-        }
-        const endInput = document.getElementById("modalEndTime");
-        endInput.value = endTime;
-        endInput.min = startTime;
-      }
-    }
-    
-    function saveItem() {
-      const startTime = document.getElementById("modalStartTime").value;
-      const endTime = document.getElementById("modalEndTime").value;
-      const subjectSelect = document.getElementById("modalSubject");
-      const subject = subjectSelect.value;
-      const description = document.getElementById("modalDescription").value;
-    
-      if (!startTime || !endTime) {
-        alert("אנא בחר שעת התחלה ושעת סיום.");
-        return;
-      }
-      if (startTime >= endTime) {
-        alert("שעת ההתחלה חייבת להיות מוקדמת משעת הסיום.");
-        return;
-      }
-      if (editingIndex === -1 && scheduleItems.some(item => item.startTime === startTime)) {
-        alert("כבר קיים פריט עם שעת התחלה זו.");
-        return;
-      }
-    
-      const newItem = { startTime, endTime, subject, description };
-      if (editingIndex === -1) {
-        scheduleItems.push(newItem);
-      } else {
-        scheduleItems[editingIndex] = newItem;
-      }
-      scheduleItems.sort((a, b) => a.startTime.localeCompare(b.startTime));
-      renderScheduleItems();
-      closeAddItemModal();
-      saveSchedulesToFirestore();
-    }
-    
-    // עדכון renderScheduleItems – מוסיף גם את הרקע של האמוג׳י וגם משאיר את הטקסט כפי שהוזן
-    function renderScheduleItems() {
-      const container = document.getElementById("scheduleContainer");
-      container.innerHTML = "";
-      scheduleItems.forEach((item, idx) => {
-        const bgEmoji = getBackgroundEmoji(item.subject);
-        const div = document.createElement("div");
-        div.className = "schedule-item";
-        div.setAttribute("data-subject", item.subject);
-        div.innerHTML = `
-          <div class="emoji-background">${bgEmoji}</div>
-          <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteScheduleItem(${idx})">🗑️</span>
-          <h3>${item.startTime} - ${item.endTime} : ${item.subject}</h3>
-          <p>${item.description}</p>
-        `;
-        div.onclick = function() {
-          editingIndex = idx;
-          document.getElementById("modalStartTime").value = item.startTime;
-          document.getElementById("modalEndTime").value = item.endTime;
-          document.getElementById("modalDescription").value = item.description;
-          const options = Array.from(document.getElementById("modalSubject").options);
-          document.getElementById("modalSubject").selectedIndex = options.findIndex(option => option.value === item.subject);
-          document.getElementById("addItemModalTitle").innerText = "עריכת חלק בלו״ז";
-          document.getElementById("addItemBtn").innerText = "שמור שינויים";
-          document.getElementById("addItemModal").style.display = "block";
-        };
-        container.appendChild(div);
-      });
-    }
-    
-    function deleteScheduleItem(index) {
-      if (confirm("האם אתה בטוח שברצונך למחוק את החלק הזה מהלו״ז?")) {
-        scheduleItems.splice(index, 1);
-        renderScheduleItems();
-        saveSchedulesToFirestore();
-        alert("החלק נמחק מהלו״ז.");
+        .then(() => { console.log("Schedule saved successfully"); })
+        .catch((error) => {
+          // אם המסמך לא קיים, ניצור אותו
+          db.collection("schedules").doc(user.uid).set({
+            schedules: [newSchedule]
+          })
+          .then(() => { console.log("Schedule created successfully"); })
+          .catch((err) => { console.error("Error saving schedule: ", err); });
+        });
       }
     }
     
@@ -732,7 +557,8 @@
         scheduleItems: JSON.parse(JSON.stringify(scheduleItems))
       };
       savedSchedules.push(newSchedule);
-      saveSchedulesToFirestore();
+      // שמירה למסד הנתונים מבלי למחוק לוזים קודמים
+      saveScheduleToFirestore(newSchedule);
       document.getElementById("finalScheduleModal").style.display = "block";
       document.getElementById("finalScheduleTitle").innerText = scheduleName;
       let finalHtml = "";
@@ -978,6 +804,196 @@
         return lastChar;
       }
       return subjectEmojis[subject] || "";
+    }
+    
+    // מילון אמוג׳ים
+    const subjectEmojis = {
+      "קריאה של חומר לימוד": "📖",
+      "תרגול📝": "📝",
+      "מעבר על חומר מהיר": "⏩",
+      "למידה עמוקה": "🔍",
+      "לקום": "⏰",
+      "הפסקה": "☕",
+      "ללכת לישון": "😴",
+      "אוכל": "🍽️"
+    };
+    
+    // פונקציות ניהול לוזים
+    function addOneMinute(timeStr) {
+      let [h, m] = timeStr.split(":").map(Number);
+      m++;
+      if (m >= 60) { m = 0; h = (h + 1) % 24; }
+      return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+    }
+    
+    function openAddItemModal() {
+      if (!scheduleName) {
+        document.getElementById("scheduleNameModal").style.display = "block";
+      } else {
+        editingIndex = -1;
+        document.getElementById("addItemModalTitle").innerText = "הוספת חלק ללו״ז";
+        document.getElementById("addItemBtn").innerText = "סיום והוסף";
+        if (scheduleItems.length > 0) {
+          let lastItem = scheduleItems[scheduleItems.length - 1];
+          let nextStart = addOneMinute(lastItem.endTime);
+          document.getElementById("modalStartTime").value = nextStart;
+        } else {
+          document.getElementById("modalStartTime").value = "";
+        }
+        setDefaultEndTime();
+        if (selectedTemplate) {
+          document.getElementById("modalSubject").value = selectedTemplate.subject;
+          if(selectedTemplate.description) {
+            document.getElementById("modalDescription").value = selectedTemplate.description;
+          }
+        }
+        updateSubjectDropdownOptions();
+        updatePermanentSubjectsList();
+        if (document.getElementById("modalSubject").value === "addSubject") {
+          openAddSubjectModal();
+          document.getElementById("modalSubject").value = "קריאה של חומר לימוד";
+        } else {
+          document.getElementById("addItemModal").style.display = "block";
+        }
+      }
+    }
+    
+    function closeScheduleNameModal() {
+      document.getElementById("scheduleNameModal").style.display = "none";
+    }
+    
+    function saveScheduleName() {
+      const nameInput = document.getElementById("scheduleNameInput").value.trim();
+      if (nameInput === "") {
+        alert("אנא הזן שם ללו״ז.");
+        return;
+      }
+      if (savedSchedules.some(sch => sch.name === nameInput)) {
+        alert("לוז עם שם זה כבר קיים. אנא בחר שם אחר.");
+        return;
+      }
+      scheduleName = nameInput;
+      closeScheduleNameModal();
+      document.getElementById("content").innerHTML = `
+        <h2>${scheduleName}</h2>
+        <p>להוספת חלק חדש, לחץ על הכפתור +</p>
+        <div class="action-buttons">
+          <button class="btn" onclick="openAddItemModal()">+</button>
+          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
+          <div id="templateDropdown">
+            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+            <div id="templateList"></div>
+          </div>
+        </div>
+        <div id="scheduleContainer"></div>
+        <div class="button-group">
+          <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
+        </div>
+      `;
+      openAddItemModal();
+    }
+    
+    function closeAddItemModal() {
+      document.getElementById("addItemModal").style.display = "none";
+      clearAddItemForm();
+    }
+    
+    function clearAddItemForm() {
+      document.getElementById("modalStartTime").value = "";
+      document.getElementById("modalEndTime").value = "";
+      document.getElementById("modalDescription").value = "";
+      document.getElementById("modalSubject").value = "קריאה של חומר לימוד";
+    }
+    
+    function setDefaultEndTime() {
+      const startTime = document.getElementById("modalStartTime").value;
+      if (startTime) {
+        let endTime;
+        if (selectedTemplate) {
+          let [h, m] = startTime.split(":").map(Number);
+          let total = h * 60 + m + selectedTemplate.duration;
+          total = total % (24 * 60);
+          let newH = Math.floor(total / 60);
+          let newM = total % 60;
+          endTime = (newH < 10 ? "0" + newH : newH) + ":" + (newM < 10 ? "0" + newM : newM);
+        } else {
+          let [h, m] = startTime.split(":").map(Number);
+          h = (h + 1) % 24;
+          endTime = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+        }
+        const endInput = document.getElementById("modalEndTime");
+        endInput.value = endTime;
+        endInput.min = startTime;
+      }
+    }
+    
+    function saveItem() {
+      const startTime = document.getElementById("modalStartTime").value;
+      const endTime = document.getElementById("modalEndTime").value;
+      const subjectSelect = document.getElementById("modalSubject");
+      const subject = subjectSelect.value;
+      const description = document.getElementById("modalDescription").value;
+    
+      if (!startTime || !endTime) {
+        alert("אנא בחר שעת התחלה ושעת סיום.");
+        return;
+      }
+      if (startTime >= endTime) {
+        alert("שעת ההתחלה חייבת להיות מוקדמת משעת הסיום.");
+        return;
+      }
+      if (editingIndex === -1 && scheduleItems.some(item => item.startTime === startTime)) {
+        alert("כבר קיים פריט עם שעת התחלה זו.");
+        return;
+      }
+    
+      const newItem = { startTime, endTime, subject, description };
+      if (editingIndex === -1) {
+        scheduleItems.push(newItem);
+      } else {
+        scheduleItems[editingIndex] = newItem;
+      }
+      scheduleItems.sort((a, b) => a.startTime.localeCompare(b.startTime));
+      renderScheduleItems();
+      closeAddItemModal();
+    }
+    
+    // עדכון renderScheduleItems – מוסיף גם את הרקע של האמוג׳י וגם משאיר את הטקסט כפי שהוזן
+    function renderScheduleItems() {
+      const container = document.getElementById("scheduleContainer");
+      container.innerHTML = "";
+      scheduleItems.forEach((item, idx) => {
+        const bgEmoji = getBackgroundEmoji(item.subject);
+        const div = document.createElement("div");
+        div.className = "schedule-item";
+        div.setAttribute("data-subject", item.subject);
+        div.innerHTML = `
+          <div class="emoji-background">${bgEmoji}</div>
+          <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteScheduleItem(${idx})">🗑️</span>
+          <h3>${item.startTime} - ${item.endTime} : ${item.subject}</h3>
+          <p>${item.description}</p>
+        `;
+        div.onclick = function() {
+          editingIndex = idx;
+          document.getElementById("modalStartTime").value = item.startTime;
+          document.getElementById("modalEndTime").value = item.endTime;
+          document.getElementById("modalDescription").value = item.description;
+          const options = Array.from(document.getElementById("modalSubject").options);
+          document.getElementById("modalSubject").selectedIndex = options.findIndex(option => option.value === item.subject);
+          document.getElementById("addItemModalTitle").innerText = "עריכת חלק בלו״ז";
+          document.getElementById("addItemBtn").innerText = "שמור שינויים";
+          document.getElementById("addItemModal").style.display = "block";
+        };
+        container.appendChild(div);
+      });
+    }
+    
+    function deleteScheduleItem(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את החלק הזה מהלו״ז?")) {
+        scheduleItems.splice(index, 1);
+        renderScheduleItems();
+        alert("החלק נמחק מהלו״ז.");
+      }
     }
   </script>
 </body>
