@@ -10,7 +10,7 @@
   <!-- קישור ל-favicon -->
   <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
   
-  <!-- ספריות וסקריפטים (כולל Firebase) -->
+  <!-- ספריות וסקריפטים -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
@@ -48,21 +48,20 @@
     }
   </script>
   
-  <!-- עיצוב זהה לשאר הדפים -->
   <style>
-    /* Reset בסיסי */
+    /* סגנונות כלליים */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      line-height: 1.6;
-      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      background: url("https://i.imgur.com/vPycdhd.jpeg") no-repeat center center fixed;
+      background-size: cover;
       direction: rtl;
       padding-top: 120px;
       padding-bottom: 40px;
       text-align: center;
     }
     .topbar {
-      background-color: #34495e;
+      background-color: rgba(255,255,255,0.8);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -73,54 +72,135 @@
       width: 100%;
       z-index: 1000;
       transition: transform 0.3s;
-      border-bottom: 2px solid #2c3e50;
+      border-bottom: 2px solid rgba(255,255,255,0.8);
     }
-    .site-name {
-      font-size: 28px;
-      color: #ecf0f1;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .nav-links {
-      display: flex;
-      gap: 10px;
-    }
+    .site-name { font-size: 28px; color: #000; cursor: pointer; font-weight: bold; }
+    .nav-links { display: flex; gap: 10px; }
     .nav-links a {
-      background-color: #2c3e50;
+      background-color: #006400;
       padding: 10px 15px;
       border-radius: 8px;
       transition: background-color 0.3s, box-shadow 0.3s;
       font-weight: bold;
-      color: #ecf0f1;
-      border-right: 1px solid rgba(236,240,241,0.5);
+      color: #fff;
+      border: none;
       text-decoration: none;
     }
-    .nav-links a:last-child { border-right: none; }
-    .nav-links a:hover {
-      background-color: #3d566e;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-    main {
-      padding: 20px;
-      margin-top: 20px;
-      min-height: 70vh;
+    .nav-links a:hover { background-color: #004f80; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    main { padding: 20px; margin-top: 20px; min-height: 70vh; text-align: center; }
+    footer { text-align: center; padding: 10px; color: #7f8c8d; font-size: 14px; }
+    .schedule-item {
+      position: relative;
+      background-color: rgba(255,255,255,0.9);
+      padding: 15px;
+      margin: 10px auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      cursor: pointer;
       text-align: center;
+      max-width: 400px;
+      transition: transform 0.2s;
+      overflow: hidden;
     }
-    footer {
-      text-align: center;
-      padding: 10px;
-      color: #7f8c8d;
-      font-size: 14px;
+    .schedule-item:hover { transform: scale(1.02); }
+    .schedule-item h3 { margin-bottom: 5px; color: #2c3e50; position: relative; z-index: 1; }
+    .schedule-item p { position: relative; z-index: 1; }
+    .emoji-background {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 100px;
+      opacity: 0.1;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .btn { display: inline-block; padding: 10px 20px; background-color: #006400; color: #fff; border: none; cursor: pointer; font-size: 16px; border-radius: 8px; transition: background-color 0.3s; }
+    .btn:hover { background-color: #004f80; }
+    /* כפתור ניווט בתוך פריט – ימוקם בפינה השמאלית התחתונה */
+    .nav-button {
+      position: absolute;
+      left: 5px;
+      bottom: 5px;
+      font-size: 12px;
+      padding: 5px 8px;
+    }
+    #templateMenuButton { background-color: #006400; border: none; border-radius: 8px; font-size: 24px; cursor: pointer; color: #fff; padding: 5px 10px; }
+    #templateDropdown {
+      position: absolute; bottom: 100%; right: 0;
+      background: #f8f8f8; border: 1px solid #ccc; border-radius: 8px;
+      display: none; z-index: 1500; box-shadow: 0 2px 6px rgba(0,0,0,0.2); min-width: 200px;
+    }
+    #templateDropdown button {
+      background: none; border: none; width: 100%; padding: 10px; text-align: right; cursor: pointer;
+      transition: background 0.2s; font-weight: normal; color: #2c3e50;
+    }
+    #templateDropdown button:first-child { background-color: #cce5ff; border-radius: 6px; margin-bottom: 5px; }
+    #templateDropdown button:hover { background: #e6f2ff; }
+    .modal {
+      display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+      overflow: auto; background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fff; margin: 10% auto; padding: 20px; border-radius: 6px; width: 90%; max-width: 500px;
+      position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.2); text-align: center;
+    }
+    .close { color: #aaa; position: absolute; left: 15px; top: 10px; font-size: 28px; font-weight: bold; cursor: pointer; }
+    .close:hover { color: #000; }
+    .form-group { margin-bottom: 15px; text-align: center; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; color: #2c3e50; background-color: #f9f9f9; text-align: right;
+    }
+    .form-group select { background-color: initial; color: initial; border: 1px solid #ccc; }
+    .modal-elegant { border: 2px solid #d4af37; }
+    .modal-elegant h2 { color: #2c3e50; }
+    .modal-elegant .btn { background-color: #2c3e50; }
+    .modal-elegant .btn:hover { background-color: #1a242f; }
+    .saved-schedule-item {
+      background-color: #fff; margin: 10px auto; padding: 10px; border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; text-align: center; font-weight: bold; color: #2c3e50; max-width: 400px;
+    }
+    .saved-schedule-item span:first-child { float: left; cursor: pointer; }
+    .button-group { margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    /* Loader - מכסה את כל חלונות הקופצים */
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      z-index: 3000;
+      display: none;
     }
     @media (max-width: 600px) {
       .topbar { flex-direction: column; gap: 10px; }
       .site-name { font-size: 24px; }
       .nav-links a { padding: 10px; width: 100%; text-align: center; }
     }
+    /* סגנון לשדה מספר טיסה – לאייקון זכוכית מגדלת */
+    .flight-search-wrapper {
+      position: relative;
+    }
+    .flight-search-wrapper input {
+      padding-left: 35px;
+    }
+    .flight-search-wrapper .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 65%; /* הוזז ל-65% */
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <!-- תפריט ראשי -->
   <nav class="topbar">
     <div class="site-name" onclick="goHome()">זמן זהב</div>
     <div class="nav-links">
@@ -130,12 +210,10 @@
       <a href="auth.html" id="authLink">התחברות</a>
     </div>
   </nav>
-  
-  <!-- תוכן עמוד "לוז חופשה" -->
+
   <main id="content">
-    <h2>בניית לוז חופשה</h2>
-    <p>להוספת חלק ללוז חופשה, לחץ על הכפתור +</p>
-    <!-- כאן יש לשלב את פונקציות ניהול הלוזים (הפונקציות זהות לאלו שב-"learning-schedule.html") -->
+    <h2>בניית לוז חופשה חדש</h2>
+    <p>להוספת חלק ללוז, לחץ על הכפתור +</p>
     <div class="action-buttons">
       <button class="btn" onclick="openAddItemModal()">+</button>
       <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
@@ -149,25 +227,252 @@
       <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
     </div>
   </main>
-  
+
   <footer>©️doronnakache</footer>
-  
-  <!-- סקריפטים לעדכון מצב המשתמש ואירועי גלילה -->
+
+  <!-- מודל הזנת שם לוז -->
+  <div id="scheduleNameModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeScheduleNameModal()">&times;</span>
+      <h2>הזן שם ללו״ז שלך</h2>
+      <div class="form-group">
+        <label>שם הלו״ז:</label>
+        <input type="text" id="scheduleNameInput" placeholder="למשל: לוז חופשה - סוף שבוע">
+      </div>
+      <button class="btn" onclick="saveScheduleName()">המשך ושמירה</button>
+    </div>
+  </div>
+
+  <!-- מודל הוספת חלק ללוז -->
+  <div id="addItemModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeAddItemModal()">&times;</span>
+      <h2 id="addItemModalTitle">הוספת חלק ללו״ז</h2>
+      <div class="form-group">
+        <label>בחר תאריך:</label>
+        <input type="date" id="modalDate">
+      </div>
+      <!-- שדות זמן כללים (מתחת לתאריך) – עבור טיסה תוויות מתעדכנות -->
+      <div class="form-group">
+        <label id="startTimeLabel">שעת התחלה:</label>
+        <input type="time" id="modalStartTime" onchange="setDefaultEndTime()">
+      </div>
+      <div class="form-group">
+        <label id="endTimeLabel">שעת סיום:</label>
+        <input type="time" id="modalEndTime">
+      </div>
+      <!-- תצוגת הערת זמן (למקרה של טיסה) -->
+      <div id="timeNote" style="font-size: 0.9rem; color: #555; display: none;"></div>
+      <div class="form-group" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+        <label>נושא:</label>
+        <select id="modalSubject" onchange="subjectChangeHandler()"></select>
+        <div style="position: relative; display: inline-block;">
+          <button id="subjectsToggleBtn" onclick="togglePermanentSubjectsList()" style="background: none; border: none; font-size: 24px; cursor: pointer;">⋮</button>
+          <div id="permanentSubjectsList" style="display: none; position: absolute; right: 0; top: 30px; background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 5px; z-index: 2000;"></div>
+        </div>
+      </div>
+      <!-- שדות נוספים עבור נושאים שונים -->
+      <div id="extraQuestions" style="display: none;">
+        <!-- עבור הליכה/נסיעה -->
+        <div class="form-group">
+          <label>מאיפה (כתובת התחלה): <small>הזן את הכתובת או המקום שממנו יוצאים</small></label>
+          <input type="text" id="fromAddress" placeholder="לדוגמה: רחוב המלך, תל אביב">
+        </div>
+        <div class="form-group">
+          <label>ולאן (כתובת יעד): <small>לדוגמה: קניון רמת אביב, תל אביב</small></label>
+          <input type="text" id="toAddress" placeholder="לדוגמה: קניון רמת אביב, תל אביב">
+        </div>
+        <!-- עבור נסיעה - שדה "איך נוסעים?" עם האפשרויות -->
+        <div class="form-group" id="travelModeGroup" style="display: none;">
+          <label>איך נוסעים?</label>
+          <select id="travelModeSelect">
+            <option value="taxi">מונית 🚖</option>
+            <option value="transit">תחב״צ 🚋🚆</option>
+            <option value="car">רכב פרטי 🚙</option>
+          </select>
+        </div>
+        <button class="btn" id="checkRouteBtn" onclick="checkRoute()">בדוק מסלול בגוגל מפס</button>
+      </div>
+      <!-- עבור ביקור/סיור -->
+      <div id="locationField" style="display:none;" class="form-group">
+        <label style="color: lightgray;">מיקום: <small>כתוב את מיקום המקום שאתה מבקר</small></label>
+        <input type="text" id="locationInput" placeholder="לדוגמה: תל אביב">
+      </div>
+      <!-- DIV עבור נושא "אוכל" -->
+      <div id="foodExtraOptions" style="display:none;">
+        <div class="form-group">
+          <label>בחר סוג אוכל:</label>
+          <select id="foodTypeSelect" onchange="foodTypeChangeHandler()">
+            <option value="">-- בחר --</option>
+            <option value="מסעדה">מסעדה👨‍🍳</option>
+            <option value="במלון">במלון🏨</option>
+            <option value="הכנה עצמית/קנייה בסופר">הכנה עצמית/קנייה בסופר🛒</option>
+            <option value="אוכל מהיר">אוכל מהיר 🥙</option>
+          </select>
+        </div>
+        <div id="foodLocationDiv" class="form-group" style="display:none;">
+          <label>מיקום:</label>
+          <input type="text" id="foodLocationInput" placeholder="הזן את מיקום המקום">
+          <button class="btn" onclick="showFoodRoute()">ראה מסלולים בגוגל מפס</button>
+        </div>
+      </div>
+      <!-- DIV עבור נושא "טיסה" – משתמשים רק בשדות הכלליים שמתחת לתאריך -->
+      <div id="flightExtraOptions" style="display:none;">
+        <div class="form-group flight-search-wrapper">
+          <label>מספר טיסה:</label>
+          <input type="text" id="flightNumberInput" placeholder="למשל: LY2523">
+          <span class="search-icon" onclick="searchFlight()">🔍</span>
+        </div>
+        <div class="form-group">
+          <label>חברת טיסה:</label>
+          <input type="text" id="airlineInput" placeholder="לדוגמה: אל על">
+        </div>
+        <div class="form-group">
+          <label>משדה תעופה:</label>
+          <input type="text" id="departureAirportInput" placeholder="לדוגמה: Prague Ruzyně">
+        </div>
+        <div class="form-group">
+          <label>לשדה תעופה:</label>
+          <input type="text" id="arrivalAirportInput" placeholder="לדוגמה: Tel Aviv Yafo Ben Gurion">
+        </div>
+        <!-- שדות זמן המופיעים כאן הוסרו – נשתמש בשדות הכלליים שמתחת לתאריך -->
+      </div>
+      <div class="form-group" id="descriptionGroup">
+        <label>תיאור:</label>
+        <textarea id="modalDescription" rows="3" placeholder="תאר מה מתוכנן (פעילות, מקום, הערות)"></textarea>
+      </div>
+      <button class="btn" id="addItemBtn" onclick="saveItem()">סיום והוסף</button>
+    </div>
+  </div>
+
+  <!-- מודל תוצאות טיסה (חלון קופץ שמכסה את כל המסך) -->
+  <div id="flightResultModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeFlightResultModal()">&times;</span>
+      <h2>תוצאות חיפוש טיסה</h2>
+      <div id="flightResultContent">
+        <!-- כאן יוצגו פרטי הטיסה -->
+      </div>
+      <button class="btn" onclick="copyFlightToForm()">העתקה ללוז (מומלץ לבדוק שהפרטים נכונים)</button>
+    </div>
+  </div>
+
+  <!-- מודל תצוגת לוז סופי -->
+  <div id="finalScheduleModal" class="modal">
+    <div class="modal-content" id="finalScheduleContent">
+      <span class="close" onclick="closeFinalScheduleModal()">&times;</span>
+      <h2 id="finalScheduleTitle"></h2>
+      <div id="finalScheduleDisplay"></div>
+      <div class="button-group">
+        <button class="btn" onclick="captureScreenshotFromElement('finalScheduleDisplay', scheduleName)">צילום מסך של הלו״ז</button>
+        <button class="btn" onclick="copyScheduleToClipboard()">העתקת הלו״ז להודעה</button>
+        <button class="btn" onclick="window.location.href='עריכה.html'">ערוך לוז</button>
+        <button class="btn" onclick="closeFinalScheduleModal()">סיום</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- מודל יצירת לוז קבוע -->
+  <div id="constantTemplateModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeConstantTemplateModal()">&times;</span>
+      <h2>צור לוז קבוע</h2>
+      <div class="form-group">
+        <label>נושא:</label>
+        <select id="templateSubjectSelect">
+          <option value="הליכה">🚶 הליכה</option>
+          <option value="נסיעה">🚗 נסיעה</option>
+          <option value="ביקור/סיור">🏛️ ביקור/סיור</option>
+          <option value="טיסה">✈️ טיסה</option>
+          <option value="אוכל">🍽️ אוכל</option>
+          <option value="שינה">😴 שינה</option>
+          <option value="לקום">⏰ לקום</option>
+          <option value="אחר">❓ אחר</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>משך (בדקות):</label>
+        <input type="number" id="templateDurationInput" value="90" min="1">
+      </div>
+      <div class="form-group">
+        <label>תיאור:</label>
+        <textarea id="templateDescriptionInput" rows="2" placeholder="תאר את תבנית הלוז"></textarea>
+      </div>
+      <button class="btn" onclick="saveConstantTemplate()">שמור תבנית</button>
+    </div>
+  </div>
+
+  <!-- מודל הוספת נושא -->
+  <div id="addSubjectModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeAddSubjectModal()">&times;</span>
+      <h2>הוספת נושא</h2>
+      <div class="form-group">
+        <label>בחר שם לנושא (מומלץ להוסיף סמיילי):</label>
+        <input type="text" id="newSubjectNameInput" placeholder="למשל: טיול משפחתי 🚶‍♂️">
+      </div>
+      <div class="form-group" style="display: flex; justify-content: space-around;">
+        <button class="btn" onclick="addSubjectOneTime()">הוספה חד פעמית</button>
+        <button class="btn" onclick="addSubjectPermanent()">הוספה קבועה</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- מודל פרטי פריט (כאשר לוחצים על פריט בלוז) -->
+  <div id="itemDetailModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeItemDetailModal()">&times;</span>
+      <div id="itemDetailContent"></div>
+      <div class="button-group">
+        <button class="btn" id="editItemBtn">עריכה</button>
+        <button class="btn" id="navigateItemBtn">נווט</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- כיסוי Loader -->
+  <div class="loader-overlay" id="loader">מחפש פרטי טיסה...✈️</div>
+
   <script>
-    function goHome() {
-      window.location.href = "index.html";
+    // הגדרת subjectEmojis
+    const subjectEmojis = {
+      "הליכה": "🚶",
+      "נסיעה": "🚗",
+      "ביקור/סיור": "🏛️",
+      "טיסה": "✈️",
+      "אוכל": "🍽️",
+      "שינה": "😴",
+      "לקום": "⏰"
+    };
+
+    let scheduleItems = [];
+    let scheduleName = null;
+    let savedSchedules = [];
+    let editingIndex = -1;
+    let constantTemplates = [];
+    let selectedTemplate = null;
+    let permanentSubjects = [];
+    let customSubjects = [];  // נושאים חד-פעמיים
+
+    let editingSavedScheduleIndex = -1;
+    let originalScheduleItems = [];
+    let originalScheduleName = "";
+
+    // פונקציה לתרגום סוג נסיעה – עבור נסיעה, המרת ערך הבחירה
+    function translateTravelMode(mode) {
+      if(mode === "taxi") return "מונית 🚖";
+      if(mode === "transit") return "תחב״צ 🚋🚆";
+      if(mode === "car") return "רכב פרטי 🚙";
+      return mode;
     }
-    
-    window.addEventListener("scroll", function() {
-      const nav = document.querySelector(".topbar");
-      if (window.scrollY > 50) {
-        nav.style.transform = "translateY(-100%)";
-      } else {
-        nav.style.transform = "translateY(0)";
-      }
-    });
-    
-    // פונקציית עדכון מצב המשתמש
+
+    function login() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then((result) => { updateUserGreeting(result.user); })
+        .catch((error) => { alert("שגיאה בהתחברות: " + error.message); });
+    }
+
     function updateUserGreeting(user) {
       let currentHour = new Date().getHours();
       let greeting = "בוקר טוב";
@@ -176,30 +481,2087 @@
       const authLink = document.getElementById("authLink");
       let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
       authLink.innerText = greeting + " " + firstName + "!";
-      
       authLink.onclick = function(event) {
         event.preventDefault();
         if (confirm("להתנתק?")) {
           firebase.auth().signOut().then(() => {
             authLink.innerText = "התחברות";
             authLink.onclick = null;
-          }).catch((error) => {
-            alert("שגיאה בהתנתקות: " + error.message);
           });
         }
       };
     }
-    
+
     firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        updateUserGreeting(user);
-      } else {
-        document.getElementById("authLink").innerText = "התחברות";
-      }
+      if (user) { updateUserGreeting(user); }
+      else { document.getElementById("authLink").innerText = "התחברות"; }
     });
-    
-    // כאן יש לשלב גם את קוד ניהול הלוזים (openAddItemModal, toggleTemplateDropdown, openConstantTemplateModal, openFinalSchedule וכו')
-    // ניתן להעתיק את הפונקציות מ-"learning-schedule.html" במידה והן זהות.
+
+    function goHome() { window.location.href = "index.html"; }
+
+    function openAddItemModal() {
+      if (!scheduleName) {
+        document.getElementById("scheduleNameModal").style.display = "block";
+      } else {
+        editingIndex = -1;
+        document.getElementById("addItemModalTitle").innerText = "הוספת חלק ללו״ז";
+        document.getElementById("addItemBtn").innerText = "סיום והוסף";
+        if (scheduleItems.length > 0) {
+          let lastItem = scheduleItems[scheduleItems.length - 1];
+          let nextStart = addOneMinute(lastItem.endTime);
+          document.getElementById("modalStartTime").value = nextStart;
+        } else {
+          document.getElementById("modalStartTime").value = "";
+        }
+        setDefaultEndTime();
+        if (selectedTemplate) {
+          document.getElementById("modalSubject").value = selectedTemplate.subject;
+          if(selectedTemplate.description) {
+            document.getElementById("modalDescription").value = selectedTemplate.description;
+          }
+        }
+        updateSubjectDropdownOptions();
+        updatePermanentSubjectsList();
+        subjectChangeHandler();
+        document.getElementById("addItemModal").style.display = "block";
+      }
+    }
+    window.openAddItemModal = openAddItemModal;
+
+    function loadNewScheduleBuilder() {
+      scheduleItems = [];
+      scheduleName = null;
+      editingIndex = -1;
+      selectedTemplate = null;
+      document.getElementById("content").innerHTML = `
+        <h2>בניית לוז חופשה חדש</h2>
+        <p>להוספת חלק חדש, לחץ על הכפתור +</p>
+        <div class="action-buttons">
+          <button class="btn" onclick="openAddItemModal()">+</button>
+          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
+          <div id="templateDropdown">
+            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+            <div id="templateList"></div>
+          </div>
+        </div>
+        <div id="scheduleContainer"></div>
+        <div class="button-group">
+          <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
+        </div>
+      `;
+    }
+
+    function loadMySchedules(event) {
+      event.preventDefault();
+      let html = `<h2>הלוזים שלי</h2>`;
+      if (savedSchedules.length === 0) { html += `<p>אין לוזים שמורים.</p>`; }
+      else {
+        html += `<ul style="list-style: none; padding:0;">`;
+        savedSchedules.forEach((sch, idx) => {
+          html += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${idx})">
+                     <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${idx})">🗑️</span>
+                     ${sch.name}
+                   </li>`;
+        });
+        html += `</ul>`;
+      }
+      document.getElementById("content").innerHTML = html;
+    }
+
+    function deleteSavedSchedule(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את הלו״ז הזה?")) {
+        savedSchedules.splice(index, 1);
+        saveSchedulesToFirestore();
+        loadMySchedules();
+        alert("הלו״ז נמחק.");
+      }
+    }
+
+    function viewSavedSchedule(idx) {
+      const sch = savedSchedules[idx];
+      let finalHtml = "";
+      const groups = groupItemsByDate(sch.scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        finalHtml += `<h3>${formatDateHeader(date)}</h3>`;
+        groups[date].forEach(item => {
+          let displaySubject = getDisplaySubject(item);
+          let bgEmoji = getBackgroundEmoji(item);
+          let extraLine = getExtraLine(item);
+          let addressLine = "";
+          if(item.fromAddress && item.toAddress && (item.subject === "נסיעה" || item.subject === "הליכה")) {
+            addressLine = `<p>${item.fromAddress} ⬅️ ${item.toAddress}</p>`;
+          }
+          finalHtml += `<div class="schedule-item" onclick="showItemDetail(${scheduleItems.indexOf(item)})" data-date="${item.date}" data-subject="${item.subject}">
+                          <div class="emoji-background">${bgEmoji}</div>
+                          <h3>${item.startTime} - ${item.endTime} : ${displaySubject}</h3>
+                          ${extraLine}
+                          ${addressLine}
+                          <p>${item.description}</p>
+                        </div>`;
+        });
+      });
+      document.getElementById("finalScheduleModal").style.display = "block";
+      document.getElementById("finalScheduleTitle").innerText = scheduleName;
+      document.getElementById("finalScheduleDisplay").innerHTML = finalHtml;
+    }
+
+    function saveSchedulesToFirestore() {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        db.collection("schedules").doc(user.uid).set({ schedules: savedSchedules })
+        .then(() => { console.log("Schedules saved successfully"); })
+        .catch((error) => { console.error("Error saving schedules: ", error); });
+      }
+    }
+
+    function addOneMinute(timeStr) {
+      let [h, m] = timeStr.split(":").map(Number);
+      m++;
+      if (m >= 60) { m = 0; h = (h + 1) % 24; }
+      return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+    }
+
+    // פונקציות להצגת נתונים
+    function getDisplaySubject(item) {
+      if(item.subject === "נסיעה") {
+        return "נסיעה " + translateTravelMode(item.travelMode);
+      }
+      return item.subject;
+    }
+
+    function getBackgroundEmoji(item) {
+      if(item.subject === "נסיעה") {
+        let translated = translateTravelMode(item.travelMode);
+        let parts = translated.split(" ");
+        return parts[parts.length-1];
+      }
+      if(item.subject === "ביקור/סיור") {
+        return "🏛️";
+      }
+      let lastChar = item.subject.slice(-1);
+      if (lastChar.codePointAt(0) > 10000) { return lastChar; }
+      return subjectEmojis[item.subject] || "";
+    }
+
+    function getExtraLine(item) {
+      let line = "";
+      if(item.subject === "נסיעה") {
+        line = `<p>נסיעה מ- ${item.fromAddress} ל- ${item.toAddress}<br>איך נוסעים: ${translateTravelMode(item.travelMode) || ""}</p>`;
+      } else if(item.subject === "הליכה") {
+        line = `<p>הליכה מ- ${item.fromAddress} ל- ${item.toAddress}</p>`;
+      } else if(item.subject === "ביקור/סיור" && item.location) {
+        line = `<p>מיקום: ${item.location}</p>`;
+      } else if(item.subject === "אוכל") {
+        if(item.foodType) {
+          line += `<p>סוג אוכל: ${item.foodType}</p>`;
+        }
+        if(item.foodLocation) {
+          line += `<p>מיקום: ${item.foodLocation}</p>`;
+        }
+      } else if(item.subject === "טיסה") {
+        line = `<p>טיסת ${item.airline || ""}<br>טיסה מספר: ${item.flightNumber || ""}<br>*• ${item.departureAirport || ""} ⬅️ ${item.arrivalAirport || ""}*</p>`;
+        // השעות יוצגו בשדות הכלליים והודעת הזמן
+      }
+      return line;
+    }
+
+    function renderScheduleItems() {
+      const container = document.getElementById("scheduleContainer");
+      container.innerHTML = "";
+      const groups = groupItemsByDate(scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        container.innerHTML += `<h3>${formatDateHeader(date)}</h3>`;
+        groups[date].forEach((item, idx) => {
+          let displaySubject = getDisplaySubject(item);
+          let bgEmoji = getBackgroundEmoji(item);
+          let extraLine = getExtraLine(item);
+          let addressLine = "";
+          if (item.fromAddress && item.toAddress && (item.subject === "נסיעה" || item.subject === "הליכה")) {
+            addressLine = `<p>${item.fromAddress} ⬅️ ${item.toAddress}</p>`;
+          }
+          let navButton = "";
+          if(item.subject === "נסיעה" || item.subject === "הליכה") {
+            if(item.fromAddress && item.toAddress) {
+              navButton = `<button class="btn nav-button" onclick="event.stopPropagation(); navigateItem(${scheduleItems.indexOf(item)})">נווט</button>`;
+            }
+          } else if(item.subject === "ביקור/סיור" && item.location) {
+            navButton = `<button class="btn nav-button" onclick="event.stopPropagation(); navigateItem(${scheduleItems.indexOf(item)})">נווט</button>`;
+          } else if(item.subject === "אוכל" && (item.foodType === "מסעדה" || item.foodType === "אוכל מהיר") && item.foodLocation) {
+            navButton = `<button class="btn nav-button" onclick="event.stopPropagation(); navigateItem(${scheduleItems.indexOf(item)})">נווט</button>`;
+          }
+          container.innerHTML += `
+            <div class="schedule-item" onclick="showItemDetail(${scheduleItems.indexOf(item)})" data-date="${item.date}" data-subject="${item.subject}">
+              ${navButton}
+              <div class="emoji-background">${bgEmoji}</div>
+              <span style="position: absolute; top: 5px; right: 5px; cursor: pointer;" onclick="event.stopPropagation(); deleteScheduleItem(${scheduleItems.indexOf(item)})">🗑️</span>
+              <h3>${item.startTime} - ${item.endTime} : ${displaySubject}</h3>
+              ${extraLine}
+              ${addressLine}
+              <p>${item.description}</p>
+            </div>
+          `;
+        });
+      });
+    }
+
+    function deleteScheduleItem(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את החלק הזה מהלו״ז?")) {
+        scheduleItems.splice(index, 1);
+        renderScheduleItems();
+        saveSchedulesToFirestore();
+        alert("החלק נמחק מהלו״ז.");
+      }
+    }
+
+    function checkRoute() {
+      const from = document.getElementById("fromAddress").value;
+      const to = document.getElementById("toAddress").value;
+      if(!from || !to) {
+        alert("אנא מלא את כתובת ההתחלה והיעד.");
+        return;
+      }
+      let url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(from) +
+                "&destination=" + encodeURIComponent(to);
+      // אם הנושא הוא נסיעה, מוסיפים את פרמטר האופן בהתאם לבחירה
+      if(document.getElementById("modalSubject").value === "נסיעה") {
+        const mode = document.getElementById("travelModeSelect").value;
+        let travelModeParam = "";
+        if(mode === "taxi" || mode === "car") {
+          travelModeParam = "&travelmode=driving";
+        } else if(mode === "transit") {
+          travelModeParam = "&travelmode=transit";
+        }
+        url += travelModeParam;
+      }
+      window.open(url, "_blank");
+    }
+
+    function navigateItem(index) {
+      const item = scheduleItems[index];
+      if(item.subject === "נסיעה" || item.subject === "הליכה") {
+        let useCurrent = confirm("לחץ OK לניווט מהמיקום הנוכחי, Cancel לניווט מכתובת 'מאיפה'.");
+        let travelModeParam = "";
+        if(item.subject === "נסיעה") {
+          const mode = item.travelMode;
+          if(mode === "taxi" || mode === "car") {
+            travelModeParam = "&travelmode=driving";
+          } else if(mode === "transit") {
+            travelModeParam = "&travelmode=transit";
+          }
+        } else {
+          travelModeParam = "&travelmode=walking";
+        }
+        if(useCurrent) {
+          if(navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+              const origin = position.coords.latitude + "," + position.coords.longitude;
+              const destination = item.toAddress;
+              const url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) +
+                          "&destination=" + encodeURIComponent(destination) + travelModeParam;
+              window.open(url, "_blank");
+            });
+          } else {
+            alert("גאולוקציה לא נתמכת בדפדפן זה.");
+          }
+        } else {
+          if(item.fromAddress) {
+            const origin = item.fromAddress;
+            const destination = item.toAddress;
+            const url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) +
+                        "&destination=" + encodeURIComponent(destination) + travelModeParam;
+            window.open(url, "_blank");
+          } else {
+            alert("אין כתובת 'מאיפה' רשומה.");
+          }
+        }
+      }
+      else if(item.subject === "ביקור/סיור" && item.location) {
+        if(navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            const origin = position.coords.latitude + "," + position.coords.longitude;
+            const destination = item.location;
+            const url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) +
+                        "&destination=" + encodeURIComponent(destination);
+            window.open(url, "_blank");
+          });
+        } else {
+          alert("גאולוקציה לא נתמכת בדפדפן זה.");
+        }
+      }
+      else if(item.subject === "אוכל" && (item.foodType === "מסעדה" || item.foodType === "אוכל מהיר") && item.foodLocation) {
+        if(navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            const origin = position.coords.latitude + "," + position.coords.longitude;
+            const destination = item.foodLocation;
+            const url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) +
+                        "&destination=" + encodeURIComponent(destination);
+            window.open(url, "_blank");
+          });
+        } else {
+          alert("גאולוקציה לא נתמכת בדפדפן זה.");
+        }
+      }
+    }
+
+    function showItemDetail(index) {
+      editingIndex = index;
+      const item = scheduleItems[index];
+      document.getElementById("modalDate").value = item.date;
+      document.getElementById("modalStartTime").value = item.startTime;
+      document.getElementById("modalEndTime").value = item.endTime;
+      document.getElementById("modalSubject").value = item.subject;
+      document.getElementById("modalDescription").value = item.description;
+      if(item.subject === "הליכה" || item.subject === "נסיעה") {
+        document.getElementById("fromAddress").value = item.fromAddress || "";
+        document.getElementById("toAddress").value = item.toAddress || "";
+        if(item.subject === "נסיעה") {
+          document.getElementById("travelModeSelect").value = item.travelMode || "";
+        }
+      }
+      if(item.subject === "ביקור/סיור") {
+        document.getElementById("locationInput").value = item.location || "";
+      }
+      if(item.subject === "אוכל") {
+        if(item.foodType) {
+          document.getElementById("foodTypeSelect").value = item.foodType;
+        }
+        if(item.foodLocation) {
+          document.getElementById("foodLocationInput").value = item.foodLocation;
+          document.getElementById("foodLocationDiv").style.display = "block";
+        } else {
+          document.getElementById("foodLocationDiv").style.display = "none";
+        }
+      }
+      if(item.subject === "טיסה") {
+        document.getElementById("flightNumberInput").value = item.flightNumber || "";
+        document.getElementById("airlineInput").value = item.airline || "";
+        document.getElementById("departureAirportInput").value = item.departureAirport || "";
+        document.getElementById("arrivalAirportInput").value = item.arrivalAirport || "";
+      }
+      document.getElementById("addItemModalTitle").innerText = "עריכת חלק בלו״ז";
+      document.getElementById("addItemBtn").innerText = "שמור שינויים";
+      document.getElementById("addItemModal").style.display = "block";
+    }
+
+    function openFinalSchedule() {
+      if (!scheduleName) { alert("עליך להזין שם ללו״ז ולבנות לפחות חלק אחד."); return; }
+      if (scheduleItems.length === 0) { alert("עליך להוסיף לפחות חלק אחד ללו״ז."); return; }
+      const newSchedule = { name: scheduleName, scheduleItems: JSON.parse(JSON.stringify(scheduleItems)) };
+      savedSchedules.push(newSchedule);
+      saveSchedulesToFirestore();
+      let finalHtml = "";
+      const groups = groupItemsByDate(scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        finalHtml += `<h3>${formatDateHeader(date)}</h3>`;
+        groups[date].forEach(item => {
+          let displaySubject = getDisplaySubject(item);
+          let bgEmoji = getBackgroundEmoji(item);
+          let extraLine = getExtraLine(item);
+          let addressLine = "";
+          if(item.fromAddress && item.toAddress && (item.subject === "נסיעה" || item.subject === "הליכה")) {
+            addressLine = `<p>${item.fromAddress} ⬅️ ${item.toAddress}</p>`;
+          }
+          finalHtml += `<div class="schedule-item" onclick="showItemDetail(${scheduleItems.indexOf(item)})" data-date="${item.date}" data-subject="${item.subject}">
+                          <div class="emoji-background">${bgEmoji}</div>
+                          <h3>${item.startTime} - ${item.endTime} : ${displaySubject}</h3>
+                          ${extraLine}
+                          ${addressLine}
+                          <p>${item.description}</p>
+                        </div>`;
+        });
+      });
+      document.getElementById("finalScheduleModal").style.display = "block";
+      document.getElementById("finalScheduleTitle").innerText = scheduleName;
+      document.getElementById("finalScheduleDisplay").innerHTML = finalHtml;
+    }
+
+    function closeFinalScheduleModal() {
+      document.getElementById("finalScheduleModal").style.display = "none";
+      goHome();
+    }
+
+    function captureScreenshotFromElement(elementId, name) {
+      const elem = document.getElementById(elementId);
+      html2canvas(elem).then(canvas => {
+        canvas.toBlob(function(blob) {
+          const link = document.createElement("a");
+          link.download = name + ".png";
+          link.href = URL.createObjectURL(blob);
+          link.click();
+        });
+      });
+    }
+
+    function copyScheduleToClipboardFromSchedule(idx) {
+      const sch = savedSchedules[idx];
+      let text = sch.name + "\n\n";
+      const groups = groupItemsByDate(sch.scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
+        groups[date].forEach(item => {
+          if(item.subject === "טיסה") {
+            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
+            text += `טיסת ${item.airline}\n`;
+            text += `טיסה מספר: ${item.flightNumber}\n`;
+            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
+            text += `המראה: ${item.startTime}\n`;
+            text += `נחיתה: ${item.endTime}\n`;
+            text += `~ ${item.description}\n\n`;
+          } else {
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
+            if(item.fromAddress && item.toAddress) {
+              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
+            } else if(item.location) {
+              text += `• ${item.location}\n`;
+            }
+            text += `~ ${item.description}\n\n`;
+          }
+        });
+      });
+      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
+      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
+    }
+
+    function copyScheduleToClipboard() {
+      let text = scheduleName + "\n\n";
+      const groups = groupItemsByDate(scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
+        groups[date].forEach(item => {
+          if(item.subject === "טיסה") {
+            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
+            text += `טיסת ${item.airline}\n`;
+            text += `טיסה מספר: ${item.flightNumber}\n`;
+            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
+            text += `המראה: ${item.startTime}\n`;
+            text += `נחיתה: ${item.endTime}\n`;
+            text += `~ ${item.description}\n\n`;
+          } else {
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
+            if(item.fromAddress && item.toAddress) {
+              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
+            } else if(item.location) {
+              text += `• ${item.location}\n`;
+            }
+            text += `~ ${item.description}\n\n`;
+          }
+        });
+      });
+      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
+      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
+    }
+
+    // -----------------------
+    // ניהול נושאים
+    // -----------------------
+    function updateSubjectDropdownOptions() {
+      const subjectDropdown = document.getElementById("modalSubject");
+      subjectDropdown.innerHTML = `<option value="">בחר</option>
+        <option value="הליכה">🚶 הליכה</option>
+        <option value="נסיעה">🚗 נסיעה</option>
+        <option value="ביקור/סיור">🏛️ ביקור/סיור</option>
+        <option value="טיסה">✈️ טיסה</option>
+        <option value="אוכל">🍽️ אוכל</option>
+        <option value="שינה">😴 שינה</option>
+        <option value="לקום">⏰ לקום</option>
+        <option value="addSubject">🖋️ הוספת נושא</option>`;
+      customSubjects.forEach(subject => {
+         const option = document.createElement("option");
+         option.value = subject;
+         option.text = subject;
+         subjectDropdown.add(option);
+      });
+      permanentSubjects.forEach(subject => {
+         const option = document.createElement("option");
+         option.value = subject;
+         option.text = subject;
+         subjectDropdown.add(option);
+      });
+    }
+
+    function openAddSubjectModal() {
+      document.getElementById("addItemModal").style.display = "none";
+      document.getElementById("addSubjectModal").style.display = "block";
+    }
+    function closeAddSubjectModal() {
+      document.getElementById("addSubjectModal").style.display = "none";
+      document.getElementById("addItemModal").style.display = "block";
+    }
+    function addSubjectOneTime() {
+      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
+      customSubjects.push(newSubjectName);
+      updateSubjectDropdownOptions();
+      document.getElementById("modalSubject").value = newSubjectName;
+      document.getElementById("newSubjectNameInput").value = "";
+      closeAddSubjectModal();
+    }
+    function addSubjectPermanent() {
+      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
+      if (permanentSubjects.includes(newSubjectName)) { alert("נושא זה כבר קיים ברשימת הנושאים הקבועים."); return; }
+      permanentSubjects.push(newSubjectName);
+      updateSubjectDropdownOptions();
+      document.getElementById("modalSubject").value = newSubjectName;
+      document.getElementById("newSubjectNameInput").value = "";
+      closeAddSubjectModal();
+      alert("הנושא '" + newSubjectName + "' נוסף לנושאים הקבועים!");
+    }
+    function updatePermanentSubjectsList() {
+      const container = document.getElementById("permanentSubjectsList");
+      container.innerHTML = "";
+      permanentSubjects.forEach(subject => {
+        const span = document.createElement("span");
+        span.style.display = "block";
+        span.style.margin = "5px 0";
+        span.style.padding = "5px 10px";
+        span.style.backgroundColor = "#f0f0f0";
+        span.style.borderRadius = "5px";
+        span.innerText = subject + " ";
+        const trash = document.createElement("span");
+        trash.style.cursor = "pointer";
+        trash.innerText = "🗑️";
+        trash.onclick = function() {
+          if (confirm("האם אתה בטוח שברצונך למחוק את הנושא '" + subject + "'?")) {
+            const index = permanentSubjects.indexOf(subject);
+            if (index > -1) {
+              permanentSubjects.splice(index, 1);
+              updatePermanentSubjectsList();
+              updateSubjectDropdownOptions();
+              alert("הנושא נמחק.");
+            }
+          }
+        };
+        span.appendChild(trash);
+        container.appendChild(span);
+      });
+    }
+    function subjectChangeHandler() {
+      const subj = document.getElementById("modalSubject").value;
+      if(subj === "") {
+        document.getElementById("descriptionGroup").style.display = "none";
+        document.getElementById("addItemBtn").style.display = "none";
+      } else {
+        document.getElementById("descriptionGroup").style.display = "block";
+        document.getElementById("addItemBtn").style.display = "inline-block";
+      }
+      // אם הנושא הוא טיסה – מעדכנים תוויות השדות הכלליים ומציגים הודעת זמן
+      if(subj === "טיסה") {
+        document.getElementById("startTimeLabel").innerText = "שעת המראה:";
+        document.getElementById("endTimeLabel").innerText = "שעת נחיתה:";
+        document.getElementById("flightExtraOptions").style.display = "block";
+        document.getElementById("extraQuestions").style.display = "none";
+        document.getElementById("locationField").style.display = "none";
+        document.getElementById("foodExtraOptions").style.display = "none";
+        document.getElementById("timeNote").style.display = "block";
+      } else {
+        document.getElementById("startTimeLabel").innerText = "שעת התחלה:";
+        document.getElementById("endTimeLabel").innerText = "שעת סיום:";
+        document.getElementById("timeNote").style.display = "none";
+        if(subj === "אוכל") {
+          document.getElementById("foodExtraOptions").style.display = "block";
+          document.getElementById("extraQuestions").style.display = "none";
+          document.getElementById("locationField").style.display = "none";
+          document.getElementById("flightExtraOptions").style.display = "none";
+        } else {
+          document.getElementById("foodExtraOptions").style.display = "none";
+          document.getElementById("flightExtraOptions").style.display = "none";
+          if(subj === "הליכה" || subj === "נסיעה") {
+            document.getElementById("extraQuestions").style.display = "block";
+            document.getElementById("locationField").style.display = "none";
+          } else if(subj === "ביקור/סיור") {
+            document.getElementById("extraQuestions").style.display = "none";
+            document.getElementById("locationField").style.display = "block";
+          } else {
+            document.getElementById("extraQuestions").style.display = "none";
+            document.getElementById("locationField").style.display = "none";
+          }
+        }
+      }
+      // אם הנושא הוא נסיעה – מציגים גם את שדה "איך נוסעים?"
+      if(subj === "נסיעה") {
+        document.getElementById("travelModeGroup").style.display = "block";
+      } else {
+        document.getElementById("travelModeGroup").style.display = "none";
+      }
+      if(subj === "addSubject") {
+        openAddSubjectModal();
+      }
+    }
+    function foodTypeChangeHandler() {
+      const foodType = document.getElementById("foodTypeSelect").value;
+      if(foodType === "מסעדה" || foodType === "אוכל מהיר") {
+        document.getElementById("foodLocationDiv").style.display = "block";
+      } else {
+        document.getElementById("foodLocationDiv").style.display = "none";
+      }
+    }
+    function showFoodRoute() {
+      const location = document.getElementById("foodLocationInput").value.trim();
+      if(location === "") {
+        alert("אנא הזן את מיקום המקום כדי לבדוק מסלול בגוגל מפס.");
+        return;
+      }
+      const url = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(location);
+      window.open(url, "_blank");
+    }
+    function updateExtraFields() {}
+    function togglePermanentSubjectsList() {
+      const container = document.getElementById("permanentSubjectsList");
+      if (container.style.display === "none" || container.style.display === "") {
+        container.style.display = "block";
+        updatePermanentSubjectsList();
+      } else { container.style.display = "none"; }
+    }
+    function toggleTemplateDropdown() {
+      const dropdown = document.getElementById("templateDropdown");
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      updateTemplateList();
+    }
+    function updateTemplateList() {
+      const listDiv = document.getElementById("templateList");
+      listDiv.innerHTML = "";
+      constantTemplates.forEach((template, idx) => {
+        const btn = document.createElement("button");
+        btn.innerHTML = `<span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteConstantTemplate(${idx})">🗑️</span>${template.subject} (${template.duration} דק)`;
+        btn.onclick = function() {
+          selectedTemplate = template;
+          openAddItemModal();
+          document.getElementById("modalSubject").value = template.subject;
+          if (template.description) { document.getElementById("modalDescription").value = template.description; }
+        };
+        listDiv.appendChild(btn);
+      });
+    }
+    function deleteConstantTemplate(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את התבנית הקבועה הזו?")) {
+        constantTemplates.splice(index, 1);
+        updateTemplateList();
+        alert("התבנית הקבועה נמחקה.");
+      }
+    }
+    function openConstantTemplateModal() {
+      document.getElementById("constantTemplateModal").style.display = "block";
+      document.getElementById("templateDropdown").style.display = "none";
+    }
+    function closeConstantTemplateModal() { document.getElementById("constantTemplateModal").style.display = "none"; }
+    function saveConstantTemplate() {
+      const subject = document.getElementById("templateSubjectSelect").value;
+      const duration = parseInt(document.getElementById("templateDurationInput").value);
+      const description = document.getElementById("templateDescriptionInput").value.trim();
+      if (!subject || isNaN(duration) || duration < 1) { alert("אנא הזן נושא ומשך תקין (בדקות)."); return; }
+      constantTemplates.push({ subject, duration, description });
+      closeConstantTemplateModal();
+      updateTemplateList();
+      alert("תבנית לוז קבוע נשמרה!");
+    }
+    window.addEventListener("scroll", function() {
+      const nav = document.querySelector(".topbar");
+      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
+    });
+    function goHome() { window.location.href = "index.html"; }
+
+    function groupItemsByDate(items) {
+      return items.reduce((groups, item) => {
+        if (!groups[item.date]) { groups[item.date] = []; }
+        groups[item.date].push(item);
+        return groups;
+      }, {});
+    }
+
+    function formatDateHeader(dateStr) {
+      const options = { day: '2-digit', month: '2-digit', year: 'numeric', weekday: 'long' };
+      const dateObj = new Date(dateStr);
+      return dateObj.toLocaleDateString('he-IL', options);
+    }
+
+    function saveScheduleName() {
+      const nameInput = document.getElementById("scheduleNameInput").value.trim();
+      if (nameInput === "") { alert("אנא הזן שם ללו״ז."); return; }
+      if (savedSchedules.some(sch => sch.name === nameInput)) { alert("לוז עם שם זה כבר קיים. אנא בחר שם אחר."); return; }
+      scheduleName = nameInput;
+      document.getElementById("scheduleNameModal").style.display = "none";
+      document.getElementById("content").innerHTML = `
+        <h2>${scheduleName}</h2>
+        <p>להוספת חלק חדש, לחץ על הכפתור +</p>
+        <div class="action-buttons">
+          <button class="btn" onclick="openAddItemModal()">+</button>
+          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
+          <div id="templateDropdown">
+            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+            <div id="templateList"></div>
+          </div>
+        </div>
+        <div id="scheduleContainer"></div>
+        <div class="button-group">
+          <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
+        </div>
+      `;
+      openAddItemModal();
+    }
+
+    function closeScheduleNameModal() {
+      document.getElementById("scheduleNameModal").style.display = "none";
+    }
+
+    function closeAddItemModal() {
+      document.getElementById("addItemModal").style.display = "none";
+    }
+
+    function setDefaultEndTime() {
+      const startTime = document.getElementById("modalStartTime").value;
+      if (startTime) {
+        let endTime;
+        if (selectedTemplate) {
+          let [h, m] = startTime.split(":").map(Number);
+          let total = h * 60 + m + selectedTemplate.duration;
+          total = total % (24 * 60);
+          let newH = Math.floor(total / 60);
+          let newM = total % 60;
+          endTime = (newH < 10 ? "0" + newH : newH) + ":" + (newM < 10 ? "0" + newM : newM);
+        } else {
+          let [h, m] = startTime.split(":").map(Number);
+          h = (h + 1) % 24;
+          endTime = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+        }
+        document.getElementById("modalEndTime").value = endTime;
+      }
+    }
+
+    function saveItem() {
+      let dateValue = document.getElementById("modalDate").value;
+      let startTime = document.getElementById("modalStartTime").value;
+      let endTime = document.getElementById("modalEndTime").value;
+      const subject = document.getElementById("modalSubject").value;
+      const description = document.getElementById("modalDescription").value;
+      if (!dateValue) { alert("אנא בחר תאריך."); return; }
+      if (!startTime || !endTime) { alert("אנא בחר שעת התחלה ושעת סיום."); return; }
+      if (startTime > endTime) { let temp = startTime; startTime = endTime; endTime = temp; }
+      
+      const newItem = { date: dateValue, startTime, endTime, subject, description };
+      if (subject === "הליכה" || subject === "נסיעה") {
+        newItem.fromAddress = document.getElementById("fromAddress").value;
+        newItem.toAddress = document.getElementById("toAddress").value;
+        if (subject === "נסיעה") {
+          newItem.travelMode = document.getElementById("travelModeSelect").value;
+        }
+      }
+      if(subject === "ביקור/סיור") {
+        newItem.location = document.getElementById("locationInput").value;
+      }
+      if(subject === "אוכל") {
+        newItem.foodType = document.getElementById("foodTypeSelect").value;
+        if(newItem.foodType === "מסעדה" || newItem.foodType === "אוכל מהיר") {
+          newItem.foodLocation = document.getElementById("foodLocationInput").value;
+        }
+      }
+      if(subject === "טיסה") {
+        newItem.flightNumber = document.getElementById("flightNumberInput").value;
+        newItem.airline = document.getElementById("airlineInput").value;
+        newItem.departureAirport = document.getElementById("departureAirportInput").value;
+        newItem.arrivalAirport = document.getElementById("arrivalAirportInput").value;
+        // משתמשים בשדות הכלליים כ"שעת המראה" ו"שעת נחיתה"
+        newItem.departureTime = document.getElementById("modalStartTime").value;
+        newItem.arrivalTime = document.getElementById("modalEndTime").value;
+      }
+      if (editingIndex === -1) { scheduleItems.push(newItem); }
+      else { scheduleItems[editingIndex] = newItem; }
+      scheduleItems.sort((a, b) => {
+        if(a.date === b.date) { return a.startTime.localeCompare(b.startTime); }
+        return a.date.localeCompare(b.date);
+      });
+      renderScheduleItems();
+      closeAddItemModal();
+      saveSchedulesToFirestore();
+    }
+
+    // -----------------------
+    // פונקציות חיפוש טיסה
+    // -----------------------
+    function searchFlight() {
+      const flightNumber = document.getElementById("flightNumberInput").value.trim();
+      const flightDate = document.getElementById("modalDate").value;
+      if (!flightNumber || !flightDate) {
+        alert("אנא הזן מספר טיסה ותאריך (מתאריך הלוז).");
+        return;
+      }
+      document.getElementById("loader").style.display = "flex";
+      
+      const apiKey = "33d4ecb375mshcf029fba766af44p17668djsnaef3c36cb209";
+      const host = "aerodatabox.p.rapidapi.com";
+      const apiUrl = "https://aerodatabox.p.rapidapi.com/flights/number/" + flightNumber +
+                     "?withLeg=true&withCancelled=true&withCodeshares=true&departure_date=" + flightDate;
+      
+      fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-host": host,
+          "x-rapidapi-key": apiKey
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("שגיאה בבקשה: " + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        let html = "";
+        if (data && data.length > 0) {
+          data.forEach(flight => {
+            const airlineName = flight.airline && flight.airline.name ? flight.airline.name : "לא זמין";
+            const depAirport = flight.departure && flight.departure.airport && flight.departure.airport.name ? flight.departure.airport.name : "לא זמין";
+            const arrAirport = flight.arrival && flight.arrival.airport && flight.arrival.airport.name ? flight.arrival.airport.name : "לא זמין";
+            const depTimeFull = flight.departure && flight.departure.scheduledTime ? flight.departure.scheduledTime.local : "לא זמין";
+            const arrTimeFull = flight.arrival && flight.arrival.scheduledTime ? flight.arrival.scheduledTime.local : "לא זמין";
+            const depTimeLocal = depTimeFull.match(/\d{2}:\d{2}/)[0];
+            const arrTimeLocal = arrTimeFull.match(/\d{2}:\d{2}/)[0];
+            
+            html += '<div class="flight-card">';
+            html += '<h2>טיסת ' + airlineName + '</h2>';
+            html += '<p><span class="time-label">משדה תעופה:</span> ' + depAirport + '</p>';
+            html += '<p><span class="time-label">לשדה תעופה:</span> ' + arrAirport + '</p>';
+            html += '<p><span class="time-label">יציאה:</span> ' + depTimeFull + '</p>';
+            html += '<p><span class="time-label">הגעה:</span> ' + arrTimeFull + '</p>';
+            html += '</div>';
+            window.flightData = {
+              flightNumber: flightNumber,
+              airline: airlineName,
+              departureAirport: depAirport,
+              arrivalAirport: arrAirport,
+              departureTime: depTimeLocal,
+              arrivalTime: arrTimeLocal
+            };
+          });
+        } else {
+          html = "<p>לא נמצא מספר טיסה. אנא רשום שנית או רשום ידנית.</p>";
+          window.flightData = null;
+        }
+        document.getElementById("flightResultContent").innerHTML = html;
+        document.getElementById("flightResultModal").style.display = "block";
+      })
+      .catch(error => {
+        document.getElementById("flightResultContent").innerText = "שגיאה: " + error.message;
+      })
+      .finally(() => {
+        document.getElementById("loader").style.display = "none";
+      });
+    }
+    function closeFlightResultModal() {
+      document.getElementById("flightResultModal").style.display = "none";
+    }
+    function copyFlightToForm() {
+      if(window.flightData) {
+        document.getElementById("flightNumberInput").value = window.flightData.flightNumber;
+        document.getElementById("airlineInput").value = window.flightData.airline;
+        document.getElementById("departureAirportInput").value = window.flightData.departureAirport;
+        document.getElementById("arrivalAirportInput").value = window.flightData.arrivalAirport;
+        document.getElementById("modalStartTime").value = window.flightData.departureTime;
+        document.getElementById("modalEndTime").value = window.flightData.arrivalTime;
+        document.getElementById("timeNote").innerText = `(המראה: ${window.flightData.departureTime} (${window.flightData.departureAirport}), נחיתה: ${window.flightData.arrivalTime} (${window.flightData.arrivalAirport}))`;
+        closeFlightResultModal();
+        alert("פרטי הטיסה הועתקו לטופס.");
+      } else {
+        alert("אין נתוני טיסה להעתקה.");
+      }
+    }
+    // -----------------------
+    // סיום פונקציות חיפוש טיסה
+    // -----------------------
+
+    // -----------------------
+    // עיצוב הודעות העתקה לווטסאפ (בשורת ההעתקה)
+    // -----------------------
+    function copyScheduleToClipboardFromSchedule(idx) {
+      const sch = savedSchedules[idx];
+      let text = sch.name + "\n\n";
+      const groups = groupItemsByDate(sch.scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
+        groups[date].forEach(item => {
+          if(item.subject === "טיסה") {
+            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
+            text += `טיסת ${item.airline}\n`;
+            text += `טיסה מספר: ${item.flightNumber}\n`;
+            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
+            text += `המראה: ${item.startTime}\n`;
+            text += `נחיתה: ${item.endTime}\n`;
+            text += `~ ${item.description}\n\n`;
+          } else {
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
+            if(item.fromAddress && item.toAddress) {
+              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
+            } else if(item.location) {
+              text += `• ${item.location}\n`;
+            }
+            text += `~ ${item.description}\n\n`;
+          }
+        });
+      });
+      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
+      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
+    }
+
+    function copyScheduleToClipboard() {
+      let text = scheduleName + "\n\n";
+      const groups = groupItemsByDate(scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
+        groups[date].forEach(item => {
+          if(item.subject === "טיסה") {
+            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
+            text += `טיסת ${item.airline}\n`;
+            text += `טיסה מספר: ${item.flightNumber}\n`;
+            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
+            text += `המראה: ${item.startTime}\n`;
+            text += `נחיתה: ${item.endTime}\n`;
+            text += `~ ${item.description}\n\n`;
+          } else {
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
+            if(item.fromAddress && item.toAddress) {
+              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
+            } else if(item.location) {
+              text += `• ${item.location}\n`;
+            }
+            text += `~ ${item.description}\n\n`;
+          }
+        });
+      });
+      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
+      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
+    }
+    // -----------------------
+    // סיום עיצוב הודעות העתקה
+    // -----------------------
+
+    // -----------------------
+    // ניהול נושאים
+    // -----------------------
+    function updateSubjectDropdownOptions() {
+      const subjectDropdown = document.getElementById("modalSubject");
+      subjectDropdown.innerHTML = `<option value="">בחר</option>
+        <option value="הליכה">🚶 הליכה</option>
+        <option value="נסיעה">🚗 נסיעה</option>
+        <option value="ביקור/סיור">🏛️ ביקור/סיור</option>
+        <option value="טיסה">✈️ טיסה</option>
+        <option value="אוכל">🍽️ אוכל</option>
+        <option value="שינה">😴 שינה</option>
+        <option value="לקום">⏰ לקום</option>
+        <option value="addSubject">🖋️ הוספת נושא</option>`;
+      customSubjects.forEach(subject => {
+         const option = document.createElement("option");
+         option.value = subject;
+         option.text = subject;
+         subjectDropdown.add(option);
+      });
+      permanentSubjects.forEach(subject => {
+         const option = document.createElement("option");
+         option.value = subject;
+         option.text = subject;
+         subjectDropdown.add(option);
+      });
+    }
+
+    function openAddSubjectModal() {
+      document.getElementById("addItemModal").style.display = "none";
+      document.getElementById("addSubjectModal").style.display = "block";
+    }
+    function closeAddSubjectModal() {
+      document.getElementById("addSubjectModal").style.display = "none";
+      document.getElementById("addItemModal").style.display = "block";
+    }
+    function addSubjectOneTime() {
+      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
+      customSubjects.push(newSubjectName);
+      updateSubjectDropdownOptions();
+      document.getElementById("modalSubject").value = newSubjectName;
+      document.getElementById("newSubjectNameInput").value = "";
+      closeAddSubjectModal();
+    }
+    function addSubjectPermanent() {
+      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
+      if (permanentSubjects.includes(newSubjectName)) { alert("נושא זה כבר קיים ברשימת הנושאים הקבועים."); return; }
+      permanentSubjects.push(newSubjectName);
+      updateSubjectDropdownOptions();
+      document.getElementById("modalSubject").value = newSubjectName;
+      document.getElementById("newSubjectNameInput").value = "";
+      closeAddSubjectModal();
+      alert("הנושא '" + newSubjectName + "' נוסף לנושאים הקבועים!");
+    }
+    function updatePermanentSubjectsList() {
+      const container = document.getElementById("permanentSubjectsList");
+      container.innerHTML = "";
+      permanentSubjects.forEach(subject => {
+        const span = document.createElement("span");
+        span.style.display = "block";
+        span.style.margin = "5px 0";
+        span.style.padding = "5px 10px";
+        span.style.backgroundColor = "#f0f0f0";
+        span.style.borderRadius = "5px";
+        span.innerText = subject + " ";
+        const trash = document.createElement("span");
+        trash.style.cursor = "pointer";
+        trash.innerText = "🗑️";
+        trash.onclick = function() {
+          if (confirm("האם אתה בטוח שברצונך למחוק את הנושא '" + subject + "'?")) {
+            const index = permanentSubjects.indexOf(subject);
+            if (index > -1) {
+              permanentSubjects.splice(index, 1);
+              updatePermanentSubjectsList();
+              updateSubjectDropdownOptions();
+              alert("הנושא נמחק.");
+            }
+          }
+        };
+        span.appendChild(trash);
+        container.appendChild(span);
+      });
+    }
+    function subjectChangeHandler() {
+      const subj = document.getElementById("modalSubject").value;
+      if(subj === "") {
+        document.getElementById("descriptionGroup").style.display = "none";
+        document.getElementById("addItemBtn").style.display = "none";
+      } else {
+        document.getElementById("descriptionGroup").style.display = "block";
+        document.getElementById("addItemBtn").style.display = "inline-block";
+      }
+      if(subj === "טיסה") {
+        document.getElementById("startTimeLabel").innerText = "שעת המראה:";
+        document.getElementById("endTimeLabel").innerText = "שעת נחיתה:";
+        document.getElementById("flightExtraOptions").style.display = "block";
+        document.getElementById("extraQuestions").style.display = "none";
+        document.getElementById("locationField").style.display = "none";
+        document.getElementById("foodExtraOptions").style.display = "none";
+        document.getElementById("timeNote").style.display = "block";
+      } else {
+        document.getElementById("startTimeLabel").innerText = "שעת התחלה:";
+        document.getElementById("endTimeLabel").innerText = "שעת סיום:";
+        document.getElementById("timeNote").style.display = "none";
+        if(subj === "אוכל") {
+          document.getElementById("foodExtraOptions").style.display = "block";
+          document.getElementById("extraQuestions").style.display = "none";
+          document.getElementById("locationField").style.display = "none";
+          document.getElementById("flightExtraOptions").style.display = "none";
+        } else {
+          document.getElementById("foodExtraOptions").style.display = "none";
+          document.getElementById("flightExtraOptions").style.display = "none";
+          if(subj === "הליכה" || subj === "נסיעה") {
+            document.getElementById("extraQuestions").style.display = "block";
+            document.getElementById("locationField").style.display = "none";
+          } else if(subj === "ביקור/סיור") {
+            document.getElementById("extraQuestions").style.display = "none";
+            document.getElementById("locationField").style.display = "block";
+          } else {
+            document.getElementById("extraQuestions").style.display = "none";
+            document.getElementById("locationField").style.display = "none";
+          }
+        }
+      }
+      if(subj === "נסיעה") {
+        document.getElementById("travelModeGroup").style.display = "block";
+      } else {
+        document.getElementById("travelModeGroup").style.display = "none";
+      }
+      if(subj === "addSubject") {
+        openAddSubjectModal();
+      }
+    }
+    function foodTypeChangeHandler() {
+      const foodType = document.getElementById("foodTypeSelect").value;
+      if(foodType === "מסעדה" || foodType === "אוכל מהיר") {
+        document.getElementById("foodLocationDiv").style.display = "block";
+      } else {
+        document.getElementById("foodLocationDiv").style.display = "none";
+      }
+    }
+    function showFoodRoute() {
+      const location = document.getElementById("foodLocationInput").value.trim();
+      if(location === "") {
+        alert("אנא הזן את מיקום המקום כדי לבדוק מסלול בגוגל מפס.");
+        return;
+      }
+      const url = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(location);
+      window.open(url, "_blank");
+    }
+    function updateExtraFields() {}
+    function togglePermanentSubjectsList() {
+      const container = document.getElementById("permanentSubjectsList");
+      if (container.style.display === "none" || container.style.display === "") {
+        container.style.display = "block";
+        updatePermanentSubjectsList();
+      } else { container.style.display = "none"; }
+    }
+    function toggleTemplateDropdown() {
+      const dropdown = document.getElementById("templateDropdown");
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      updateTemplateList();
+    }
+    function updateTemplateList() {
+      const listDiv = document.getElementById("templateList");
+      listDiv.innerHTML = "";
+      constantTemplates.forEach((template, idx) => {
+        const btn = document.createElement("button");
+        btn.innerHTML = `<span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteConstantTemplate(${idx})">🗑️</span>${template.subject} (${template.duration} דק)`;
+        btn.onclick = function() {
+          selectedTemplate = template;
+          openAddItemModal();
+          document.getElementById("modalSubject").value = template.subject;
+          if (template.description) { document.getElementById("modalDescription").value = template.description; }
+        };
+        listDiv.appendChild(btn);
+      });
+    }
+    function deleteConstantTemplate(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את התבנית הקבועה הזו?")) {
+        constantTemplates.splice(index, 1);
+        updateTemplateList();
+        alert("התבנית הקבועה נמחקה.");
+      }
+    }
+    function openConstantTemplateModal() {
+      document.getElementById("constantTemplateModal").style.display = "block";
+      document.getElementById("templateDropdown").style.display = "none";
+    }
+    function closeConstantTemplateModal() { document.getElementById("constantTemplateModal").style.display = "none"; }
+    function saveConstantTemplate() {
+      const subject = document.getElementById("templateSubjectSelect").value;
+      const duration = parseInt(document.getElementById("templateDurationInput").value);
+      const description = document.getElementById("templateDescriptionInput").value.trim();
+      if (!subject || isNaN(duration) || duration < 1) { alert("אנא הזן נושא ומשך תקין (בדקות)."); return; }
+      constantTemplates.push({ subject, duration, description });
+      closeConstantTemplateModal();
+      updateTemplateList();
+      alert("תבנית לוז קבוע נשמרה!");
+    }
+    window.addEventListener("scroll", function() {
+      const nav = document.querySelector(".topbar");
+      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
+    });
+    function goHome() { window.location.href = "index.html"; }
+
+    function groupItemsByDate(items) {
+      return items.reduce((groups, item) => {
+        if (!groups[item.date]) { groups[item.date] = []; }
+        groups[item.date].push(item);
+        return groups;
+      }, {});
+    }
+
+    function formatDateHeader(dateStr) {
+      const options = { day: '2-digit', month: '2-digit', year: 'numeric', weekday: 'long' };
+      const dateObj = new Date(dateStr);
+      return dateObj.toLocaleDateString('he-IL', options);
+    }
+
+    function saveScheduleName() {
+      const nameInput = document.getElementById("scheduleNameInput").value.trim();
+      if (nameInput === "") { alert("אנא הזן שם ללו״ז."); return; }
+      if (savedSchedules.some(sch => sch.name === nameInput)) { alert("לוז עם שם זה כבר קיים. אנא בחר שם אחר."); return; }
+      scheduleName = nameInput;
+      document.getElementById("scheduleNameModal").style.display = "none";
+      document.getElementById("content").innerHTML = `
+        <h2>${scheduleName}</h2>
+        <p>להוספת חלק חדש, לחץ על הכפתור +</p>
+        <div class="action-buttons">
+          <button class="btn" onclick="openAddItemModal()">+</button>
+          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
+          <div id="templateDropdown">
+            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+            <div id="templateList"></div>
+          </div>
+        </div>
+        <div id="scheduleContainer"></div>
+        <div class="button-group">
+          <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
+        </div>
+      `;
+      openAddItemModal();
+    }
+
+    function closeScheduleNameModal() {
+      document.getElementById("scheduleNameModal").style.display = "none";
+    }
+
+    function closeAddItemModal() {
+      document.getElementById("addItemModal").style.display = "none";
+    }
+
+    function setDefaultEndTime() {
+      const startTime = document.getElementById("modalStartTime").value;
+      if (startTime) {
+        let endTime;
+        if (selectedTemplate) {
+          let [h, m] = startTime.split(":").map(Number);
+          let total = h * 60 + m + selectedTemplate.duration;
+          total = total % (24 * 60);
+          let newH = Math.floor(total / 60);
+          let newM = total % 60;
+          endTime = (newH < 10 ? "0" + newH : newH) + ":" + (newM < 10 ? "0" + newM : newM);
+        } else {
+          let [h, m] = startTime.split(":").map(Number);
+          h = (h + 1) % 24;
+          endTime = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+        }
+        document.getElementById("modalEndTime").value = endTime;
+      }
+    }
+
+    function saveItem() {
+      let dateValue = document.getElementById("modalDate").value;
+      let startTime = document.getElementById("modalStartTime").value;
+      let endTime = document.getElementById("modalEndTime").value;
+      const subject = document.getElementById("modalSubject").value;
+      const description = document.getElementById("modalDescription").value;
+      if (!dateValue) { alert("אנא בחר תאריך."); return; }
+      if (!startTime || !endTime) { alert("אנא בחר שעת התחלה ושעת סיום."); return; }
+      if (startTime > endTime) { let temp = startTime; startTime = endTime; endTime = temp; }
+      
+      const newItem = { date: dateValue, startTime, endTime, subject, description };
+      if (subject === "הליכה" || subject === "נסיעה") {
+        newItem.fromAddress = document.getElementById("fromAddress").value;
+        newItem.toAddress = document.getElementById("toAddress").value;
+        if (subject === "נסיעה") {
+          newItem.travelMode = document.getElementById("travelModeSelect").value;
+        }
+      }
+      if(subject === "ביקור/סיור") {
+        newItem.location = document.getElementById("locationInput").value;
+      }
+      if(subject === "אוכל") {
+        newItem.foodType = document.getElementById("foodTypeSelect").value;
+        if(newItem.foodType === "מסעדה" || newItem.foodType === "אוכל מהיר") {
+          newItem.foodLocation = document.getElementById("foodLocationInput").value;
+        }
+      }
+      if(subject === "טיסה") {
+        newItem.flightNumber = document.getElementById("flightNumberInput").value;
+        newItem.airline = document.getElementById("airlineInput").value;
+        newItem.departureAirport = document.getElementById("departureAirportInput").value;
+        newItem.arrivalAirport = document.getElementById("arrivalAirportInput").value;
+        newItem.departureTime = document.getElementById("modalStartTime").value;
+        newItem.arrivalTime = document.getElementById("modalEndTime").value;
+      }
+      if (editingIndex === -1) { scheduleItems.push(newItem); }
+      else { scheduleItems[editingIndex] = newItem; }
+      scheduleItems.sort((a, b) => {
+        if(a.date === b.date) { return a.startTime.localeCompare(b.startTime); }
+        return a.date.localeCompare(b.date);
+      });
+      renderScheduleItems();
+      closeAddItemModal();
+      saveSchedulesToFirestore();
+    }
+
+    // -----------------------
+    // פונקציות חיפוש טיסה
+    // -----------------------
+    function searchFlight() {
+      const flightNumber = document.getElementById("flightNumberInput").value.trim();
+      const flightDate = document.getElementById("modalDate").value;
+      if (!flightNumber || !flightDate) {
+        alert("אנא הזן מספר טיסה ותאריך (מתאריך הלוז).");
+        return;
+      }
+      document.getElementById("loader").style.display = "flex";
+      
+      const apiKey = "33d4ecb375mshcf029fba766af44p17668djsnaef3c36cb209";
+      const host = "aerodatabox.p.rapidapi.com";
+      const apiUrl = "https://aerodatabox.p.rapidapi.com/flights/number/" + flightNumber +
+                     "?withLeg=true&withCancelled=true&withCodeshares=true&departure_date=" + flightDate;
+      
+      fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-host": host,
+          "x-rapidapi-key": apiKey
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("שגיאה בבקשה: " + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        let html = "";
+        if (data && data.length > 0) {
+          data.forEach(flight => {
+            const airlineName = flight.airline && flight.airline.name ? flight.airline.name : "לא זמין";
+            const depAirport = flight.departure && flight.departure.airport && flight.departure.airport.name ? flight.departure.airport.name : "לא זמין";
+            const arrAirport = flight.arrival && flight.arrival.airport && flight.arrival.airport.name ? flight.arrival.airport.name : "לא זמין";
+            const depTimeFull = flight.departure && flight.departure.scheduledTime ? flight.departure.scheduledTime.local : "לא זמין";
+            const arrTimeFull = flight.arrival && flight.arrival.scheduledTime ? flight.arrival.scheduledTime.local : "לא זמין";
+            const depTimeLocal = depTimeFull.match(/\d{2}:\d{2}/)[0];
+            const arrTimeLocal = arrTimeFull.match(/\d{2}:\d{2}/)[0];
+            
+            html += '<div class="flight-card">';
+            html += '<h2>טיסת ' + airlineName + '</h2>';
+            html += '<p><span class="time-label">משדה תעופה:</span> ' + depAirport + '</p>';
+            html += '<p><span class="time-label">לשדה תעופה:</span> ' + arrAirport + '</p>';
+            html += '<p><span class="time-label">יציאה:</span> ' + depTimeFull + '</p>';
+            html += '<p><span class="time-label">הגעה:</span> ' + arrTimeFull + '</p>';
+            html += '</div>';
+            window.flightData = {
+              flightNumber: flightNumber,
+              airline: airlineName,
+              departureAirport: depAirport,
+              arrivalAirport: arrAirport,
+              departureTime: depTimeLocal,
+              arrivalTime: arrTimeLocal
+            };
+          });
+        } else {
+          html = "<p>לא נמצא מספר טיסה. אנא רשום שנית או רשום ידנית.</p>";
+          window.flightData = null;
+        }
+        document.getElementById("flightResultContent").innerHTML = html;
+        document.getElementById("flightResultModal").style.display = "block";
+      })
+      .catch(error => {
+        document.getElementById("flightResultContent").innerText = "שגיאה: " + error.message;
+      })
+      .finally(() => {
+        document.getElementById("loader").style.display = "none";
+      });
+    }
+    function closeFlightResultModal() {
+      document.getElementById("flightResultModal").style.display = "none";
+    }
+    function copyFlightToForm() {
+      if(window.flightData) {
+        document.getElementById("flightNumberInput").value = window.flightData.flightNumber;
+        document.getElementById("airlineInput").value = window.flightData.airline;
+        document.getElementById("departureAirportInput").value = window.flightData.departureAirport;
+        document.getElementById("arrivalAirportInput").value = window.flightData.arrivalAirport;
+        document.getElementById("modalStartTime").value = window.flightData.departureTime;
+        document.getElementById("modalEndTime").value = window.flightData.arrivalTime;
+        document.getElementById("timeNote").innerText = `(המראה: ${window.flightData.departureTime} (${window.flightData.departureAirport}), נחיתה: ${window.flightData.arrivalTime} (${window.flightData.arrivalAirport}))`;
+        closeFlightResultModal();
+        alert("פרטי הטיסה הועתקו לטופס.");
+      } else {
+        alert("אין נתוני טיסה להעתקה.");
+      }
+    }
+    // -----------------------
+    // סיום פונקציות חיפוש טיסה
+    // -----------------------
+
+    // -----------------------
+    // עיצוב הודעות העתקה לווטסאפ
+    // -----------------------
+    function copyScheduleToClipboardFromSchedule(idx) {
+      const sch = savedSchedules[idx];
+      let text = sch.name + "\n\n";
+      const groups = groupItemsByDate(sch.scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
+        groups[date].forEach(item => {
+          if(item.subject === "טיסה") {
+            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
+            text += `טיסת ${item.airline}\n`;
+            text += `טיסה מספר: ${item.flightNumber}\n`;
+            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
+            text += `המראה: ${item.startTime}\n`;
+            text += `נחיתה: ${item.endTime}\n`;
+            text += `~ ${item.description}\n\n`;
+          } else {
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
+            if(item.fromAddress && item.toAddress) {
+              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
+            } else if(item.location) {
+              text += `• ${item.location}\n`;
+            }
+            text += `~ ${item.description}\n\n`;
+          }
+        });
+      });
+      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
+      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
+    }
+
+    function copyScheduleToClipboard() {
+      let text = scheduleName + "\n\n";
+      const groups = groupItemsByDate(scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
+        groups[date].forEach(item => {
+          if(item.subject === "טיסה") {
+            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
+            text += `טיסת ${item.airline}\n`;
+            text += `טיסה מספר: ${item.flightNumber}\n`;
+            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
+            text += `המראה: ${item.startTime}\n`;
+            text += `נחיתה: ${item.endTime}\n`;
+            text += `~ ${item.description}\n\n`;
+          } else {
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
+            if(item.fromAddress && item.toAddress) {
+              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
+            } else if(item.location) {
+              text += `• ${item.location}\n`;
+            }
+            text += `~ ${item.description}\n\n`;
+          }
+        });
+      });
+      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
+      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
+    }
+    // -----------------------
+    // סיום עיצוב הודעות העתקה
+    // -----------------------
+
+    // -----------------------
+    // ניהול נושאים
+    // -----------------------
+    function updateSubjectDropdownOptions() {
+      const subjectDropdown = document.getElementById("modalSubject");
+      subjectDropdown.innerHTML = `<option value="">בחר</option>
+        <option value="הליכה">🚶 הליכה</option>
+        <option value="נסיעה">🚗 נסיעה</option>
+        <option value="ביקור/סיור">🏛️ ביקור/סיור</option>
+        <option value="טיסה">✈️ טיסה</option>
+        <option value="אוכל">🍽️ אוכל</option>
+        <option value="שינה">😴 שינה</option>
+        <option value="לקום">⏰ לקום</option>
+        <option value="addSubject">🖋️ הוספת נושא</option>`;
+      customSubjects.forEach(subject => {
+         const option = document.createElement("option");
+         option.value = subject;
+         option.text = subject;
+         subjectDropdown.add(option);
+      });
+      permanentSubjects.forEach(subject => {
+         const option = document.createElement("option");
+         option.value = subject;
+         option.text = subject;
+         subjectDropdown.add(option);
+      });
+    }
+
+    function openAddSubjectModal() {
+      document.getElementById("addItemModal").style.display = "none";
+      document.getElementById("addSubjectModal").style.display = "block";
+    }
+    function closeAddSubjectModal() {
+      document.getElementById("addSubjectModal").style.display = "none";
+      document.getElementById("addItemModal").style.display = "block";
+    }
+    function addSubjectOneTime() {
+      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
+      customSubjects.push(newSubjectName);
+      updateSubjectDropdownOptions();
+      document.getElementById("modalSubject").value = newSubjectName;
+      document.getElementById("newSubjectNameInput").value = "";
+      closeAddSubjectModal();
+    }
+    function addSubjectPermanent() {
+      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
+      if (permanentSubjects.includes(newSubjectName)) { alert("נושא זה כבר קיים ברשימת הנושאים הקבועים."); return; }
+      permanentSubjects.push(newSubjectName);
+      updateSubjectDropdownOptions();
+      document.getElementById("modalSubject").value = newSubjectName;
+      document.getElementById("newSubjectNameInput").value = "";
+      closeAddSubjectModal();
+      alert("הנושא '" + newSubjectName + "' נוסף לנושאים הקבועים!");
+    }
+    function updatePermanentSubjectsList() {
+      const container = document.getElementById("permanentSubjectsList");
+      container.innerHTML = "";
+      permanentSubjects.forEach(subject => {
+        const span = document.createElement("span");
+        span.style.display = "block";
+        span.style.margin = "5px 0";
+        span.style.padding = "5px 10px";
+        span.style.backgroundColor = "#f0f0f0";
+        span.style.borderRadius = "5px";
+        span.innerText = subject + " ";
+        const trash = document.createElement("span");
+        trash.style.cursor = "pointer";
+        trash.innerText = "🗑️";
+        trash.onclick = function() {
+          if (confirm("האם אתה בטוח שברצונך למחוק את הנושא '" + subject + "'?")) {
+            const index = permanentSubjects.indexOf(subject);
+            if (index > -1) {
+              permanentSubjects.splice(index, 1);
+              updatePermanentSubjectsList();
+              updateSubjectDropdownOptions();
+              alert("הנושא נמחק.");
+            }
+          }
+        };
+        span.appendChild(trash);
+        container.appendChild(span);
+      });
+    }
+    function subjectChangeHandler() {
+      const subj = document.getElementById("modalSubject").value;
+      if(subj === "") {
+        document.getElementById("descriptionGroup").style.display = "none";
+        document.getElementById("addItemBtn").style.display = "none";
+      } else {
+        document.getElementById("descriptionGroup").style.display = "block";
+        document.getElementById("addItemBtn").style.display = "inline-block";
+      }
+      if(subj === "טיסה") {
+        document.getElementById("startTimeLabel").innerText = "שעת המראה:";
+        document.getElementById("endTimeLabel").innerText = "שעת נחיתה:";
+        document.getElementById("flightExtraOptions").style.display = "block";
+        document.getElementById("extraQuestions").style.display = "none";
+        document.getElementById("locationField").style.display = "none";
+        document.getElementById("foodExtraOptions").style.display = "none";
+        document.getElementById("timeNote").style.display = "block";
+      } else {
+        document.getElementById("startTimeLabel").innerText = "שעת התחלה:";
+        document.getElementById("endTimeLabel").innerText = "שעת סיום:";
+        document.getElementById("timeNote").style.display = "none";
+        if(subj === "אוכל") {
+          document.getElementById("foodExtraOptions").style.display = "block";
+          document.getElementById("extraQuestions").style.display = "none";
+          document.getElementById("locationField").style.display = "none";
+          document.getElementById("flightExtraOptions").style.display = "none";
+        } else {
+          document.getElementById("foodExtraOptions").style.display = "none";
+          document.getElementById("flightExtraOptions").style.display = "none";
+          if(subj === "הליכה" || subj === "נסיעה") {
+            document.getElementById("extraQuestions").style.display = "block";
+            document.getElementById("locationField").style.display = "none";
+          } else if(subj === "ביקור/סיור") {
+            document.getElementById("extraQuestions").style.display = "none";
+            document.getElementById("locationField").style.display = "block";
+          } else {
+            document.getElementById("extraQuestions").style.display = "none";
+            document.getElementById("locationField").style.display = "none";
+          }
+        }
+      }
+      if(subj === "נסיעה") {
+        document.getElementById("travelModeGroup").style.display = "block";
+      } else {
+        document.getElementById("travelModeGroup").style.display = "none";
+      }
+      if(subj === "addSubject") {
+        openAddSubjectModal();
+      }
+    }
+    function foodTypeChangeHandler() {
+      const foodType = document.getElementById("foodTypeSelect").value;
+      if(foodType === "מסעדה" || foodType === "אוכל מהיר") {
+        document.getElementById("foodLocationDiv").style.display = "block";
+      } else {
+        document.getElementById("foodLocationDiv").style.display = "none";
+      }
+    }
+    function showFoodRoute() {
+      const location = document.getElementById("foodLocationInput").value.trim();
+      if(location === "") {
+        alert("אנא הזן את מיקום המקום כדי לבדוק מסלול בגוגל מפס.");
+        return;
+      }
+      const url = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(location);
+      window.open(url, "_blank");
+    }
+    function updateExtraFields() {}
+    function togglePermanentSubjectsList() {
+      const container = document.getElementById("permanentSubjectsList");
+      if (container.style.display === "none" || container.style.display === "") {
+        container.style.display = "block";
+        updatePermanentSubjectsList();
+      } else { container.style.display = "none"; }
+    }
+    function toggleTemplateDropdown() {
+      const dropdown = document.getElementById("templateDropdown");
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      updateTemplateList();
+    }
+    function updateTemplateList() {
+      const listDiv = document.getElementById("templateList");
+      listDiv.innerHTML = "";
+      constantTemplates.forEach((template, idx) => {
+        const btn = document.createElement("button");
+        btn.innerHTML = `<span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteConstantTemplate(${idx})">🗑️</span>${template.subject} (${template.duration} דק)`;
+        btn.onclick = function() {
+          selectedTemplate = template;
+          openAddItemModal();
+          document.getElementById("modalSubject").value = template.subject;
+          if (template.description) { document.getElementById("modalDescription").value = template.description; }
+        };
+        listDiv.appendChild(btn);
+      });
+    }
+    function deleteConstantTemplate(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את התבנית הקבועה הזו?")) {
+        constantTemplates.splice(index, 1);
+        updateTemplateList();
+        alert("התבנית הקבועה נמחקה.");
+      }
+    }
+    function openConstantTemplateModal() {
+      document.getElementById("constantTemplateModal").style.display = "block";
+      document.getElementById("templateDropdown").style.display = "none";
+    }
+    function closeConstantTemplateModal() { document.getElementById("constantTemplateModal").style.display = "none"; }
+    function saveConstantTemplate() {
+      const subject = document.getElementById("templateSubjectSelect").value;
+      const duration = parseInt(document.getElementById("templateDurationInput").value);
+      const description = document.getElementById("templateDescriptionInput").value.trim();
+      if (!subject || isNaN(duration) || duration < 1) { alert("אנא הזן נושא ומשך תקין (בדקות)."); return; }
+      constantTemplates.push({ subject, duration, description });
+      closeConstantTemplateModal();
+      updateTemplateList();
+      alert("תבנית לוז קבוע נשמרה!");
+    }
+    window.addEventListener("scroll", function() {
+      const nav = document.querySelector(".topbar");
+      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
+    });
+    function goHome() { window.location.href = "index.html"; }
+
+    function groupItemsByDate(items) {
+      return items.reduce((groups, item) => {
+        if (!groups[item.date]) { groups[item.date] = []; }
+        groups[item.date].push(item);
+        return groups;
+      }, {});
+    }
+
+    function formatDateHeader(dateStr) {
+      const options = { day: '2-digit', month: '2-digit', year: 'numeric', weekday: 'long' };
+      const dateObj = new Date(dateStr);
+      return dateObj.toLocaleDateString('he-IL', options);
+    }
+
+    function saveScheduleName() {
+      const nameInput = document.getElementById("scheduleNameInput").value.trim();
+      if (nameInput === "") { alert("אנא הזן שם ללו״ז."); return; }
+      if (savedSchedules.some(sch => sch.name === nameInput)) { alert("לוז עם שם זה כבר קיים. אנא בחר שם אחר."); return; }
+      scheduleName = nameInput;
+      document.getElementById("scheduleNameModal").style.display = "none";
+      document.getElementById("content").innerHTML = `
+        <h2>${scheduleName}</h2>
+        <p>להוספת חלק חדש, לחץ על הכפתור +</p>
+        <div class="action-buttons">
+          <button class="btn" onclick="openAddItemModal()">+</button>
+          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
+          <div id="templateDropdown">
+            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+            <div id="templateList"></div>
+          </div>
+        </div>
+        <div id="scheduleContainer"></div>
+        <div class="button-group">
+          <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
+        </div>
+      `;
+      openAddItemModal();
+    }
+
+    function closeScheduleNameModal() {
+      document.getElementById("scheduleNameModal").style.display = "none";
+    }
+
+    function closeAddItemModal() {
+      document.getElementById("addItemModal").style.display = "none";
+    }
+
+    function setDefaultEndTime() {
+      const startTime = document.getElementById("modalStartTime").value;
+      if (startTime) {
+        let endTime;
+        if (selectedTemplate) {
+          let [h, m] = startTime.split(":").map(Number);
+          let total = h * 60 + m + selectedTemplate.duration;
+          total = total % (24 * 60);
+          let newH = Math.floor(total / 60);
+          let newM = total % 60;
+          endTime = (newH < 10 ? "0" + newH : newH) + ":" + (newM < 10 ? "0" + newM : newM);
+        } else {
+          let [h, m] = startTime.split(":").map(Number);
+          h = (h + 1) % 24;
+          endTime = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+        }
+        document.getElementById("modalEndTime").value = endTime;
+      }
+    }
+
+    function saveItem() {
+      let dateValue = document.getElementById("modalDate").value;
+      let startTime = document.getElementById("modalStartTime").value;
+      let endTime = document.getElementById("modalEndTime").value;
+      const subject = document.getElementById("modalSubject").value;
+      const description = document.getElementById("modalDescription").value;
+      if (!dateValue) { alert("אנא בחר תאריך."); return; }
+      if (!startTime || !endTime) { alert("אנא בחר שעת התחלה ושעת סיום."); return; }
+      if (startTime > endTime) { let temp = startTime; startTime = endTime; endTime = temp; }
+      
+      const newItem = { date: dateValue, startTime, endTime, subject, description };
+      if (subject === "הליכה" || subject === "נסיעה") {
+        newItem.fromAddress = document.getElementById("fromAddress").value;
+        newItem.toAddress = document.getElementById("toAddress").value;
+        if (subject === "נסיעה") {
+          newItem.travelMode = document.getElementById("travelModeSelect").value;
+        }
+      }
+      if(subject === "ביקור/סיור") {
+        newItem.location = document.getElementById("locationInput").value;
+      }
+      if(subject === "אוכל") {
+        newItem.foodType = document.getElementById("foodTypeSelect").value;
+        if(newItem.foodType === "מסעדה" || newItem.foodType === "אוכל מהיר") {
+          newItem.foodLocation = document.getElementById("foodLocationInput").value;
+        }
+      }
+      if(subject === "טיסה") {
+        newItem.flightNumber = document.getElementById("flightNumberInput").value;
+        newItem.airline = document.getElementById("airlineInput").value;
+        newItem.departureAirport = document.getElementById("departureAirportInput").value;
+        newItem.arrivalAirport = document.getElementById("arrivalAirportInput").value;
+        newItem.departureTime = document.getElementById("modalStartTime").value;
+        newItem.arrivalTime = document.getElementById("modalEndTime").value;
+      }
+      if (editingIndex === -1) { scheduleItems.push(newItem); }
+      else { scheduleItems[editingIndex] = newItem; }
+      scheduleItems.sort((a, b) => {
+        if(a.date === b.date) { return a.startTime.localeCompare(b.startTime); }
+        return a.date.localeCompare(b.date);
+      });
+      renderScheduleItems();
+      closeAddItemModal();
+      saveSchedulesToFirestore();
+    }
+
+    // -----------------------
+    // פונקציות חיפוש טיסה
+    // -----------------------
+    function searchFlight() {
+      const flightNumber = document.getElementById("flightNumberInput").value.trim();
+      const flightDate = document.getElementById("modalDate").value;
+      if (!flightNumber || !flightDate) {
+        alert("אנא הזן מספר טיסה ותאריך (מתאריך הלוז).");
+        return;
+      }
+      document.getElementById("loader").style.display = "flex";
+      
+      const apiKey = "33d4ecb375mshcf029fba766af44p17668djsnaef3c36cb209";
+      const host = "aerodatabox.p.rapidapi.com";
+      const apiUrl = "https://aerodatabox.p.rapidapi.com/flights/number/" + flightNumber +
+                     "?withLeg=true&withCancelled=true&withCodeshares=true&departure_date=" + flightDate;
+      
+      fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-host": host,
+          "x-rapidapi-key": apiKey
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("שגיאה בבקשה: " + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        let html = "";
+        if (data && data.length > 0) {
+          data.forEach(flight => {
+            const airlineName = flight.airline && flight.airline.name ? flight.airline.name : "לא זמין";
+            const depAirport = flight.departure && flight.departure.airport && flight.departure.airport.name ? flight.departure.airport.name : "לא זמין";
+            const arrAirport = flight.arrival && flight.arrival.airport && flight.arrival.airport.name ? flight.arrival.airport.name : "לא זמין";
+            const depTimeFull = flight.departure && flight.departure.scheduledTime ? flight.departure.scheduledTime.local : "לא זמין";
+            const arrTimeFull = flight.arrival && flight.arrival.scheduledTime ? flight.arrival.scheduledTime.local : "לא זמין";
+            const depTimeLocal = depTimeFull.match(/\d{2}:\d{2}/)[0];
+            const arrTimeLocal = arrTimeFull.match(/\d{2}:\d{2}/)[0];
+            
+            html += '<div class="flight-card">';
+            html += '<h2>טיסת ' + airlineName + '</h2>';
+            html += '<p><span class="time-label">משדה תעופה:</span> ' + depAirport + '</p>';
+            html += '<p><span class="time-label">לשדה תעופה:</span> ' + arrAirport + '</p>';
+            html += '<p><span class="time-label">יציאה:</span> ' + depTimeFull + '</p>';
+            html += '<p><span class="time-label">הגעה:</span> ' + arrTimeFull + '</p>';
+            html += '</div>';
+            window.flightData = {
+              flightNumber: flightNumber,
+              airline: airlineName,
+              departureAirport: depAirport,
+              arrivalAirport: arrAirport,
+              departureTime: depTimeLocal,
+              arrivalTime: arrTimeLocal
+            };
+          });
+        } else {
+          html = "<p>לא נמצא מספר טיסה. אנא רשום שנית או רשום ידנית.</p>";
+          window.flightData = null;
+        }
+        document.getElementById("flightResultContent").innerHTML = html;
+        document.getElementById("flightResultModal").style.display = "block";
+      })
+      .catch(error => {
+        document.getElementById("flightResultContent").innerText = "שגיאה: " + error.message;
+      })
+      .finally(() => {
+        document.getElementById("loader").style.display = "none";
+      });
+    }
+    function closeFlightResultModal() {
+      document.getElementById("flightResultModal").style.display = "none";
+    }
+    function copyFlightToForm() {
+      if(window.flightData) {
+        document.getElementById("flightNumberInput").value = window.flightData.flightNumber;
+        document.getElementById("airlineInput").value = window.flightData.airline;
+        document.getElementById("departureAirportInput").value = window.flightData.departureAirport;
+        document.getElementById("arrivalAirportInput").value = window.flightData.arrivalAirport;
+        document.getElementById("modalStartTime").value = window.flightData.departureTime;
+        document.getElementById("modalEndTime").value = window.flightData.arrivalTime;
+        document.getElementById("timeNote").innerText = `(המראה: ${window.flightData.departureTime} (${window.flightData.departureAirport}), נחיתה: ${window.flightData.arrivalTime} (${window.flightData.arrivalAirport}))`;
+        closeFlightResultModal();
+        alert("פרטי הטיסה הועתקו לטופס.");
+      } else {
+        alert("אין נתוני טיסה להעתקה.");
+      }
+    }
+    // -----------------------
+    // סיום פונקציות חיפוש טיסה
+    // -----------------------
+
+    // -----------------------
+    // עיצוב הודעות העתקה לווטסאפ
+    // -----------------------
+    function copyScheduleToClipboardFromSchedule(idx) {
+      const sch = savedSchedules[idx];
+      let text = sch.name + "\n\n";
+      const groups = groupItemsByDate(sch.scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
+        groups[date].forEach(item => {
+          if(item.subject === "טיסה") {
+            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
+            text += `טיסת ${item.airline}\n`;
+            text += `טיסה מספר: ${item.flightNumber}\n`;
+            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
+            text += `המראה: ${item.startTime}\n`;
+            text += `נחיתה: ${item.endTime}\n`;
+            text += `~ ${item.description}\n\n`;
+          } else {
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
+            if(item.fromAddress && item.toAddress) {
+              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
+            } else if(item.location) {
+              text += `• ${item.location}\n`;
+            }
+            text += `~ ${item.description}\n\n`;
+          }
+        });
+      });
+      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
+      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
+    }
+
+    function copyScheduleToClipboard() {
+      let text = scheduleName + "\n\n";
+      const groups = groupItemsByDate(scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
+        groups[date].forEach(item => {
+          if(item.subject === "טיסה") {
+            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
+            text += `טיסת ${item.airline}\n`;
+            text += `טיסה מספר: ${item.flightNumber}\n`;
+            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
+            text += `המראה: ${item.startTime}\n`;
+            text += `נחיתה: ${item.endTime}\n`;
+            text += `~ ${item.description}\n\n`;
+          } else {
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
+            if(item.fromAddress && item.toAddress) {
+              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
+            } else if(item.location) {
+              text += `• ${item.location}\n`;
+            }
+            text += `~ ${item.description}\n\n`;
+          }
+        });
+      });
+      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
+      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
+    }
+    // -----------------------
+    // סיום עיצוב הודעות העתקה
+    // -----------------------
+
+    // -----------------------
+    // ניהול נושאים
+    // -----------------------
+    function updateSubjectDropdownOptions() {
+      const subjectDropdown = document.getElementById("modalSubject");
+      subjectDropdown.innerHTML = `<option value="">בחר</option>
+        <option value="הליכה">🚶 הליכה</option>
+        <option value="נסיעה">🚗 נסיעה</option>
+        <option value="ביקור/סיור">🏛️ ביקור/סיור</option>
+        <option value="טיסה">✈️ טיסה</option>
+        <option value="אוכל">🍽️ אוכל</option>
+        <option value="שינה">😴 שינה</option>
+        <option value="לקום">⏰ לקום</option>
+        <option value="addSubject">🖋️ הוספת נושא</option>`;
+      customSubjects.forEach(subject => {
+         const option = document.createElement("option");
+         option.value = subject;
+         option.text = subject;
+         subjectDropdown.add(option);
+      });
+      permanentSubjects.forEach(subject => {
+         const option = document.createElement("option");
+         option.value = subject;
+         option.text = subject;
+         subjectDropdown.add(option);
+      });
+    }
+
+    function openAddSubjectModal() {
+      document.getElementById("addItemModal").style.display = "none";
+      document.getElementById("addSubjectModal").style.display = "block";
+    }
+    function closeAddSubjectModal() {
+      document.getElementById("addSubjectModal").style.display = "none";
+      document.getElementById("addItemModal").style.display = "block";
+    }
+    function addSubjectOneTime() {
+      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
+      customSubjects.push(newSubjectName);
+      updateSubjectDropdownOptions();
+      document.getElementById("modalSubject").value = newSubjectName;
+      document.getElementById("newSubjectNameInput").value = "";
+      closeAddSubjectModal();
+    }
+    function addSubjectPermanent() {
+      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
+      if (permanentSubjects.includes(newSubjectName)) { alert("נושא זה כבר קיים ברשימת הנושאים הקבועים."); return; }
+      permanentSubjects.push(newSubjectName);
+      updateSubjectDropdownOptions();
+      document.getElementById("modalSubject").value = newSubjectName;
+      document.getElementById("newSubjectNameInput").value = "";
+      closeAddSubjectModal();
+      alert("הנושא '" + newSubjectName + "' נוסף לנושאים הקבועים!");
+    }
+    function updatePermanentSubjectsList() {
+      const container = document.getElementById("permanentSubjectsList");
+      container.innerHTML = "";
+      permanentSubjects.forEach(subject => {
+        const span = document.createElement("span");
+        span.style.display = "block";
+        span.style.margin = "5px 0";
+        span.style.padding = "5px 10px";
+        span.style.backgroundColor = "#f0f0f0";
+        span.style.borderRadius = "5px";
+        span.innerText = subject + " ";
+        const trash = document.createElement("span");
+        trash.style.cursor = "pointer";
+        trash.innerText = "🗑️";
+        trash.onclick = function() {
+          if (confirm("האם אתה בטוח שברצונך למחוק את הנושא '" + subject + "'?")) {
+            const index = permanentSubjects.indexOf(subject);
+            if (index > -1) {
+              permanentSubjects.splice(index, 1);
+              updatePermanentSubjectsList();
+              updateSubjectDropdownOptions();
+              alert("הנושא נמחק.");
+            }
+          }
+        };
+        span.appendChild(trash);
+        container.appendChild(span);
+      });
+    }
+    function subjectChangeHandler() {
+      const subj = document.getElementById("modalSubject").value;
+      if(subj === "") {
+        document.getElementById("descriptionGroup").style.display = "none";
+        document.getElementById("addItemBtn").style.display = "none";
+      } else {
+        document.getElementById("descriptionGroup").style.display = "block";
+        document.getElementById("addItemBtn").style.display = "inline-block";
+      }
+      if(subj === "טיסה") {
+        document.getElementById("startTimeLabel").innerText = "שעת המראה:";
+        document.getElementById("endTimeLabel").innerText = "שעת נחיתה:";
+        document.getElementById("flightExtraOptions").style.display = "block";
+        document.getElementById("extraQuestions").style.display = "none";
+        document.getElementById("locationField").style.display = "none";
+        document.getElementById("foodExtraOptions").style.display = "none";
+        document.getElementById("timeNote").style.display = "block";
+      } else {
+        document.getElementById("startTimeLabel").innerText = "שעת התחלה:";
+        document.getElementById("endTimeLabel").innerText = "שעת סיום:";
+        document.getElementById("timeNote").style.display = "none";
+        if(subj === "אוכל") {
+          document.getElementById("foodExtraOptions").style.display = "block";
+          document.getElementById("extraQuestions").style.display = "none";
+          document.getElementById("locationField").style.display = "none";
+          document.getElementById("flightExtraOptions").style.display = "none";
+        } else {
+          document.getElementById("foodExtraOptions").style.display = "none";
+          document.getElementById("flightExtraOptions").style.display = "none";
+          if(subj === "הליכה" || subj === "נסיעה") {
+            document.getElementById("extraQuestions").style.display = "block";
+            document.getElementById("locationField").style.display = "none";
+          } else if(subj === "ביקור/סיור") {
+            document.getElementById("extraQuestions").style.display = "none";
+            document.getElementById("locationField").style.display = "block";
+          } else {
+            document.getElementById("extraQuestions").style.display = "none";
+            document.getElementById("locationField").style.display = "none";
+          }
+        }
+      }
+      if(subj === "נסיעה") {
+        document.getElementById("travelModeGroup").style.display = "block";
+      } else {
+        document.getElementById("travelModeGroup").style.display = "none";
+      }
+      if(subj === "addSubject") {
+        openAddSubjectModal();
+      }
+    }
+    function foodTypeChangeHandler() {
+      const foodType = document.getElementById("foodTypeSelect").value;
+      if(foodType === "מסעדה" || foodType === "אוכל מהיר") {
+        document.getElementById("foodLocationDiv").style.display = "block";
+      } else {
+        document.getElementById("foodLocationDiv").style.display = "none";
+      }
+    }
+    function showFoodRoute() {
+      const location = document.getElementById("foodLocationInput").value.trim();
+      if(location === "") {
+        alert("אנא הזן את מיקום המקום כדי לבדוק מסלול בגוגל מפס.");
+        return;
+      }
+      const url = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(location);
+      window.open(url, "_blank");
+    }
+    function updateExtraFields() {}
+    // -----------------------
+    // סיום ניהול נושאים
+    // -----------------------
+
   </script>
 </body>
 </html>
