@@ -1,1 +1,15 @@
-h
+{
+  "name": "זמן זהב",
+  "short_name": "זמן זהב",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#e0eafc",
+  "theme_color": "#34495e",
+  "icons": [
+    {
+      "src": "https://i.imgur.com/GaYFAp1.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
