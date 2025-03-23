@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>זמן זהב - דף הבית</title>
+  <title>זמן זהב</title>
 
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
@@ -34,18 +34,13 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/service-worker.js')
-          .then(function(registration) {
-            console.log('Service Worker registered with scope:', registration.scope);
-          })
-          .catch(function(err) {
-            console.log('Service Worker registration failed:', err);
-          });
+          .then(registration => console.log('Service Worker registered with scope:', registration.scope))
+          .catch(err => console.log('Service Worker registration failed:', err));
       });
     }
   </script>
 
   <style>
-    /* Reset בסיסי */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -96,127 +91,43 @@
       background-color: #8ae3ff; /* טורקיז בהיר יותר בריחוף */
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-    main#content {
-      background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url('URL_של_תמונה_מתאימה');
-      background-size: cover;
-      background-position: center;
-      color: #333; /* טקסט כהה על רקע בהיר יותר */
-      text-shadow: none; /* הסרת צל הטקסט כי הרקע בהיר */
-      padding-top: 150px;
-      padding-bottom: 80px;
-      min-height: 60vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    main#content h1 {
-      font-size: 3em;
-      margin-bottom: 20px;
-      color: #1e90ff; /* כחול רויאל לכותרת */
-    }
-    main#content p {
-      font-size: 1.5em;
-      max-width: 700px;
-      margin-bottom: 30px;
-      color: #555; /* גוון אפור בהיר יותר לפסקה */
-    }
-    main#content .btn {
-      font-size: 1.2em;
-      padding: 15px 30px;
-      background-color: #6dd5ed; /* טורקיז בהיר כצבע ראשי לכפתור */
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      text-decoration: none;
-    }
-    main#content .btn:hover {
-      background-color: #5bc0de;
-    }
-    .features {
-      display: flex;
-      justify-content: space-around;
-      padding: 40px 20px;
-      text-align: center;
-      max-width: 1200px;
-      margin: 40px auto;
-      background-color: #f8f9fa; /* רקע בהיר גם לסעיף היתרונות */
-      border-radius: 12px; /* פינות מעוגלות לסעיף */
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* צל עדין */
-    }
-    .feature {
-      flex: 1;
-      padding: 20px;
-      margin: 0 10px;
-      border-radius: 8px;
-      background-color: #fff;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .feature i {
-      color: #ffb347; /* כתום רך לאייקונים */
-      margin-bottom: 15px;
-    }
-    .feature h3 {
-      margin-bottom: 10px;
-      color: #3a506b; /* גוון כהה יותר של טורקיז לכותרות */
-    }
-    .options {
-      display: flex;
-      justify-content: space-around;
-      padding: 40px 20px;
-      max-width: 1200px;
-      margin: 20px auto;
-      flex-wrap: wrap;
-      background-color: #f8f9fa; /* רקע בהיר גם לסעיף האפשרויות */
-      border-radius: 12px; /* פינות מעוגלות לסעיף */
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* צל עדין */
-    }
-    .option-card {
-      background-color: #fff;
-      border-radius: 8px;
+    main {
       padding: 30px;
-      margin: 20px;
-      width: calc(33% - 40px); /* להתאים לשלושה כרטיסים בשורה */
+      margin-top: 30px;
+      min-height: 70vh;
       text-align: center;
+      background-color: #fff; /* רקע לבן לתוכן */
+      border-radius: 12px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      transition: transform 0.3s;
-      text-decoration: none;
-      color: #3a506b; /* גוון כהה יותר של טורקיז לטקסט */
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    .option-card:hover {
-      transform: scale(1.05);
-      background-color: #e9ecef; /* גוון אפור בהיר בעת ריחוף */
+    h1 {
+      font-size: 3em;
+      color: #1e90ff; /* כחול רויאל לכותרת */
+      margin-bottom: 20px;
     }
-    .option-card i {
-      color: #1e90ff; /* כחול רויאל לאייקונים של האפשרויות */
-      margin-bottom: 15px;
-    }
-    .option-card h3 {
-      margin-bottom: 10px;
+    p {
+      font-size: 1.2em;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 20px;
     }
     footer {
       text-align: center;
       padding: 20px;
       color: #7f8c8d;
       font-size: 14px;
-      background-color: #e9ecef; /* רקע אפור בהיר יותר לפוטר */
+      background-color: #e9ecef; /* רקע אפור בהיר לפוטר */
       border-top: 1px solid #ddd;
-    }
-    @media (max-width: 768px) {
-      .options { flex-direction: column; align-items: center; }
-      .option-card { width: 80%; }
     }
     @media (max-width: 600px) {
       .topbar { flex-direction: column; gap: 10px; }
       .site-name { font-size: 24px; }
       .nav-links a { padding: 10px; width: 100%; text-align: center; }
-      main#content h1 { font-size: 2.5em; color: #1e90ff; }
-      main#content p { font-size: 1.2em; color: #555; }
-      .features { flex-direction: column; align-items: center; background-color: #f8f9fa; }
-      .feature { margin: 15px 0; width: 80%; background-color: #fff; }
+      h1 { font-size: 2.5em; }
+      p { font-size: 1.1em; }
     }
   </style>
 </head>
@@ -231,47 +142,11 @@
     </div>
   </nav>
 
-  <main id="content">
-    <h1>ארגון הזמן שלך - לכל מטרה</h1>
-    <p>צור לוז למידה ממוקד, תכנן את החופשה המושלמת או סדר את היום-יום שלך בקלות ובמהירות עם "זמן זהב".</p>
-    <a href="choose-schedule.html" class="btn">צור לו״ז חדש</a>
+  <main>
+    <h1>ברוכים הבאים לזמן זהב</h1>
+    <p>כאן תוכלו ליצור ולנהל את הלו״זים שלכם בקלות ובנוחות.</p>
+    <p>התחילו לתכנן את הזמן שלכם עוד היום!</p>
   </main>
-
-  <section class="features">
-    <div class="feature">
-      <i class="fas fa-calendar-plus fa-3x" style="color: #ffb347;"></i>
-      <h3>גמישות מקסימלית</h3>
-      <p>צור לוזים לכל מטרה: לימודים, חופשות, משימות יומיות ועוד.</p>
-    </div>
-    <div class="feature">
-      <i class="fas fa-list-alt fa-3x" style="color: #ffb347;"></i>
-      <h3>ארגון מותאם אישית</h3>
-      <p>התאם את הלוז בדיוק לצרכים ולזמנים שלך.</p>
-    </div>
-    <div class="feature">
-      <i class="fas fa-check-circle fa-3x" style="color: #ffb347;"></i>
-      <h3>שיפור הפרודוקטיביות</h3>
-      <p>נהל את הזמן שלך בצורה יעילה והשג את המטרות שלך.</p>
-    </div>
-  </section>
-
-  <section class="options">
-    <a href="choose-schedule.html" class="option-card">
-      <i class="fas fa-plus-circle fa-4x" style="color: #1e90ff;"></i>
-      <h3>לו״ז חדש</h3>
-      <p>התחל לתכנן את הלוז הבא שלך.</p>
-    </a>
-    <a href="my-schedules.html" class="option-card">
-      <i class="fas fa-folder-open fa-4x" style="color: #1e90ff;"></i>
-      <h3>הלוזי״ם שלי</h3>
-      <p>גש ללוזים השמורים וערוך אותם.</p>
-    </a>
-    <a href="how-to-use.html" class="option-card">
-      <i class="fas fa-question-circle fa-4x" style="color: #1e90ff;"></i>
-      <h3>איך משתמשים</h3>
-      <p>המדריך המלא לשימוש באתר.</p>
-    </a>
-  </section>
 
   <footer>©️doronnakache</footer>
 
@@ -279,14 +154,45 @@
     function goHome() {
       window.location.href = "index.html";
     }
-
     window.addEventListener("scroll", function() {
       const nav = document.querySelector(".topbar");
-      if (window.scrollY > 50) {
-        nav.style.transform = "translateY(-100%)";
+      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
+    });
+
+    function updateUserGreeting(user) {
+      let currentHour = new Date().getHours();
+      let greeting = "בוקר טוב";
+      if(currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
+      else if(currentHour >= 18) { greeting = "ערב טוב"; }
+      const authLink = document.getElementById("authLink");
+      if (user) {
+        let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
+        authLink.innerText = greeting + " " + firstName + "!";
+        authLink.onclick = function(event) {
+          event.preventDefault();
+          if(confirm("להתנתק?")) {
+            firebase.auth().signOut().then(() => {
+              authLink.innerText = "התחברות";
+              authLink.onclick = function(event) {
+                event.preventDefault();
+                window.location.href = "auth.html"; // או כל כתובת דף התחברות אחרת
+              };
+            }).catch(error => {
+              alert("שגיאה בהתנתקות: " + error.message);
+            });
+          }
+        };
       } else {
-        nav.style.transform = "translateY(0)";
+        authLink.innerText = "התחברות";
+        authLink.onclick = function(event) {
+          event.preventDefault();
+          window.location.href = "auth.html"; // או כל כתובת דף התחברות אחרת
+        };
       }
+    }
+
+    firebase.auth().onAuthStateChanged(user => {
+      updateUserGreeting(user);
     });
   </script>
 </body>
