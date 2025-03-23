@@ -49,7 +49,7 @@
   </script>
   
   <style>
-    /* סגנונות כללים */
+    /* סגנונות כלליים */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -158,17 +158,8 @@
     .modal-elegant .btn { background-color: #2c3e50; }
     .modal-elegant .btn:hover { background-color: #1a242f; }
     .saved-schedule-item {
-      background-color: #fff;
-      margin: 10px auto;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      cursor: pointer;
-      text-align: center;
-      font-weight: bold;
-      color: #2c3e50;
-      max-width: 400px;
-      position: relative;
+      background-color: #fff; margin: 10px auto; padding: 10px; border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; text-align: center; font-weight: bold; color: #2c3e50; max-width: 400px;
     }
     .saved-schedule-item span:first-child { float: left; cursor: pointer; }
     .button-group { margin-top: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
@@ -246,7 +237,7 @@
       <h2>הזן שם ללו״ז שלך</h2>
       <div class="form-group">
         <label>שם הלו״ז:</label>
-        <input type="text" id="scheduleNameInput" placeholder="למשל: חופשה - סוף שבוע">
+        <input type="text" id="scheduleNameInput" placeholder="למשל: לוז חופשה - סוף שבוע">
       </div>
       <button class="btn" onclick="saveScheduleName()">המשך ושמירה</button>
     </div>
@@ -588,31 +579,36 @@
     function viewSavedSchedule(idx) {
       const sch = savedSchedules[idx];
       let finalHtml = "";
-      sch.scheduleItems.forEach(item => {
-        finalHtml += `<div class="saved-schedule-item">
-                        <div class="emoji-background">${getBackgroundEmoji(item.subject)}</div>
-                        <h3>${item.startTime} - ${item.endTime} : ${item.subject}</h3>
-                        <p>${item.description}</p>
-                      </div>`;
+      const groups = groupItemsByDate(sch.scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        finalHtml += `<h3>${formatDateHeader(date)}</h3>`;
+        groups[date].forEach(item => {
+          let displaySubject = getDisplaySubject(item);
+          let bgEmoji = getBackgroundEmoji(item);
+          let extraLine = getExtraLine(item);
+          let addressLine = "";
+          if(item.fromAddress && item.toAddress && (item.subject === "נסיעה" || item.subject === "הליכה")) {
+            addressLine = `<p>${item.fromAddress} ⬅️ ${item.toAddress}</p>`;
+          }
+          finalHtml += `<div class="schedule-item" onclick="showItemDetail(${scheduleItems.indexOf(item)})" data-date="${item.date}" data-subject="${item.subject}">
+                          <div class="emoji-background">${bgEmoji}</div>
+                          <h3>${item.startTime} - ${item.endTime} : ${displaySubject}</h3>
+                          ${extraLine}
+                          ${addressLine}
+                          <p>${item.description}</p>
+                        </div>`;
+        });
       });
-      document.getElementById("content").innerHTML = `
-        <h2>${sch.name}</h2>
-        <div id="finalScheduleDisplay">${finalHtml}</div>
-        <div class="button-group">
-          <button class="btn" onclick="captureScreenshotFromElement('finalScheduleDisplay', '${sch.name}')">צילום מסך של הלו״ז</button>
-          <button class="btn" onclick="copyScheduleToClipboardFromSchedule(${idx})">העתקת הלו״ז להודעה</button>
-          <button class="btn" onclick="window.location.href='עריכה.html'">ערוך לוז</button>
-          <button class="btn" onclick="goHome()">סיום</button>
-        </div>
-      `;
+      document.getElementById("finalScheduleModal").style.display = "block";
+      document.getElementById("finalScheduleTitle").innerText = scheduleName;
+      document.getElementById("finalScheduleDisplay").innerHTML = finalHtml;
     }
 
     function saveSchedulesToFirestore() {
       const user = firebase.auth().currentUser;
       if (user) {
-        db.collection("schedules").doc(user.uid).set({
-          schedules: savedSchedules
-        })
+        db.collection("schedules").doc(user.uid).set({ schedules: savedSchedules })
         .then(() => { console.log("Schedules saved successfully"); })
         .catch((error) => { console.error("Error saving schedules: ", error); });
       }
@@ -633,12 +629,18 @@
       return item.subject;
     }
 
-    function getBackgroundEmoji(itemSubject) {
-      // ננסה להחזיר את האימוג'י בהתאם למפתח במילון, או נבדוק את התו האחרון
-      if(subjectEmojis[itemSubject]) return subjectEmojis[itemSubject];
-      let lastChar = itemSubject.slice(-1);
-      if (lastChar.codePointAt(0) > 10000) return lastChar;
-      return "";
+    function getBackgroundEmoji(item) {
+      if(item.subject === "נסיעה") {
+        let translated = translateTravelMode(item.travelMode);
+        let parts = translated.split(" ");
+        return parts[parts.length-1];
+      }
+      if(item.subject === "ביקור/סיור") {
+        return "🏛️";
+      }
+      let lastChar = item.subject.slice(-1);
+      if (lastChar.codePointAt(0) > 10000) { return lastChar; }
+      return subjectEmojis[item.subject] || "";
     }
 
     function getExtraLine(item) {
@@ -650,8 +652,12 @@
       } else if(item.subject === "ביקור/סיור" && item.location) {
         line = `<p>מיקום: ${item.location}</p>`;
       } else if(item.subject === "אוכל") {
-        if(item.foodType) line += `<p>סוג אוכל: ${item.foodType}</p>`;
-        if(item.foodLocation) line += `<p>מיקום: ${item.foodLocation}</p>`;
+        if(item.foodType) {
+          line += `<p>סוג אוכל: ${item.foodType}</p>`;
+        }
+        if(item.foodLocation) {
+          line += `<p>מיקום: ${item.foodLocation}</p>`;
+        }
       } else if(item.subject === "טיסה") {
         line = `<p>טיסת ${item.airline || ""}<br>טיסה מספר: ${item.flightNumber || ""}<br>*• ${item.departureAirport || ""} ⬅️ ${item.arrivalAirport || ""}*</p>`;
       }
@@ -667,7 +673,7 @@
         container.innerHTML += `<h3>${formatDateHeader(date)}</h3>`;
         groups[date].forEach((item, idx) => {
           let displaySubject = getDisplaySubject(item);
-          let bgEmoji = getBackgroundEmoji(item.subject);
+          let bgEmoji = getBackgroundEmoji(item);
           let extraLine = getExtraLine(item);
           let addressLine = "";
           if (item.fromAddress && item.toAddress && (item.subject === "נסיעה" || item.subject === "הליכה")) {
@@ -719,8 +725,11 @@
       if(document.getElementById("modalSubject").value === "נסיעה") {
         const mode = document.getElementById("travelModeSelect").value;
         let travelModeParam = "";
-        if(mode === "taxi" || mode === "car") travelModeParam = "&travelmode=driving";
-        else if(mode === "transit") travelModeParam = "&travelmode=transit";
+        if(mode === "taxi" || mode === "car") {
+          travelModeParam = "&travelmode=driving";
+        } else if(mode === "transit") {
+          travelModeParam = "&travelmode=transit";
+        }
         url += travelModeParam;
       }
       window.open(url, "_blank");
@@ -733,8 +742,11 @@
         let travelModeParam = "";
         if(item.subject === "נסיעה") {
           const mode = item.travelMode;
-          if(mode === "taxi" || mode === "car") travelModeParam = "&travelmode=driving";
-          else if(mode === "transit") travelModeParam = "&travelmode=transit";
+          if(mode === "taxi" || mode === "car") {
+            travelModeParam = "&travelmode=driving";
+          } else if(mode === "transit") {
+            travelModeParam = "&travelmode=transit";
+          }
         } else {
           travelModeParam = "&travelmode=walking";
         }
@@ -809,7 +821,9 @@
         document.getElementById("locationInput").value = item.location || "";
       }
       if(item.subject === "אוכל") {
-        if(item.foodType) document.getElementById("foodTypeSelect").value = item.foodType;
+        if(item.foodType) {
+          document.getElementById("foodTypeSelect").value = item.foodType;
+        }
         if(item.foodLocation) {
           document.getElementById("foodLocationInput").value = item.foodLocation;
           document.getElementById("foodLocationDiv").style.display = "block";
@@ -841,7 +855,7 @@
         finalHtml += `<h3>${formatDateHeader(date)}</h3>`;
         groups[date].forEach(item => {
           let displaySubject = getDisplaySubject(item);
-          let bgEmoji = getBackgroundEmoji(item.subject);
+          let bgEmoji = getBackgroundEmoji(item);
           let extraLine = getExtraLine(item);
           let addressLine = "";
           if(item.fromAddress && item.toAddress && (item.subject === "נסיעה" || item.subject === "הליכה")) {
@@ -878,7 +892,6 @@
       });
     }
 
-    // עיצוב הודעות העתקה לווטסאפ
     function copyScheduleToClipboardFromSchedule(idx) {
       const sch = savedSchedules[idx];
       let text = sch.name + "\n\n";
@@ -896,7 +909,7 @@
             text += `נחיתה: ${item.endTime}\n`;
             text += `~ ${item.description}\n\n`;
           } else {
-            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item.subject)}*\n`;
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
             if(item.fromAddress && item.toAddress) {
               text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
             } else if(item.location) {
@@ -926,7 +939,7 @@
             text += `נחיתה: ${item.endTime}\n`;
             text += `~ ${item.description}\n\n`;
           } else {
-            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item.subject)}*\n`;
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
             if(item.fromAddress && item.toAddress) {
               text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
             } else if(item.location) {
@@ -939,9 +952,10 @@
       navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
       .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
     }
-    // סיום עיצוב הודעות העתקה לווטסאפ
 
+    // -----------------------
     // ניהול נושאים
+    // -----------------------
     function updateSubjectDropdownOptions() {
       const subjectDropdown = document.getElementById("modalSubject");
       subjectDropdown.innerHTML = `<option value="">בחר</option>
@@ -1091,7 +1105,61 @@
       const url = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(location);
       window.open(url, "_blank");
     }
-    // סיום ניהול נושאים
+    function updateExtraFields() {}
+    function togglePermanentSubjectsList() {
+      const container = document.getElementById("permanentSubjectsList");
+      if (container.style.display === "none" || container.style.display === "") {
+        container.style.display = "block";
+        updatePermanentSubjectsList();
+      } else { container.style.display = "none"; }
+    }
+    function toggleTemplateDropdown() {
+      const dropdown = document.getElementById("templateDropdown");
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      updateTemplateList();
+    }
+    function updateTemplateList() {
+      const listDiv = document.getElementById("templateList");
+      listDiv.innerHTML = "";
+      constantTemplates.forEach((template, idx) => {
+        const btn = document.createElement("button");
+        btn.innerHTML = `<span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteConstantTemplate(${idx})">🗑️</span>${template.subject} (${template.duration} דק)`;
+        btn.onclick = function() {
+          selectedTemplate = template;
+          openAddItemModal();
+          document.getElementById("modalSubject").value = template.subject;
+          if (template.description) { document.getElementById("modalDescription").value = template.description; }
+        };
+        listDiv.appendChild(btn);
+      });
+    }
+    function deleteConstantTemplate(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את התבנית הקבועה הזו?")) {
+        constantTemplates.splice(index, 1);
+        updateTemplateList();
+        alert("התבנית הקבועה נמחקה.");
+      }
+    }
+    function openConstantTemplateModal() {
+      document.getElementById("constantTemplateModal").style.display = "block";
+      document.getElementById("templateDropdown").style.display = "none";
+    }
+    function closeConstantTemplateModal() { document.getElementById("constantTemplateModal").style.display = "none"; }
+    function saveConstantTemplate() {
+      const subject = document.getElementById("templateSubjectSelect").value;
+      const duration = parseInt(document.getElementById("templateDurationInput").value);
+      const description = document.getElementById("templateDescriptionInput").value.trim();
+      if (!subject || isNaN(duration) || duration < 1) { alert("אנא הזן נושא ומשך תקין (בדקות)."); return; }
+      constantTemplates.push({ subject, duration, description });
+      closeConstantTemplateModal();
+      updateTemplateList();
+      alert("תבנית לוז קבוע נשמרה!");
+    }
+    window.addEventListener("scroll", function() {
+      const nav = document.querySelector(".topbar");
+      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
+    });
+    function goHome() { window.location.href = "index.html"; }
 
     function groupItemsByDate(items) {
       return items.reduce((groups, item) => {
@@ -1107,17 +1175,12 @@
       return dateObj.toLocaleDateString('he-IL', options);
     }
 
-    // הוספת מילה מוסתרת בשם הלוז – רק למחשב (תו-רווח אפס)
+    // עדכון: שינוי בפונקציה saveScheduleName – המילה (חופשה) מתווספת כתגובה HTML, כך שהיא לא תוצג כלל בדפדפן
     function saveScheduleName() {
-      let nameInput = document.getElementById("scheduleNameInput").value.trim();
+      const nameInput = document.getElementById("scheduleNameInput").value.trim();
       if (nameInput === "") { alert("אנא הזן שם ללו״ז."); return; }
-      // אם המחרוזת לא מכילה את "חופשה", נוסיף אותה בתו-רווח אפס (שלא נראה)
-      if (!nameInput.includes("חופשה")) {
-        nameInput += "\u200Bחופשה\u200B";
-      }
-      // בדיקה אם קיים כבר לוז עם שם זה (כולל המילה המוסתרת)
       if (savedSchedules.some(sch => sch.name === nameInput)) { alert("לוז עם שם זה כבר קיים. אנא בחר שם אחר."); return; }
-      scheduleName = nameInput;
+      scheduleName = nameInput + "<!--(חופשה)-->";
       document.getElementById("scheduleNameModal").style.display = "none";
       document.getElementById("content").innerHTML = `
         <h2>${scheduleName}</h2>
@@ -1212,7 +1275,6 @@
       saveSchedulesToFirestore();
     }
 
-    // פונקציות חיפוש טיסה
     function searchFlight() {
       const flightNumber = document.getElementById("flightNumberInput").value.trim();
       const flightDate = document.getElementById("modalDate").value;
@@ -1300,708 +1362,6 @@
         alert("אין נתוני טיסה להעתקה.");
       }
     }
-    // סיום פונקציות חיפוש טיסה
-
-    // עיצוב הודעות העתקה לווטסאפ
-    function copyScheduleToClipboardFromSchedule(idx) {
-      const sch = savedSchedules[idx];
-      let text = sch.name + "\n\n";
-      const groups = groupItemsByDate(sch.scheduleItems);
-      const sortedDates = Object.keys(groups).sort();
-      sortedDates.forEach(date => {
-        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
-        groups[date].forEach(item => {
-          if(item.subject === "טיסה") {
-            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
-            text += `טיסת ${item.airline}\n`;
-            text += `טיסה מספר: ${item.flightNumber}\n`;
-            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
-            text += `המראה: ${item.startTime}\n`;
-            text += `נחיתה: ${item.endTime}\n`;
-            text += `~ ${item.description}\n\n`;
-          } else {
-            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item.subject)}*\n`;
-            if(item.fromAddress && item.toAddress) {
-              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
-            } else if(item.location) {
-              text += `• ${item.location}\n`;
-            }
-            text += `~ ${item.description}\n\n`;
-          }
-        });
-      });
-      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
-      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
-    }
-
-    function copyScheduleToClipboard() {
-      let text = scheduleName + "\n\n";
-      const groups = groupItemsByDate(scheduleItems);
-      const sortedDates = Object.keys(groups).sort();
-      sortedDates.forEach(date => {
-        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
-        groups[date].forEach(item => {
-          if(item.subject === "טיסה") {
-            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
-            text += `טיסת ${item.airline}\n`;
-            text += `טיסה מספר: ${item.flightNumber}\n`;
-            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
-            text += `המראה: ${item.startTime}\n`;
-            text += `נחיתה: ${item.endTime}\n`;
-            text += `~ ${item.description}\n\n`;
-          } else {
-            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item.subject)}*\n`;
-            if(item.fromAddress && item.toAddress) {
-              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
-            } else if(item.location) {
-              text += `• ${item.location}\n`;
-            }
-            text += `~ ${item.description}\n\n`;
-          }
-        });
-      });
-      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
-      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
-    }
-    // סיום עיצוב הודעות העתקה לווטסאפ
-
-    // ניהול נושאים
-    function updateSubjectDropdownOptions() {
-      const subjectDropdown = document.getElementById("modalSubject");
-      subjectDropdown.innerHTML = `<option value="">בחר</option>
-        <option value="הליכה">🚶 הליכה</option>
-        <option value="נסיעה">🚗 נסיעה</option>
-        <option value="ביקור/סיור">🏛️ ביקור/סיור</option>
-        <option value="טיסה">✈️ טיסה</option>
-        <option value="אוכל">🍽️ אוכל</option>
-        <option value="שינה">😴 שינה</option>
-        <option value="לקום">⏰ לקום</option>
-        <option value="addSubject">🖋️ הוספת נושא</option>`;
-      customSubjects.forEach(subject => {
-         const option = document.createElement("option");
-         option.value = subject;
-         option.text = subject;
-         subjectDropdown.add(option);
-      });
-      permanentSubjects.forEach(subject => {
-         const option = document.createElement("option");
-         option.value = subject;
-         option.text = subject;
-         subjectDropdown.add(option);
-      });
-    }
-
-    function openAddSubjectModal() {
-      document.getElementById("addItemModal").style.display = "none";
-      document.getElementById("addSubjectModal").style.display = "block";
-    }
-    function closeAddSubjectModal() {
-      document.getElementById("addSubjectModal").style.display = "none";
-      document.getElementById("addItemModal").style.display = "block";
-    }
-    function addSubjectOneTime() {
-      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
-      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
-      customSubjects.push(newSubjectName);
-      updateSubjectDropdownOptions();
-      document.getElementById("modalSubject").value = newSubjectName;
-      document.getElementById("newSubjectNameInput").value = "";
-      closeAddSubjectModal();
-    }
-    function addSubjectPermanent() {
-      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
-      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
-      if (permanentSubjects.includes(newSubjectName)) { alert("נושא זה כבר קיים ברשימת הנושאים הקבועים."); return; }
-      permanentSubjects.push(newSubjectName);
-      updateSubjectDropdownOptions();
-      document.getElementById("modalSubject").value = newSubjectName;
-      document.getElementById("newSubjectNameInput").value = "";
-      closeAddSubjectModal();
-      alert("הנושא '" + newSubjectName + "' נוסף לנושאים הקבועים!");
-    }
-    function updatePermanentSubjectsList() {
-      const container = document.getElementById("permanentSubjectsList");
-      container.innerHTML = "";
-      permanentSubjects.forEach(subject => {
-        const span = document.createElement("span");
-        span.style.display = "block";
-        span.style.margin = "5px 0";
-        span.style.padding = "5px 10px";
-        span.style.backgroundColor = "#f0f0f0";
-        span.style.borderRadius = "5px";
-        span.innerText = subject + " ";
-        const trash = document.createElement("span");
-        trash.style.cursor = "pointer";
-        trash.innerText = "🗑️";
-        trash.onclick = function() {
-          if (confirm("האם אתה בטוח שברצונך למחוק את הנושא '" + subject + "'?")) {
-            const index = permanentSubjects.indexOf(subject);
-            if (index > -1) {
-              permanentSubjects.splice(index, 1);
-              updatePermanentSubjectsList();
-              updateSubjectDropdownOptions();
-              alert("הנושא נמחק.");
-            }
-          }
-        };
-        span.appendChild(trash);
-        container.appendChild(span);
-      });
-    }
-    function subjectChangeHandler() {
-      const subj = document.getElementById("modalSubject").value;
-      if(subj === "") {
-        document.getElementById("descriptionGroup").style.display = "none";
-        document.getElementById("addItemBtn").style.display = "none";
-      } else {
-        document.getElementById("descriptionGroup").style.display = "block";
-        document.getElementById("addItemBtn").style.display = "inline-block";
-      }
-      if(subj === "טיסה") {
-        document.getElementById("startTimeLabel").innerText = "שעת המראה:";
-        document.getElementById("endTimeLabel").innerText = "שעת נחיתה:";
-        document.getElementById("flightExtraOptions").style.display = "block";
-        document.getElementById("extraQuestions").style.display = "none";
-        document.getElementById("locationField").style.display = "none";
-        document.getElementById("foodExtraOptions").style.display = "none";
-        document.getElementById("timeNote").style.display = "block";
-      } else {
-        document.getElementById("startTimeLabel").innerText = "שעת התחלה:";
-        document.getElementById("endTimeLabel").innerText = "שעת סיום:";
-        document.getElementById("timeNote").style.display = "none";
-        if(subj === "אוכל") {
-          document.getElementById("foodExtraOptions").style.display = "block";
-          document.getElementById("extraQuestions").style.display = "none";
-          document.getElementById("locationField").style.display = "none";
-          document.getElementById("flightExtraOptions").style.display = "none";
-        } else {
-          document.getElementById("foodExtraOptions").style.display = "none";
-          document.getElementById("flightExtraOptions").style.display = "none";
-          if(subj === "הליכה" || subj === "נסיעה") {
-            document.getElementById("extraQuestions").style.display = "block";
-            document.getElementById("locationField").style.display = "none";
-          } else if(subj === "ביקור/סיור") {
-            document.getElementById("extraQuestions").style.display = "none";
-            document.getElementById("locationField").style.display = "block";
-          } else {
-            document.getElementById("extraQuestions").style.display = "none";
-            document.getElementById("locationField").style.display = "none";
-          }
-        }
-      }
-      if(subj === "נסיעה") {
-        document.getElementById("travelModeGroup").style.display = "block";
-      } else {
-        document.getElementById("travelModeGroup").style.display = "none";
-      }
-      if(subj === "addSubject") {
-        openAddSubjectModal();
-      }
-    }
-    function foodTypeChangeHandler() {
-      const foodType = document.getElementById("foodTypeSelect").value;
-      if(foodType === "מסעדה" || foodType === "אוכל מהיר") {
-        document.getElementById("foodLocationDiv").style.display = "block";
-      } else {
-        document.getElementById("foodLocationDiv").style.display = "none";
-      }
-    }
-    function showFoodRoute() {
-      const location = document.getElementById("foodLocationInput").value.trim();
-      if(location === "") {
-        alert("אנא הזן את מיקום המקום כדי לבדוק מסלול בגוגל מפס.");
-        return;
-      }
-      const url = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(location);
-      window.open(url, "_blank");
-    }
-    // סיום ניהול נושאים
-
-    function groupItemsByDate(items) {
-      return items.reduce((groups, item) => {
-        if (!groups[item.date]) { groups[item.date] = []; }
-        groups[item.date].push(item);
-        return groups;
-      }, {});
-    }
-
-    function formatDateHeader(dateStr) {
-      const options = { day: '2-digit', month: '2-digit', year: 'numeric', weekday: 'long' };
-      const dateObj = new Date(dateStr);
-      return dateObj.toLocaleDateString('he-IL', options);
-    }
-
-    // הוספת מילה מוסתרת בשם הלוז – רק למחשב (תו-רווח אפס)
-    function saveScheduleName() {
-      let nameInput = document.getElementById("scheduleNameInput").value.trim();
-      if (nameInput === "") { alert("אנא הזן שם ללו״ז."); return; }
-      if (savedSchedules.some(sch => sch.name === nameInput)) { alert("לוז עם שם זה כבר קיים. אנא בחר שם אחר."); return; }
-      // אם לא קיים במחרוזת את "חופשה", נוסיף את המילה בצורה מוסתרת (תווי zero-width)
-      if (!nameInput.includes("חופשה")) {
-        nameInput += "\u200Bחופשה\u200B";
-      }
-      scheduleName = nameInput;
-      document.getElementById("scheduleNameModal").style.display = "none";
-      document.getElementById("content").innerHTML = `
-        <h2>${scheduleName}</h2>
-        <p>להוספת חלק חדש, לחץ על הכפתור +</p>
-        <div class="action-buttons">
-          <button class="btn" onclick="openAddItemModal()">+</button>
-          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
-          <div id="templateDropdown">
-            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
-            <div id="templateList"></div>
-          </div>
-        </div>
-        <div id="scheduleContainer"></div>
-        <div class="button-group">
-          <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
-        </div>
-      `;
-      openAddItemModal();
-    }
-
-    function closeScheduleNameModal() {
-      document.getElementById("scheduleNameModal").style.display = "none";
-    }
-
-    function closeAddItemModal() {
-      document.getElementById("addItemModal").style.display = "none";
-    }
-
-    function setDefaultEndTime() {
-      const startTime = document.getElementById("modalStartTime").value;
-      if (startTime) {
-        let endTime;
-        if (selectedTemplate) {
-          let [h, m] = startTime.split(":").map(Number);
-          let total = h * 60 + m + selectedTemplate.duration;
-          total = total % (24 * 60);
-          let newH = Math.floor(total / 60);
-          let newM = total % 60;
-          endTime = (newH < 10 ? "0" + newH : newH) + ":" + (newM < 10 ? "0" + newM : newM);
-        } else {
-          let [h, m] = startTime.split(":").map(Number);
-          h = (h + 1) % 24;
-          endTime = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
-        }
-        document.getElementById("modalEndTime").value = endTime;
-      }
-    }
-
-    function saveItem() {
-      let dateValue = document.getElementById("modalDate").value;
-      let startTime = document.getElementById("modalStartTime").value;
-      let endTime = document.getElementById("modalEndTime").value;
-      const subject = document.getElementById("modalSubject").value;
-      const description = document.getElementById("modalDescription").value;
-      if (!dateValue) { alert("אנא בחר תאריך."); return; }
-      if (!startTime || !endTime) { alert("אנא בחר שעת התחלה ושעת סיום."); return; }
-      if (startTime > endTime) { let temp = startTime; startTime = endTime; endTime = temp; }
-      
-      const newItem = { date: dateValue, startTime, endTime, subject, description };
-      if (subject === "הליכה" || subject === "נסיעה") {
-        newItem.fromAddress = document.getElementById("fromAddress").value;
-        newItem.toAddress = document.getElementById("toAddress").value;
-        if (subject === "נסיעה") {
-          newItem.travelMode = document.getElementById("travelModeSelect").value;
-        }
-      }
-      if(subject === "ביקור/סיור") {
-        newItem.location = document.getElementById("locationInput").value;
-      }
-      if(subject === "אוכל") {
-        newItem.foodType = document.getElementById("foodTypeSelect").value;
-        if(newItem.foodType === "מסעדה" || newItem.foodType === "אוכל מהיר") {
-          newItem.foodLocation = document.getElementById("foodLocationInput").value;
-        }
-      }
-      if(subject === "טיסה") {
-        newItem.flightNumber = document.getElementById("flightNumberInput").value;
-        newItem.airline = document.getElementById("airlineInput").value;
-        newItem.departureAirport = document.getElementById("departureAirportInput").value;
-        newItem.arrivalAirport = document.getElementById("arrivalAirportInput").value;
-        newItem.departureTime = document.getElementById("modalStartTime").value;
-        newItem.arrivalTime = document.getElementById("modalEndTime").value;
-      }
-      if (editingIndex === -1) { scheduleItems.push(newItem); }
-      else { scheduleItems[editingIndex] = newItem; }
-      scheduleItems.sort((a, b) => {
-        if(a.date === b.date) { return a.startTime.localeCompare(b.startTime); }
-        return a.date.localeCompare(b.date);
-      });
-      renderScheduleItems();
-      closeAddItemModal();
-      saveSchedulesToFirestore();
-    }
-
-    // פונקציות חיפוש טיסה
-    function searchFlight() {
-      const flightNumber = document.getElementById("flightNumberInput").value.trim();
-      const flightDate = document.getElementById("modalDate").value;
-      if (!flightNumber || !flightDate) {
-        alert("אנא הזן מספר טיסה ותאריך (מתאריך הלוז).");
-        return;
-      }
-      document.getElementById("loader").style.display = "flex";
-      
-      const apiKey = "33d4ecb375mshcf029fba766af44p17668djsnaef3c36cb209";
-      const host = "aerodatabox.p.rapidapi.com";
-      const apiUrl = "https://aerodatabox.p.rapidapi.com/flights/number/" + flightNumber +
-                     "?withLeg=true&withCancelled=true&withCodeshares=true&departure_date=" + flightDate;
-      
-      fetch(apiUrl, {
-        method: "GET",
-        headers: {
-          "x-rapidapi-host": host,
-          "x-rapidapi-key": apiKey
-        }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("שגיאה בבקשה: " + response.status);
-        }
-        return response.json();
-      })
-      .then(data => {
-        let html = "";
-        if (data && data.length > 0) {
-          data.forEach(flight => {
-            const airlineName = flight.airline && flight.airline.name ? flight.airline.name : "לא זמין";
-            const depAirport = flight.departure && flight.departure.airport && flight.departure.airport.name ? flight.departure.airport.name : "לא זמין";
-            const arrAirport = flight.arrival && flight.arrival.airport && flight.arrival.airport.name ? flight.arrival.airport.name : "לא זמין";
-            const depTimeFull = flight.departure && flight.departure.scheduledTime ? flight.departure.scheduledTime.local : "לא זמין";
-            const arrTimeFull = flight.arrival && flight.arrival.scheduledTime ? flight.arrival.scheduledTime.local : "לא זמין";
-            const depTimeLocal = depTimeFull.match(/\d{2}:\d{2}/)[0];
-            const arrTimeLocal = arrTimeFull.match(/\d{2}:\d{2}/)[0];
-            
-            html += '<div class="flight-card">';
-            html += '<h2>טיסת ' + airlineName + '</h2>';
-            html += '<p><span class="time-label">משדה תעופה:</span> ' + depAirport + '</p>';
-            html += '<p><span class="time-label">לשדה תעופה:</span> ' + arrAirport + '</p>';
-            html += '<p><span class="time-label">יציאה:</span> ' + depTimeFull + '</p>';
-            html += '<p><span class="time-label">הגעה:</span> ' + arrTimeFull + '</p>';
-            html += '</div>';
-            window.flightData = {
-              flightNumber: flightNumber,
-              airline: airlineName,
-              departureAirport: depAirport,
-              arrivalAirport: arrAirport,
-              departureTime: depTimeLocal,
-              arrivalTime: arrTimeLocal
-            };
-          });
-        } else {
-          html = "<p>לא נמצא מספר טיסה. אנא רשום שנית או רשום ידנית.</p>";
-          window.flightData = null;
-        }
-        document.getElementById("flightResultContent").innerHTML = html;
-        document.getElementById("flightResultModal").style.display = "block";
-      })
-      .catch(error => {
-        document.getElementById("flightResultContent").innerText = "שגיאה: " + error.message;
-      })
-      .finally(() => {
-        document.getElementById("loader").style.display = "none";
-      });
-    }
-    function closeFlightResultModal() {
-      document.getElementById("flightResultModal").style.display = "none";
-    }
-    function copyFlightToForm() {
-      if(window.flightData) {
-        document.getElementById("flightNumberInput").value = window.flightData.flightNumber;
-        document.getElementById("airlineInput").value = window.flightData.airline;
-        document.getElementById("departureAirportInput").value = window.flightData.departureAirport;
-        document.getElementById("arrivalAirportInput").value = window.flightData.arrivalAirport;
-        document.getElementById("modalStartTime").value = window.flightData.departureTime;
-        document.getElementById("modalEndTime").value = window.flightData.arrivalTime;
-        document.getElementById("timeNote").innerText = `(המראה: ${window.flightData.departureTime} (${window.flightData.departureAirport}), נחיתה: ${window.flightData.arrivalTime} (${window.flightData.arrivalAirport}))`;
-        closeFlightResultModal();
-        alert("פרטי הטיסה הועתקו לטופס.");
-      } else {
-        alert("אין נתוני טיסה להעתקה.");
-      }
-    }
-    // סיום פונקציות חיפוש טיסה
-
-    // עיצוב הודעות העתקה לווטסאפ
-    function copyScheduleToClipboardFromSchedule(idx) {
-      const sch = savedSchedules[idx];
-      let text = sch.name + "\n\n";
-      const groups = groupItemsByDate(sch.scheduleItems);
-      const sortedDates = Object.keys(groups).sort();
-      sortedDates.forEach(date => {
-        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
-        groups[date].forEach(item => {
-          if(item.subject === "טיסה") {
-            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
-            text += `טיסת ${item.airline}\n`;
-            text += `טיסה מספר: ${item.flightNumber}\n`;
-            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
-            text += `המראה: ${item.startTime}\n`;
-            text += `נחיתה: ${item.endTime}\n`;
-            text += `~ ${item.description}\n\n`;
-          } else {
-            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item.subject)}*\n`;
-            if(item.fromAddress && item.toAddress) {
-              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
-            } else if(item.location) {
-              text += `• ${item.location}\n`;
-            }
-            text += `~ ${item.description}\n\n`;
-          }
-        });
-      });
-      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
-      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
-    }
-
-    function copyScheduleToClipboard() {
-      let text = scheduleName + "\n\n";
-      const groups = groupItemsByDate(scheduleItems);
-      const sortedDates = Object.keys(groups).sort();
-      sortedDates.forEach(date => {
-        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
-        groups[date].forEach(item => {
-          if(item.subject === "טיסה") {
-            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
-            text += `טיסת ${item.airline}\n`;
-            text += `טיסה מספר: ${item.flightNumber}\n`;
-            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
-            text += `המראה: ${item.startTime}\n`;
-            text += `נחיתה: ${item.endTime}\n`;
-            text += `~ ${item.description}\n\n`;
-          } else {
-            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item.subject)}*\n`;
-            if(item.fromAddress && item.toAddress) {
-              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
-            } else if(item.location) {
-              text += `• ${item.location}\n`;
-            }
-            text += `~ ${item.description}\n\n`;
-          }
-        });
-      });
-      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
-      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
-    }
-    // סיום עיצוב הודעות העתקה לווטסאפ
-
-    // ניהול נושאים
-    function updateSubjectDropdownOptions() {
-      const subjectDropdown = document.getElementById("modalSubject");
-      subjectDropdown.innerHTML = `<option value="">בחר</option>
-        <option value="הליכה">🚶 הליכה</option>
-        <option value="נסיעה">🚗 נסיעה</option>
-        <option value="ביקור/סיור">🏛️ ביקור/סיור</option>
-        <option value="טיסה">✈️ טיסה</option>
-        <option value="אוכל">🍽️ אוכל</option>
-        <option value="שינה">😴 שינה</option>
-        <option value="לקום">⏰ לקום</option>
-        <option value="addSubject">🖋️ הוספת נושא</option>`;
-      customSubjects.forEach(subject => {
-         const option = document.createElement("option");
-         option.value = subject;
-         option.text = subject;
-         subjectDropdown.add(option);
-      });
-      permanentSubjects.forEach(subject => {
-         const option = document.createElement("option");
-         option.value = subject;
-         option.text = subject;
-         subjectDropdown.add(option);
-      });
-    }
-
-    function openAddSubjectModal() {
-      document.getElementById("addItemModal").style.display = "none";
-      document.getElementById("addSubjectModal").style.display = "block";
-    }
-    function closeAddSubjectModal() {
-      document.getElementById("addSubjectModal").style.display = "none";
-      document.getElementById("addItemModal").style.display = "block";
-    }
-    function addSubjectOneTime() {
-      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
-      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
-      customSubjects.push(newSubjectName);
-      updateSubjectDropdownOptions();
-      document.getElementById("modalSubject").value = newSubjectName;
-      document.getElementById("newSubjectNameInput").value = "";
-      closeAddSubjectModal();
-    }
-    function addSubjectPermanent() {
-      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
-      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
-      if (permanentSubjects.includes(newSubjectName)) { alert("נושא זה כבר קיים ברשימת הנושאים הקבועים."); return; }
-      permanentSubjects.push(newSubjectName);
-      updateSubjectDropdownOptions();
-      document.getElementById("modalSubject").value = newSubjectName;
-      document.getElementById("newSubjectNameInput").value = "";
-      closeAddSubjectModal();
-      alert("הנושא '" + newSubjectName + "' נוסף לנושאים הקבועים!");
-    }
-    function updatePermanentSubjectsList() {
-      const container = document.getElementById("permanentSubjectsList");
-      container.innerHTML = "";
-      permanentSubjects.forEach(subject => {
-        const span = document.createElement("span");
-        span.style.display = "block";
-        span.style.margin = "5px 0";
-        span.style.padding = "5px 10px";
-        span.style.backgroundColor = "#f0f0f0";
-        span.style.borderRadius = "5px";
-        span.innerText = subject + " ";
-        const trash = document.createElement("span");
-        trash.style.cursor = "pointer";
-        trash.innerText = "🗑️";
-        trash.onclick = function() {
-          if (confirm("האם אתה בטוח שברצונך למחוק את הנושא '" + subject + "'?")) {
-            const index = permanentSubjects.indexOf(subject);
-            if (index > -1) {
-              permanentSubjects.splice(index, 1);
-              updatePermanentSubjectsList();
-              updateSubjectDropdownOptions();
-              alert("הנושא נמחק.");
-            }
-          }
-        };
-        span.appendChild(trash);
-        container.appendChild(span);
-      });
-    }
-    function subjectChangeHandler() {
-      const subj = document.getElementById("modalSubject").value;
-      if(subj === "") {
-        document.getElementById("descriptionGroup").style.display = "none";
-        document.getElementById("addItemBtn").style.display = "none";
-      } else {
-        document.getElementById("descriptionGroup").style.display = "block";
-        document.getElementById("addItemBtn").style.display = "inline-block";
-      }
-      if(subj === "טיסה") {
-        document.getElementById("startTimeLabel").innerText = "שעת המראה:";
-        document.getElementById("endTimeLabel").innerText = "שעת נחיתה:";
-        document.getElementById("flightExtraOptions").style.display = "block";
-        document.getElementById("extraQuestions").style.display = "none";
-        document.getElementById("locationField").style.display = "none";
-        document.getElementById("foodExtraOptions").style.display = "none";
-        document.getElementById("timeNote").style.display = "block";
-      } else {
-        document.getElementById("startTimeLabel").innerText = "שעת התחלה:";
-        document.getElementById("endTimeLabel").innerText = "שעת סיום:";
-        document.getElementById("timeNote").style.display = "none";
-        if(subj === "אוכל") {
-          document.getElementById("foodExtraOptions").style.display = "block";
-          document.getElementById("extraQuestions").style.display = "none";
-          document.getElementById("locationField").style.display = "none";
-          document.getElementById("flightExtraOptions").style.display = "none";
-        } else {
-          document.getElementById("foodExtraOptions").style.display = "none";
-          document.getElementById("flightExtraOptions").style.display = "none";
-          if(subj === "הליכה" || subj === "נסיעה") {
-            document.getElementById("extraQuestions").style.display = "block";
-            document.getElementById("locationField").style.display = "none";
-          } else if(subj === "ביקור/סיור") {
-            document.getElementById("extraQuestions").style.display = "none";
-            document.getElementById("locationField").style.display = "block";
-          } else {
-            document.getElementById("extraQuestions").style.display = "none";
-            document.getElementById("locationField").style.display = "none";
-          }
-        }
-      }
-      if(subj === "נסיעה") {
-        document.getElementById("travelModeGroup").style.display = "block";
-      } else {
-        document.getElementById("travelModeGroup").style.display = "none";
-      }
-      if(subj === "addSubject") {
-        openAddSubjectModal();
-      }
-    }
-    function foodTypeChangeHandler() {
-      const foodType = document.getElementById("foodTypeSelect").value;
-      if(foodType === "מסעדה" || foodType === "אוכל מהיר") {
-        document.getElementById("foodLocationDiv").style.display = "block";
-      } else {
-        document.getElementById("foodLocationDiv").style.display = "none";
-      }
-    }
-    function showFoodRoute() {
-      const location = document.getElementById("foodLocationInput").value.trim();
-      if(location === "") {
-        alert("אנא הזן את מיקום המקום כדי לבדוק מסלול בגוגל מפס.");
-        return;
-      }
-      const url = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(location);
-      window.open(url, "_blank");
-    }
-    // סיום ניהול נושאים
-
-    function copyScheduleToClipboardFromSchedule(idx) {
-      const sch = savedSchedules[idx];
-      let text = sch.name + "\n\n";
-      const groups = groupItemsByDate(sch.scheduleItems);
-      const sortedDates = Object.keys(groups).sort();
-      sortedDates.forEach(date => {
-        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
-        groups[date].forEach(item => {
-          if(item.subject === "טיסה") {
-            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
-            text += `טיסת ${item.airline}\n`;
-            text += `טיסה מספר: ${item.flightNumber}\n`;
-            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
-            text += `המראה: ${item.startTime}\n`;
-            text += `נחיתה: ${item.endTime}\n`;
-            text += `~ ${item.description}\n\n`;
-          } else {
-            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item.subject)}*\n`;
-            if(item.fromAddress && item.toAddress) {
-              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
-            } else if(item.location) {
-              text += `• ${item.location}\n`;
-            }
-            text += `~ ${item.description}\n\n`;
-          }
-        });
-      });
-      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
-      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
-    }
-
-    function copyScheduleToClipboard() {
-      let text = scheduleName + "\n\n";
-      const groups = groupItemsByDate(scheduleItems);
-      const sortedDates = Object.keys(groups).sort();
-      sortedDates.forEach(date => {
-        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
-        groups[date].forEach(item => {
-          if(item.subject === "טיסה") {
-            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
-            text += `טיסת ${item.airline}\n`;
-            text += `טיסה מספר: ${item.flightNumber}\n`;
-            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
-            text += `המראה: ${item.startTime}\n`;
-            text += `נחיתה: ${item.endTime}\n`;
-            text += `~ ${item.description}\n\n`;
-          } else {
-            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item.subject)}*\n`;
-            if(item.fromAddress && item.toAddress) {
-              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
-            } else if(item.location) {
-              text += `• ${item.location}\n`;
-            }
-            text += `~ ${item.description}\n\n`;
-          }
-        });
-      });
-      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
-      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
-    }
-    // סיום עיצוב הודעות העתקה לווטסאפ
-
   </script>
 </body>
 </html>
