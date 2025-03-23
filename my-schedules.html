@@ -3,21 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>זמן זהב - הלוזים שלי</title>
-  
-  <!-- קישור ל-manifest -->
+  <title>זמן זהב - הלוזי״ם שלי</title>
+
   <link rel="manifest" href="manifest.json">
-  <!-- קישור ל-favicon -->
   <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
-  
-  <!-- ספריות וסקריפטים (כולל Firebase) -->
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  
-  <!-- קוד Firebase והגדרות האתר -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCsp7xKutteUAxmjYQsQWDlrjK7URg-MR8",
@@ -32,8 +29,7 @@
     firebase.analytics();
     const db = firebase.firestore();
   </script>
-  
-  <!-- רישום Service Worker -->
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
@@ -43,22 +39,21 @@
       });
     }
   </script>
-  
-  <!-- עיצוב כללי ושינויים עבור קטגוריות עם תפריט נפתח -->
+
   <style>
     /* Reset בסיסי */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
-      background: linear-gradient(135deg, #e0eafc, #cfdef3);
       direction: rtl;
-      padding-top: 120px;
+      padding-top: 70px; /* מוריד את התוכן מתחת לתפריט הקבוע */
       padding-bottom: 40px;
       text-align: center;
+      background-color: #f0f0f0; /* רקע כללי בהיר */
     }
     .topbar {
-      background-color: #34495e;
+      background-color: #6dd5ed; /* טורקיז בהיר לתפריט */
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -69,116 +64,137 @@
       width: 100%;
       z-index: 1000;
       transition: transform 0.3s;
-      border-bottom: 2px solid #2c3e50;
+      border-bottom: 2px solid #5bc0de; /* גוון כהה יותר לתיחום */
     }
     .site-name {
       font-size: 28px;
       color: #ecf0f1;
       cursor: pointer;
       font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* צל קל לשם האתר */
     }
     .nav-links {
       display: flex;
       gap: 10px;
     }
     .nav-links a {
-      background-color: #2c3e50;
+      background-color: #4ab3bf; /* גוון כהה יותר של טורקיז לקישורים */
       padding: 10px 15px;
       border-radius: 8px;
       transition: background-color 0.3s, box-shadow 0.3s;
       font-weight: bold;
       color: #ecf0f1;
-      border-right: 1px solid rgba(236,240,241,0.5);
+      border-right: 1px solid rgba(236,240,241,0.3); /* תיחום קל בין הקישורים */
       text-decoration: none;
     }
     .nav-links a:last-child { border-right: none; }
     .nav-links a:hover {
-      background-color: #3d566e;
+      background-color: #8ae3ff; /* טורקיז בהיר יותר בריחוף */
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     main {
-      padding: 20px;
-      margin-top: 20px;
+      padding: 30px;
+      margin-top: 30px;
       min-height: 70vh;
       text-align: center;
-    }
-    footer {
-      text-align: center;
-      padding: 10px;
-      color: #7f8c8d;
-      font-size: 14px;
-    }
-    /* כל קטגוריה בתוך מכולת "category-item" */
-    .category-item {
-      margin-bottom: 20px;
-      max-width: 500px;
+      background-color: #fff; /* רקע לבן לתוכן */
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
       margin-left: auto;
       margin-right: auto;
     }
+    h2 {
+      font-size: 2.5em;
+      color: #1e90ff; /* כחול רויאל לכותרת */
+      margin-bottom: 30px;
+    }
+    .category-item {
+      margin-bottom: 20px;
+      width: 100%;
+    }
     .category-btn {
-      background-color: #2c3e50;
-      color: #ecf0f1;
-      padding: 10px 20px;
+      background-color: #6dd5ed; /* טורקיז בהיר ללחצני קטגוריה */
+      color: #fff;
+      padding: 15px 20px;
       border: none;
-      border-radius: 8px;
-      font-size: 18px;
+      border-radius: 10px;
+      font-size: 1.2em;
       cursor: pointer;
       width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      font-weight: bold;
+      margin-bottom: 5px;
     }
-    .category-btn:hover { background-color: #3d566e; }
+    .category-btn:hover {
+      background-color: #5bc0de;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
     .category-btn span.arrow {
-      font-size: 16px;
+      font-size: 1em;
     }
     .category-list {
-      text-align: center;
+      text-align: right;
       display: none;
       animation: slideDown 0.3s ease;
-      margin-top: 5px;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
     }
     @keyframes slideDown {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .saved-schedule-item {
-      background-color: #fff;
-      margin: 10px auto;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-bottom: 1px solid #eee;
       cursor: pointer;
-      text-align: center;
-      font-weight: bold;
-      color: #2c3e50;
-      max-width: 400px;
-      position: relative;
+      text-align: right;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .saved-schedule-item:last-child {
+      border-bottom: none;
     }
     .saved-schedule-item span:first-child {
-      float: left;
+      color: #d9534f; /* אדום למחיקה */
       cursor: pointer;
+      font-size: 1.2em;
     }
-    /* כפתורי פעולות מעוצבים כמו בדף "בניית לוז למידה" */
+    .saved-schedule-item:hover {
+      background-color: #f0f0f0;
+    }
+    /* כפתורי פעולות מעוצבים */
     .btn {
       display: inline-block;
-      padding: 10px 20px;
-      background-color: #3a506b;
+      padding: 12px 25px;
+      background-color: #1e90ff; /* כחול רויאל לכפתורים */
       color: #fff;
       border: none;
       cursor: pointer;
-      font-size: 16px;
-      border-radius: 8px;
-      transition: background-color 0.3s;
+      font-size: 1em;
+      border-radius: 10px;
+      transition: background-color 0.3s, box-shadow 0.3s;
       margin: 5px;
+      text-decoration: none;
     }
-    .btn:hover { background-color: #2a3e56; }
+    .btn:hover {
+      background-color: #0d6efd;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
     @media (max-width: 600px) {
       .topbar { flex-direction: column; gap: 10px; }
       .site-name { font-size: 24px; }
       .nav-links a { padding: 10px; width: 100%; text-align: center; }
-      .category-item { width: 90%; }
+      .category-item { width: 95%; }
+      .btn { font-size: 0.9em; padding: 10px 20px; }
     }
     /* רקע אמוג'י מאחורי הטקסט */
     .emoji-background {
@@ -191,10 +207,44 @@
       pointer-events: none;
       z-index: 0;
     }
+    #finalScheduleDisplay {
+      text-align: right;
+      margin-top: 20px;
+    }
+    #finalScheduleDisplay .saved-schedule-item {
+      margin: 15px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    #finalScheduleDisplay h3 {
+      font-size: 1.5em;
+      color: #3a506b;
+      margin-bottom: 10px;
+    }
+    #finalScheduleDisplay p {
+      font-size: 1em;
+      color: #555;
+      margin-bottom: 0;
+    }
+    .button-group {
+      margin-top: 30px;
+      text-align: center;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #7f8c8d;
+      font-size: 14px;
+      background-color: #e9ecef; /* רקע אפור בהיר לפוטר */
+      border-top: 1px solid #ddd;
+    }
   </style>
 </head>
 <body>
-  <!-- תפריט ראשי -->
   <nav class="topbar">
     <div class="site-name" onclick="goHome()">זמן זהב</div>
     <div class="nav-links">
@@ -204,11 +254,9 @@
       <a href="auth.html" id="authLink">התחברות</a>
     </div>
   </nav>
-  
-  <!-- תוכן עמוד "הלוזים שלי" -->
+
   <main id="content">
-    <h2>הלוזים שלי</h2>
-    <!-- כל קטגוריה עטופה במכולה עם לחצן ותפריט נפתח -->
+    <h2>הלוזי״ם שלי</h2>
     <div class="category-item">
       <button class="category-btn" onclick="toggleCategory('למידה')">
         <span>📖 למידה</span>
@@ -231,20 +279,19 @@
       <div class="category-list" id="category-ניהול יום"></div>
     </div>
   </main>
-  
+
   <footer>©️doronnakache</footer>
-  
-  <!-- סקריפטים לעדכון מצב המשתמש, טעינת הלוזים ואירועי גלילה -->
+
   <script>
     function goHome() {
       window.location.href = "index.html";
     }
-    
+
     window.addEventListener("scroll", function() {
       const nav = document.querySelector(".topbar");
       nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
     });
-    
+
     function updateUserGreeting(user) {
       let currentHour = new Date().getHours();
       let greeting = "בוקר טוב";
@@ -265,7 +312,7 @@
         }
       };
     }
-    
+
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         updateUserGreeting(user);
@@ -274,17 +321,17 @@
         document.getElementById("authLink").innerText = "התחברות";
       }
     });
-    
+
     // טעינת הלוזים מה-Firestore
-    let savedSchedules = [];
-    
+    let savedSchedules =;
+
     function loadMySchedules() {
       const user = firebase.auth().currentUser;
       if (user) {
         db.collection("schedules").doc(user.uid).get()
           .then((doc) => {
             if (doc.exists) {
-              savedSchedules = doc.data().schedules || [];
+              savedSchedules = doc.data().schedules ||;
               // קביעת קטגוריה לפי שם הלוז:
               savedSchedules.forEach(sch => {
                 if (sch.name.includes("חופשה")) {
@@ -297,7 +344,7 @@
               });
               renderSavedSchedules();
             } else {
-              savedSchedules = [];
+              savedSchedules =;
               renderSavedSchedules();
             }
           })
@@ -306,27 +353,27 @@
           });
       }
     }
-    
+
     function renderSavedSchedules() {
       // יצירת קבוצות לפי קטגוריות תוך שמירה על האינדקס במערך הראשי
       const schedulesByCategory = {
-        "למידה": [],
-        "חופשה": [],
-        "ניהול יום": []
+        "למידה":,
+        "חופשה":,
+        "ניהול יום":
       };
-      
+
       savedSchedules.forEach((sch, originalIndex) => {
         if (sch.category in schedulesByCategory) {
           schedulesByCategory[sch.category].push({ schedule: sch, index: originalIndex });
         }
       });
-      
+
       // עיצוב קטגוריה "למידה"
       const containerLearning = document.getElementById("category-למידה");
       let htmlLearning = "";
       if (schedulesByCategory["למידה"].length === 0) {
         htmlLearning = `
-          <p>עדיין לא שמרת לוז למידה.</p>
+          <p style="text-align:center;">עדיין לא שמרת לו״ז למידה.</p>
           <button class="btn" onclick="window.location.href='learning-schedule.html'">התחל לבנות כאן</button>
         `;
       } else {
@@ -340,13 +387,13 @@
         htmlLearning += "</ul>";
       }
       containerLearning.innerHTML = htmlLearning;
-      
+
       // עיצוב קטגוריה "חופשה"
       const containerVacation = document.getElementById("category-חופשה");
       let htmlVacation = "";
       if (schedulesByCategory["חופשה"].length === 0) {
         htmlVacation = `
-          <p>עדיין לא שמרת לוז חופשה.</p>
+          <p style="text-align:center;">עדיין לא שמרת לו״ז חופשה.</p>
           <button class="btn" onclick="window.location.href='חופשה.html'">התחל לבנות כאן</button>
         `;
       } else {
@@ -360,13 +407,13 @@
         htmlVacation += "</ul>";
       }
       containerVacation.innerHTML = htmlVacation;
-      
+
       // עיצוב קטגוריה "ניהול יום"
       const containerDaily = document.getElementById("category-ניהול יום");
       let htmlDaily = "";
       if (schedulesByCategory["ניהול יום"].length === 0) {
         htmlDaily = `
-          <p>עדיין לא שמרת לוז ניהול יום.</p>
+          <p style="text-align:center;">עדיין לא שמרת לו״ז ניהול יום.</p>
           <button class="btn" onclick="window.location.href='יומי.html'">התחל לבנות כאן</button>
         `;
       } else {
@@ -381,7 +428,7 @@
       }
       containerDaily.innerHTML = htmlDaily;
     }
-    
+
     function toggleCategory(cat) {
       // סגירה של כל הקטגוריות האחרות
       const categories = ["למידה", "חופשה", "ניהול יום"];
@@ -402,7 +449,7 @@
         arrow.innerText = "▼";
       }
     }
-    
+
     function deleteSavedSchedule(index) {
       if (confirm("האם אתה בטוח שברצונך למחוק את הלו״ז הזה?")) {
         savedSchedules.splice(index, 1);
@@ -411,7 +458,7 @@
         alert("הלו״ז נמחק.");
       }
     }
-    
+
     function viewSavedSchedule(idx) {
       const sch = savedSchedules[idx];
       let finalHtml = "";
@@ -428,12 +475,12 @@
         <div class="button-group">
           <button class="btn" onclick="captureScreenshotFromElement('finalScheduleDisplay', '${sch.name}')">צילום מסך של הלו״ז</button>
           <button class="btn" onclick="copyScheduleToClipboardFromSchedule(${idx})">העתקת הלו״ז להודעה</button>
-          <button class="btn" onclick="window.location.href='עריכה.html'">ערוך לוז</button>
+          <button class="btn" onclick="window.location.href='עריכה.html'">ערוך לו״ז</button>
           <button class="btn" onclick="goHome()">סיום</button>
         </div>
       `;
     }
-    
+
     function saveSchedulesToFirestore() {
       const user = firebase.auth().currentUser;
       if (user) {
@@ -444,7 +491,7 @@
         .catch((error) => { console.error("Error saving schedules: ", error); });
       }
     }
-    
+
     // עזר: getBackgroundEmoji – אם התו האחרון הוא אמוג'י, מחזיר אותו, אחרת משתמש במילון
     function getBackgroundEmoji(subject) {
       let lastChar = subject.slice(-1);
@@ -453,7 +500,7 @@
       }
       return subjectEmojis[subject] || "";
     }
-    
+
     const subjectEmojis = {
       "קריאה של חומר לימוד": "📖",
       "תרגול📝": "📝",
@@ -464,7 +511,7 @@
       "ללכת לישון": "😴",
       "אוכל": "🍽️"
     };
-    
+
     function captureScreenshotFromElement(elementId, name) {
       const elem = document.getElementById(elementId);
       html2canvas(elem).then(canvas => {
@@ -476,7 +523,7 @@
         });
       });
     }
-    
+
     function copyScheduleToClipboardFromSchedule(idx) {
       const sch = savedSchedules[idx];
       let text = sch.name + "\n\n";
@@ -484,12 +531,12 @@
         text += `*${item.startTime} - ${item.endTime} : ${item.subject} ${getBackgroundEmoji(item.subject)}*\n~ ${item.description}\n\n`;
       });
       navigator.clipboard.writeText(text).then(() => {
-        alert("הלוז הועתק בהצלחה!");
+        alert("הלו״ז הועתק בהצלחה!");
       }).catch(err => {
         alert("התרחשה שגיאה בהעתקה.");
       });
     }
-    
+
     function copyScheduleToClipboard() {
       let text = scheduleName + "\n\n";
       scheduleItems.forEach(item => {
