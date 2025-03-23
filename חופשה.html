@@ -491,8 +491,16 @@
       };
     }
 
+    // עדכון: קריאת הלוזים הקיימים מהמסמך ב-Firestore בעת התחברות המשתמש
     firebase.auth().onAuthStateChanged((user) => {
-      if (user) { updateUserGreeting(user); }
+      if (user) { 
+        updateUserGreeting(user);
+        db.collection("schedules").doc(user.uid).get().then((doc) => {
+          if (doc.exists) {
+            savedSchedules = doc.data().schedules || [];
+          }
+        });
+      }
       else { document.getElementById("authLink").innerText = "התחברות"; }
     });
 
@@ -605,10 +613,11 @@
       document.getElementById("finalScheduleDisplay").innerHTML = finalHtml;
     }
 
+    // שינוי כאן: שימוש ב-merge:true כך שלא נמחקו לוזים קיימים בעת העדכון
     function saveSchedulesToFirestore() {
       const user = firebase.auth().currentUser;
       if (user) {
-        db.collection("schedules").doc(user.uid).set({ schedules: savedSchedules })
+        db.collection("schedules").doc(user.uid).set({ schedules: savedSchedules }, { merge: true })
         .then(() => { console.log("Schedules saved successfully"); })
         .catch((error) => { console.error("Error saving schedules: ", error); });
       }
@@ -1175,7 +1184,7 @@
       return dateObj.toLocaleDateString('he-IL', options);
     }
 
-    // עדכון: שינוי בפונקציה saveScheduleName – המילה (חופשה) מתווספת כתגובה HTML, כך שהיא לא תוצג כלל בדפדפן
+    // שינוי כאן: המילה (חופשה) מתווספת כתגובה HTML כך שלא תוצג בדפדפן
     function saveScheduleName() {
       const nameInput = document.getElementById("scheduleNameInput").value.trim();
       if (nameInput === "") { alert("אנא הזן שם ללו״ז."); return; }
