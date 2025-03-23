@@ -4,20 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>זמן זהב - איך משתמשים</title>
-  
-  <!-- קישור ל-manifest -->
+
   <link rel="manifest" href="manifest.json">
-  <!-- קישור ל-favicon -->
   <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
-  
-  <!-- ספריות וסקריפטים (כולל Firebase) -->
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  
-  <!-- קוד Firebase והגדרות האתר -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCsp7xKutteUAxmjYQsQWDlrjK7URg-MR8",
@@ -32,8 +29,7 @@
     firebase.analytics();
     const db = firebase.firestore();
   </script>
-  
-  <!-- רישום Service Worker -->
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
@@ -43,21 +39,20 @@
       });
     }
   </script>
-  
-  <!-- עיצוב זהה לשאר הדפים -->
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
-      background: linear-gradient(135deg, #e0eafc, #cfdef3);
       direction: rtl;
-      padding-top: 120px;
+      padding-top: 70px; /* מוריד את התוכן מתחת לתפריט הקבוע */
       padding-bottom: 40px;
       text-align: center;
+      background-color: #f0f0f0; /* רקע כללי בהיר */
     }
     .topbar {
-      background-color: #34495e;
+      background-color: #6dd5ed; /* טורקיז בהיר לתפריט */
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -68,54 +63,124 @@
       width: 100%;
       z-index: 1000;
       transition: transform 0.3s;
-      border-bottom: 2px solid #2c3e50;
+      border-bottom: 2px solid #5bc0de; /* גוון כהה יותר לתיחום */
     }
     .site-name {
       font-size: 28px;
       color: #ecf0f1;
       cursor: pointer;
       font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* צל קל לשם האתר */
     }
     .nav-links {
       display: flex;
       gap: 10px;
     }
     .nav-links a {
-      background-color: #2c3e50;
+      background-color: #4ab3bf; /* גוון כהה יותר של טורקיז לקישורים */
       padding: 10px 15px;
       border-radius: 8px;
       transition: background-color 0.3s, box-shadow 0.3s;
       font-weight: bold;
       color: #ecf0f1;
-      border-right: 1px solid rgba(236,240,241,0.5);
+      border-right: 1px solid rgba(236,240,241,0.3); /* תיחום קל בין הקישורים */
       text-decoration: none;
     }
     .nav-links a:last-child { border-right: none; }
     .nav-links a:hover {
-      background-color: #3d566e;
+      background-color: #8ae3ff; /* טורקיז בהיר יותר בריחוף */
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     main {
-      padding: 20px;
-      margin-top: 20px;
+      padding: 30px;
+      margin-top: 30px;
       min-height: 70vh;
+      text-align: right; /* יישור לימין עבור תוכן בעברית */
+      background-color: #fff; /* רקע לבן לתוכן */
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h2 {
+      font-size: 2.5em;
+      color: #1e90ff; /* כחול רויאל לכותרת */
+      margin-bottom: 20px;
       text-align: center;
+    }
+    h3 {
+      font-size: 1.8em;
+      color: #3a506b; /* גוון כהה יותר של טורקיז לכותרות משנה */
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+    p {
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 15px;
+    }
+    strong {
+      font-weight: bold;
+      color: #333;
+    }
+    .faq-section {
+      margin-top: 40px;
+      text-align: right;
+    }
+    .faq-item {
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      overflow: hidden; /* כדי להסתיר את התשובה */
+    }
+    .faq-question {
+      font-weight: bold;
+      color: #3a506b;
+      padding: 15px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .faq-question::before {
+      content: '+';
+      font-size: 1.2em;
+      margin-left: 10px; /* הוספה של מרווח בין הסימן לשאלה */
+    }
+    .faq-item.open .faq-question::before {
+      content: '-';
+    }
+    .faq-answer {
+      color: #555;
+      padding: 15px;
+      padding-top: 0;
+      display: none; /* הסתרה ראשונית של התשובה */
+    }
+    .faq-item.open .faq-answer {
+      display: block;
     }
     footer {
       text-align: center;
-      padding: 10px;
+      padding: 20px;
       color: #7f8c8d;
       font-size: 14px;
+      background-color: #e9ecef; /* רקע אפור בהיר לפוטר */
+      border-top: 1px solid #ddd;
     }
     @media (max-width: 600px) {
       .topbar { flex-direction: column; gap: 10px; }
       .site-name { font-size: 24px; }
       .nav-links a { padding: 10px; width: 100%; text-align: center; }
+      h2 { font-size: 2em; }
+      h3 { font-size: 1.5em; }
+      p { font-size: 1em; }
     }
   </style>
 </head>
 <body>
-  <!-- תפריט ראשי -->
   <nav class="topbar">
     <div class="site-name" onclick="goHome()">זמן זהב</div>
     <div class="nav-links">
@@ -125,24 +190,80 @@
       <a href="auth.html" id="authLink">התחברות</a>
     </div>
   </nav>
-  
-  <!-- תוכן עמוד "איך משתמשים" -->
+
   <main id="content">
-    <h2>איך משתמשים</h2>
-    <p>ברוכים הבאים לאתר "זמן זהב". כאן תוכלו למצוא מדריכים והסברים כיצד ליצור, לשמור ולנהל את הלוזים שלכם.</p>
-    <p>
-      <strong>שלבים לשימוש:</strong><br>
-      1. בחרו "לו״ז חדש" ליצירת לוז חדש.<br>
-      2. בחרו את סוג הלוז (למידה, חופשה, ניהול יום).<br>
-      3. מלאו את הפרטים, הוסיפו חלקים ללוז ולבסוף שמרו אותו.<br>
-      4. בדף "הלוזים שלי" תוכלו לצפות, לערוך או למחוק את הלוזים השמורים.
-    </p>
-    <p>בנוסף, ניתן לצלם מסך של הלוז, להעתיקו להודעה ולשתף אותו בקלות.</p>
+    <h2>איך משתמשים ב"זמן זהב"?</h2>
+
+    <h3>יצירת לו״ז חדש</h3>
+    <p>כדי ליצור לו״ז חדש, לחצו על כפתור "לו״ז חדש" בתפריט הראשי. לאחר מכן, תתבקשו לבחור את סוג הלו״ז שברצונכם ליצור: לו״ז למידה, לו״ז חופשה או לו״ז ניהול יום.</p>
+    <p>בהתאם לסוג הלו״ז שתבחרו, יוצגו בפניכם שדות ופרטים שונים שעליכם למלא. מלאו את כל הפרטים הרלוונטיים, כגון שם הלו״ז, תאריכים, שעות, משימות וכו'.</p>
+    <p>לאחר שתסיימו למלא את כל הפרטים, תוכלו לשמור את הלו״ז שלכם על ידי לחיצה על כפתור "שמור".</p>
+
+    <h3>הלוזי״ם שלי</h3>
+    <p>בדף "הלוזי״ם שלי" תוכלו למצוא את כל הלוזי״ם ששמרתם בעבר. תוכלו לצפות בכל לו״ז, לערוך אותו על ידי לחיצה על כפתור "ערוך", או למחוק אותו באמצעות כפתור "מחק".</p>
+
+    <h3>שיתוף הלו״ז</h3>
+    <p>בסיום יצירת הלו״ז, תוכלו לצלם מסך של הלו״ז ולשתף אותו עם חברים, משפחה או קולגות בקלות באמצעות אפליקציות הודעות או רשתות חברתיות.</p>
+
+    <section class="faq-section">
+      <h3>שאלות ותשובות</h3>
+      <div class="faq-item">
+        <div class="faq-question">האם אני צריך ליצור חשבון כדי להשתמש באתר?</div>
+        <div class="faq-answer">לא חובה ליצור חשבון כדי ליצור לו״זים, אך יצירת חשבון תאפשר לך לשמור את הלוזי״ם שלך ולגשת אליהם מכל מכשיר.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">איך אני יוצר לו״ז חדש?</div>
+        <div class="faq-answer">לחץ על "לו״ז חדש" בתפריט הראשי ובחר את סוג הלו״ז הרצוי. מלא את הפרטים ולחץ על "שמור".</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">מה ההבדל בין שלושת סוגי הלו״זים?</div>
+        <div class="faq-answer">
+          <strong>לו״ז למידה:</strong> מיועד לתכנון זמני לימוד למבחנים, קורסים או נושאים ספציפיים.<br>
+          <strong>לו״ז חופשה:</strong> עוזר לתכנן פעילויות וזמנים במהלך חופשה.<br>
+          <strong>לו״ז ניהול יום:</strong> מאפשר לתכנן את המשימות והפעילויות היומיות שלך.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">איפה אני יכול לראות את הלוזי״ם ששמרתי?</div>
+        <div class="faq-answer">כל הלוזי״ם ששמרת נמצאים בדף "הלוזי״ם שלי", אליו ניתן להגיע דרך התפריט הראשי.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">האם אני יכול לערוך לו״ז לאחר ששמרתי אותו?</div>
+        <div class="faq-answer">כן, תוכל לערוך כל לו״ז ששמרת בדף "הלוזי״ם שלי" על ידי לחיצה על כפתור "ערוך" שנמצא ליד הלו״ז הרצוי.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">מה קורה אם אני מוחק לו״ז?</div>
+        <div class="faq-answer">לאחר מחיקת לו״ז, הוא יוסר לצמיתות ולא תוכל לשחזר אותו. לכן, מומלץ לוודא שאתה בטוח שברצונך למחוק לפני האישור.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">האם האתר מאובטח?</div>
+        <div class="faq-answer">כן, אנו משתמשים בטכנולוגיות אבטחה מתקדמות כדי להגן על הנתונים שלך. פרטי המשתמש והלוזי״ם מאובטחים.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">האם השימוש באתר כרוך בתשלום?</div>
+        <div class="faq-answer">נכון לעכשיו, השימוש באתר "זמן זהב" הוא בחינם. ייתכן שבעתיד יתווספו תכונות פרימיום בתשלום, אך הפונקציונליות הבסיסית תישאר ללא עלות.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">האם אני יכול להדפיס את הלו״ז שיצרתי?</div>
+        <div class="faq-answer">כן, אתה יכול לצלם מסך של הלו״ז ולאחר מכן להדפיס אותו מהמכשיר שלך. אנו עובדים על אפשרות הדפסה ישירה בעתיד.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">האם האתר עובד על כל סוגי המכשירים?</div>
+        <div class="faq-answer">האתר מותאם לשימוש במחשבים, טאבלטים וטלפונים חכמים באמצעות דפדפן אינטרנט.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">כיצד אוכל ליצור קשר עם תמיכה אם יש לי בעיה או שאלה נוספת?</div>
+        <div class="faq-answer">תוכל ליצור איתנו קשר דרך טופס יצירת קשר שיופיע בקרוב באתר. בינתיים, אתה יכול לשלוח מייל לכתובת [הכנס כאן כתובת מייל תמיכה].</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">האם אני יכול לשתף את הלו״ז שלי עם משתמשים אחרים באתר?</div>
+        <div class="faq-answer">נכון לעכשיו, אין אפשרות שיתוף ישירה בין משתמשים באתר. עם זאת, אתה יכול לשתף צילום מסך של הלו״ז שלך. אנו בוחנים אפשרויות שיתוף עתידיות.</div>
+      </div>
+    </section>
   </main>
-  
+
   <footer>©️doronnakache</footer>
-  
-  <!-- סקריפטים לעדכון מצב המשתמש ואירועי גלילה -->
+
   <script>
     function goHome() {
       window.location.href = "index.html";
@@ -151,6 +272,16 @@
       const nav = document.querySelector(".topbar");
       nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
     });
+
+    // קוד JavaScript עבור פתיחה וסגירה של שאלות ותשובות
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question');
+      question.addEventListener('click', () => {
+        item.classList.toggle('open');
+      });
+    });
+
     function updateUserGreeting(user) {
       let currentHour = new Date().getHours();
       let greeting = "בוקר טוב";
