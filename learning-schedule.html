@@ -10,6 +10,11 @@
   <!-- קישור ל-favicon עם התמונה שסיפקת -->
   <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
   
+  <!-- גוגל פונטים -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&family=Heebo:wght@400;700&display=swap" rel="stylesheet">
+  
   <!-- ספריות וסקריפטים -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -51,19 +56,34 @@
   </script>
   
   <style>
-    /* Reset בסיסי */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* הגדרת כיוון טקסט RTL לכל הגוף */
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      line-height: 1.6;
-      background: linear-gradient(135deg, #e0eafc, #cfdef3);
       direction: rtl;
+      font-family: 'Assistant', sans-serif;
+      background: #f5f5dc;
+      color: #333;
+      line-height: 1.6;
       padding-top: 120px;
       padding-bottom: 40px;
       text-align: center;
+      /* רקע עם תבנית גיאומטרית עדינה */
+      background-image: url('data:image/svg+xml,%3Csvg width="42" height="42" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cpath d="M0 0h42v42H0z"/%3E%3Cpath d="M3 3h36v36H3z" stroke="%23ddd" stroke-width=".5"/%3E%3C/g%3E%3C/svg%3E');
+      background-repeat: repeat;
+      transition: all 0.3s ease-in-out;
     }
+    /* סגנונות כלליים עם מעבר */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: all 0.3s ease-in-out;
+    }
+    
+    /* תפריט ראשי – השארנו את המראה המקורי, אך שינינו את סדר הפריטים כך שכפתור ההתחברות יהיה הכי מצד שמאל */
     .topbar {
-      background-color: #34495e;
+      font-family: 'Heebo', sans-serif;
+      background-color: #ffb347; /* כתום רך */
+      border-bottom: 2px solid #e69138;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -73,12 +93,10 @@
       left: 0;
       width: 100%;
       z-index: 1000;
-      transition: transform 0.3s;
-      border-bottom: 2px solid #2c3e50;
     }
     .site-name {
       font-size: 28px;
-      color: #ecf0f1;
+      color: #333;
       cursor: pointer;
       font-weight: bold;
     }
@@ -87,40 +105,70 @@
       gap: 10px;
     }
     .nav-links a {
-      background-color: #2c3e50;
+      background-color: #87ceeb; /* כחול בהיר */
       padding: 10px 15px;
       border-radius: 8px;
-      transition: background-color 0.3s, box-shadow 0.3s;
       font-weight: bold;
-      color: #ecf0f1;
-      border-right: 1px solid rgba(236,240,241,0.5);
+      color: #333;
+      border-right: 1px solid rgba(51,51,51,0.5);
       text-decoration: none;
     }
     .nav-links a:last-child { border-right: none; }
     .nav-links a:hover {
-      background-color: #3d566e;
+      background-color: #6495ed;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-    main { padding: 20px; margin-top: 20px; min-height: 70vh; text-align: center; }
-    footer { text-align: center; padding: 10px; color: #7f8c8d; font-size: 14px; }
+    /* כאן אנו לא משנים את מיקום הפריטים בתוך התפריט – אלא מחליפים רק את מיקום כפתור ההתחברות.
+       בתצוגה בעברית (RTL) הפריט האחרון במערך (כפתור ההתחברות) יופיע בצד שמאל */
+    /* יש להניח שהסדר ב-HTML יהיה כך:
+         <div class="site-name">...</div>
+         <div class="nav-links">
+            <a href="choose-schedule.html">...</a>
+            <a href="my-schedules.html">...</a>
+            <a href="how-to-use.html">...</a>
+            <a href="auth.html" id="authLink">התחברות</a>
+         </div>
+    */
+    
+    main { 
+      padding: 20px; 
+      margin-top: 20px; 
+      min-height: 70vh; 
+      text-align: center;
+    }
+    footer { 
+      text-align: center; 
+      padding: 10px; 
+      color: #7f8c8d; 
+      font-size: 14px; 
+    }
     
     /* סגנונות ללוז – הוספת רקע לאמוג'י */
     .schedule-item {
       position: relative;
-      background-color: rgba(255,255,255,0.9);
+      background-color: rgba(255,255,255,0.95);
       padding: 15px;
-      margin: 10px auto;
+      margin: 15px auto;
       border-radius: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
       cursor: pointer;
       text-align: center;
       max-width: 400px;
-      transition: transform 0.2s;
-      overflow: hidden;
     }
-    .schedule-item:hover { transform: scale(1.02); }
-    .schedule-item h3 { margin-bottom: 5px; color: #2c3e50; position: relative; z-index: 1; }
-    .schedule-item p { position: relative; z-index: 1; }
+    .schedule-item:hover { 
+      transform: scale(1.02); 
+    }
+    .schedule-item h3 {
+      margin-bottom: 5px;
+      color: #333;
+      position: relative;
+      z-index: 1;
+      font-family: 'Heebo', sans-serif;
+    }
+    .schedule-item p { 
+      position: relative; 
+      z-index: 1; 
+    }
     .emoji-background {
       position: absolute;
       top: 50%;
@@ -132,24 +180,68 @@
       z-index: 0;
     }
     
-    /* שאר הסגנונות (כפתורים, מודלים וכו') נשארים כפי שהוגדרו */
-    .action-buttons { display: inline-flex; align-items: center; gap: 10px; margin-top: 10px; position: relative; }
-    .btn { display: inline-block; padding: 10px 20px; background-color: #3a506b; color: #fff; border: none; cursor: pointer; font-size: 16px; border-radius: 8px; transition: background-color 0.3s; }
-    .btn:hover { background-color: #2a3e56; }
-    #templateMenuButton { background-color: #3a506b; border: none; border-radius: 8px; font-size: 24px; cursor: pointer; color: #ecf0f1; padding: 5px 10px; }
+    /* כפתורים, מודלים ועוד */
+    .action-buttons { 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 10px; 
+      margin-top: 10px; 
+      position: relative; 
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #ffb347;
+      color: #333;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .btn:hover { 
+      background-color: #e69138; 
+    }
+    #templateMenuButton { 
+      background-color: #ffb347;
+      border: none;
+      border-radius: 8px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #333;
+      padding: 5px 10px;
+    }
     #templateDropdown {
-      position: absolute; bottom: 100%; right: 0;
-      background: #f8f8f8; border: 1px solid #ccc; border-radius: 8px;
-      display: none; z-index: 1500; box-shadow: 0 2px 6px rgba(0,0,0,0.2); min-width: 200px;
+      position: absolute; 
+      bottom: 100%; 
+      right: 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      display: none; 
+      z-index: 1500; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      min-width: 200px;
     }
     #templateDropdown button {
-      background: none; border: none; width: 100%; padding: 10px; text-align: right; cursor: pointer;
-      transition: background 0.2s; font-weight: normal; color: #2c3e50;
+      background: none;
+      border: none;
+      width: 100%;
+      padding: 10px;
+      text-align: right;
+      cursor: pointer;
+      font-weight: normal;
+      color: #333;
     }
     #templateDropdown button:first-child {
-      background-color: #cce5ff; border-radius: 6px; margin-bottom: 5px;
+      background-color: #ffe0b2;
+      border-radius: 6px;
+      margin-bottom: 5px;
     }
-    #templateDropdown button:hover { background: #e6f2ff; }
+    #templateDropdown button:hover { 
+      background: #ffd699; 
+    }
+    
     .modal {
       display: none;
       position: fixed;
@@ -172,18 +264,28 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       text-align: center;
     }
-    .close {
-      color: #aaa;
-      position: absolute;
-      left: 15px;
-      top: 10px;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
+    .modal-elegant { 
+      border: 2px solid #d4af37; 
     }
-    .close:hover { color: #000; }
-    .form-group { margin-bottom: 15px; text-align: center; }
-    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .modal-elegant h2 { 
+      color: #333; 
+      font-family: 'Heebo', sans-serif;
+    }
+    .modal-elegant .btn { 
+      background-color: #ffb347; 
+    }
+    .modal-elegant .btn:hover { 
+      background-color: #e69138; 
+    }
+    .form-group { 
+      margin-bottom: 15px; 
+      text-align: center; 
+    }
+    .form-group label { 
+      display: block; 
+      margin-bottom: 5px; 
+      font-weight: bold; 
+    }
     .form-group input,
     .form-group select,
     .form-group textarea {
@@ -192,14 +294,11 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 16px;
-      color: #2c3e50;
+      color: #333;
       background-color: #f9f9f9;
       text-align: right;
     }
-    .modal-elegant { border: 2px solid #d4af37; }
-    .modal-elegant h2 { color: #2c3e50; }
-    .modal-elegant .btn { background-color: #2c3e50; }
-    .modal-elegant .btn:hover { background-color: #1a242f; }
+    
     .saved-schedule-item {
       background-color: #fff;
       margin: 10px auto;
@@ -209,7 +308,7 @@
       cursor: pointer;
       text-align: center;
       font-weight: bold;
-      color: #2c3e50;
+      color: #333;
       max-width: 400px;
     }
     .saved-schedule-item span:first-child {
@@ -223,15 +322,25 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+    
     @media (max-width: 600px) {
-      .topbar { flex-direction: column; gap: 10px; }
-      .site-name { font-size: 24px; }
-      .nav-links a { padding: 10px; width: 100%; text-align: center; }
+      .topbar {
+        flex-direction: column; 
+        gap: 10px;
+      }
+      .site-name {
+        font-size: 24px;
+      }
+      .nav-links a {
+        padding: 10px; 
+        width: 100%; 
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- תפריט ראשי -->
+  <!-- תפריט ראשי – הסדר כפי שהיה, כאשר כפתור "התחברות" נמצא כילד האחרון בתוך div.nav-links (ובסביבה RTL זה מופיע מצד שמאל) -->
   <nav class="topbar">
     <div class="site-name" onclick="goHome()">זמן זהב</div>
     <div class="nav-links">
@@ -321,7 +430,6 @@
       <div class="button-group">
         <button class="btn" onclick="captureScreenshot()">צילום מסך של הלו״ז</button>
         <button class="btn" onclick="copyScheduleToClipboard()">העתקת הלו״ז להודעה</button>
-        <!-- בעת לחיצה על "סיום", נסגור את החלון ונעביר לעמוד הבית -->
         <button class="btn" onclick="closeFinalScheduleModal()">סיום</button>
       </div>
     </div>
