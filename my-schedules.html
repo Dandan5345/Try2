@@ -308,66 +308,73 @@
     }
     
     function renderSavedSchedules() {
-      // סינון לפי קטגוריות
-      const schedulesLearning = savedSchedules.filter(sch => sch.category === "למידה");
-      const schedulesVacation = savedSchedules.filter(sch => sch.category === "חופשה");
-      const schedulesDaily = savedSchedules.filter(sch => sch.category === "ניהול יום");
+      // יצירת קבוצות לפי קטגוריות תוך שמירה על האינדקס במערך הראשי
+      const schedulesByCategory = {
+        "למידה": [],
+        "חופשה": [],
+        "ניהול יום": []
+      };
       
-      // קטגוריה "למידה"
+      savedSchedules.forEach((sch, originalIndex) => {
+        if (sch.category in schedulesByCategory) {
+          schedulesByCategory[sch.category].push({ schedule: sch, index: originalIndex });
+        }
+      });
+      
+      // עיצוב קטגוריה "למידה"
       const containerLearning = document.getElementById("category-למידה");
       let htmlLearning = "";
-      if (schedulesLearning.length === 0) {
+      if (schedulesByCategory["למידה"].length === 0) {
         htmlLearning = `
           <p>עדיין לא שמרת לוז למידה.</p>
           <button class="btn" onclick="window.location.href='learning-schedule.html'">התחל לבנות כאן</button>
         `;
       } else {
         htmlLearning += "<ul style='list-style: none; padding:0;'>";
-        schedulesLearning.forEach((sch, idx) => {
-          // idx כאן צריך להתאים למיקום בלוח השמור – יש לטפל בזה לפי הצורך
-          htmlLearning += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${idx})">
-                             <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${idx})">🗑️</span>
-                             ${sch.name}
+        schedulesByCategory["למידה"].forEach(item => {
+          htmlLearning += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${item.index})">
+                             <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${item.index})">🗑️</span>
+                             ${item.schedule.name}
                            </li>`;
         });
         htmlLearning += "</ul>";
       }
       containerLearning.innerHTML = htmlLearning;
       
-      // קטגוריה "חופשה"
+      // עיצוב קטגוריה "חופשה"
       const containerVacation = document.getElementById("category-חופשה");
       let htmlVacation = "";
-      if (schedulesVacation.length === 0) {
+      if (schedulesByCategory["חופשה"].length === 0) {
         htmlVacation = `
           <p>עדיין לא שמרת לוז חופשה.</p>
           <button class="btn" onclick="window.location.href='חופשה.html'">התחל לבנות כאן</button>
         `;
       } else {
         htmlVacation += "<ul style='list-style: none; padding:0;'>";
-        schedulesVacation.forEach((sch, idx) => {
-          htmlVacation += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${idx})">
-                             <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${idx})">🗑️</span>
-                             ${sch.name}
+        schedulesByCategory["חופשה"].forEach(item => {
+          htmlVacation += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${item.index})">
+                             <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${item.index})">🗑️</span>
+                             ${item.schedule.name}
                            </li>`;
         });
         htmlVacation += "</ul>";
       }
       containerVacation.innerHTML = htmlVacation;
       
-      // קטגוריה "ניהול יום"
+      // עיצוב קטגוריה "ניהול יום"
       const containerDaily = document.getElementById("category-ניהול יום");
       let htmlDaily = "";
-      if (schedulesDaily.length === 0) {
+      if (schedulesByCategory["ניהול יום"].length === 0) {
         htmlDaily = `
           <p>עדיין לא שמרת לוז ניהול יום.</p>
           <button class="btn" onclick="window.location.href='יומי.html'">התחל לבנות כאן</button>
         `;
       } else {
         htmlDaily += "<ul style='list-style: none; padding:0;'>";
-        schedulesDaily.forEach((sch, idx) => {
-          htmlDaily += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${idx})">
-                             <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${idx})">🗑️</span>
-                             ${sch.name}
+        schedulesByCategory["ניהול יום"].forEach(item => {
+          htmlDaily += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${item.index})">
+                             <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${item.index})">🗑️</span>
+                             ${item.schedule.name}
                            </li>`;
         });
         htmlDaily += "</ul>";
