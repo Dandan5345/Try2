@@ -44,19 +44,36 @@
     }
   </script>
   
-  <!-- עיצוב כללי ושינויים עבור קטגוריות עם תפריט נפתח -->
+  <!-- עיצוב כולל – מבוסס על העיצוב המעודכן של דף "הלוזים שלי" -->
   <style>
     /* Reset בסיסי */
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
-      background: linear-gradient(135deg, #e0eafc, #cfdef3);
       direction: rtl;
       padding-top: 120px;
       padding-bottom: 40px;
       text-align: center;
+      /* רקע עם גרדיאנט עדין ושילוב תבנית גיאומטרית */
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      background-image: url('data:image/svg+xml,%3Csvg width="42" height="42" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cpath d="M0 0h42v42H0z"/%3E%3Cpath d="M3 3h36v36H3z" stroke="%23ddd" stroke-width=".5"/%3E%3C/g%3E%3C/svg%3E');
+      background-repeat: repeat;
+      transition: all 0.3s ease-in-out;
     }
+    
+    /* כפתור עזרה מעל התפריט הראשי */
+    .help-icon {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      z-index: 1001;
+      font-size: 24px;
+      color: #ecf0f1;
+    }
+    
     .topbar {
       background-color: #34495e;
       display: flex;
@@ -96,19 +113,26 @@
       background-color: #3d566e;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
+    
     main {
       padding: 20px;
       margin-top: 20px;
       min-height: 70vh;
       text-align: center;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    footer {
-      text-align: center;
-      padding: 10px;
-      color: #7f8c8d;
-      font-size: 14px;
+    h2 {
+      font-size: 2.5em;
+      color: #1e90ff;
+      margin-bottom: 30px;
     }
-    /* כל קטגוריה בתוך מכולת "category-item" */
+    
+    /* עיצוב קטגוריות – כל קטגוריה עטופה במכולת category-item */
     .category-item {
       margin-bottom: 20px;
       max-width: 500px;
@@ -143,6 +167,7 @@
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    
     .saved-schedule-item {
       background-color: #fff;
       margin: 10px auto;
@@ -160,7 +185,8 @@
       float: left;
       cursor: pointer;
     }
-    /* כפתורי פעולות מעוצבים כמו בדף "בניית לוז למידה" */
+    
+    /* כפתורי פעולות */
     .btn {
       display: inline-block;
       padding: 10px 20px;
@@ -172,14 +198,18 @@
       border-radius: 8px;
       transition: background-color 0.3s;
       margin: 5px;
+      text-decoration: none;
     }
     .btn:hover { background-color: #2a3e56; }
+    
     @media (max-width: 600px) {
       .topbar { flex-direction: column; gap: 10px; }
       .site-name { font-size: 24px; }
       .nav-links a { padding: 10px; width: 100%; text-align: center; }
       .category-item { width: 90%; }
+      .btn { font-size: 0.9em; padding: 10px 20px; }
     }
+    
     /* רקע אמוג'י מאחורי הטקסט */
     .emoji-background {
       position: absolute;
@@ -191,16 +221,28 @@
       pointer-events: none;
       z-index: 0;
     }
+    
+    footer {
+      text-align: center;
+      padding: 10px;
+      color: #7f8c8d;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
+  <!-- כפתור עזרה בצורת סימן שאלה המפנה לדף "איך משתמשים" -->
+  <div class="help-icon" onclick="window.location.href='how-to-use.html'">
+    <i class="fas fa-question-circle"></i>
+  </div>
+  
   <!-- תפריט ראשי -->
   <nav class="topbar">
     <div class="site-name" onclick="goHome()">זמן זהב</div>
     <div class="nav-links">
       <a href="choose-schedule.html">לו״ז חדש</a>
-      <a href="my-schedules.html">הלוזי״ם שלי</a>
-      <a href="how-to-use.html">איך משתמשים</a>
+      <a href="my-schedules.html">הלוזים שלי</a>
+      <a href="tips.html">טיפים לניהול זמנים</a>
       <a href="auth.html" id="authLink">התחברות</a>
     </div>
   </nav>
@@ -208,7 +250,7 @@
   <!-- תוכן עמוד "הלוזים שלי" -->
   <main id="content">
     <h2>הלוזים שלי</h2>
-    <!-- כל קטגוריה עטופה במכולה עם לחצן ותפריט נפתח -->
+    <!-- קטגוריות עם לחצנים ותפריט נפתח -->
     <div class="category-item">
       <button class="category-btn" onclick="toggleCategory('למידה')">
         <span>📖 למידה</span>
@@ -234,7 +276,7 @@
   
   <footer>©️doronnakache</footer>
   
-  <!-- סקריפטים לעדכון מצב המשתמש, טעינת הלוזים ואירועי גלילה -->
+  <!-- סקריפטים: עדכון מצב משתמש, טעינת לוזים, קטגוריות ועוד -->
   <script>
     function goHome() {
       window.location.href = "index.html";
@@ -275,7 +317,7 @@
       }
     });
     
-    // טעינת הלוזים מה-Firestore
+    // טעינת הלוזים מ-Firestore
     let savedSchedules = [];
     
     function loadMySchedules() {
@@ -308,7 +350,6 @@
     }
     
     function renderSavedSchedules() {
-      // יצירת קבוצות לפי קטגוריות תוך שמירה על האינדקס במערך הראשי
       const schedulesByCategory = {
         "למידה": [],
         "חופשה": [],
@@ -321,7 +362,7 @@
         }
       });
       
-      // עיצוב קטגוריה "למידה"
+      // קטגוריה "למידה"
       const containerLearning = document.getElementById("category-למידה");
       let htmlLearning = "";
       if (schedulesByCategory["למידה"].length === 0) {
@@ -341,7 +382,7 @@
       }
       containerLearning.innerHTML = htmlLearning;
       
-      // עיצוב קטגוריה "חופשה"
+      // קטגוריה "חופשה"
       const containerVacation = document.getElementById("category-חופשה");
       let htmlVacation = "";
       if (schedulesByCategory["חופשה"].length === 0) {
@@ -361,7 +402,7 @@
       }
       containerVacation.innerHTML = htmlVacation;
       
-      // עיצוב קטגוריה "ניהול יום"
+      // קטגוריה "ניהול יום"
       const containerDaily = document.getElementById("category-ניהול יום");
       let htmlDaily = "";
       if (schedulesByCategory["ניהול יום"].length === 0) {
@@ -383,7 +424,6 @@
     }
     
     function toggleCategory(cat) {
-      // סגירה של כל הקטגוריות האחרות
       const categories = ["למידה", "חופשה", "ניהול יום"];
       categories.forEach(c => {
         if (c !== cat) {
@@ -391,7 +431,6 @@
           document.getElementById("arrow-" + c).innerText = "▼";
         }
       });
-      // פתיחה/סגירה של הקטגוריה שנבחרה
       const list = document.getElementById("category-" + cat);
       const arrow = document.getElementById("arrow-" + cat);
       if (list.style.display === "none" || list.style.display === "") {
@@ -445,7 +484,7 @@
       }
     }
     
-    // עזר: getBackgroundEmoji – אם התו האחרון הוא אמוג'י, מחזיר אותו, אחרת משתמש במילון
+    // עזר: getBackgroundEmoji – בודק אם התו האחרון הוא אמוג'י, אחרת משתמש במילון
     function getBackgroundEmoji(subject) {
       let lastChar = subject.slice(-1);
       if (lastChar.codePointAt(0) > 10000) {
@@ -484,19 +523,7 @@
         text += `*${item.startTime} - ${item.endTime} : ${item.subject} ${getBackgroundEmoji(item.subject)}*\n~ ${item.description}\n\n`;
       });
       navigator.clipboard.writeText(text).then(() => {
-        alert("הלוז הועתק בהצלחה!");
-      }).catch(err => {
-        alert("התרחשה שגיאה בהעתקה.");
-      });
-    }
-    
-    function copyScheduleToClipboard() {
-      let text = scheduleName + "\n\n";
-      scheduleItems.forEach(item => {
-        text += `*${item.startTime} - ${item.endTime} : ${item.subject} ${getBackgroundEmoji(item.subject)}*\n~ ${item.description}\n\n`;
-      });
-      navigator.clipboard.writeText(text).then(() => {
-        alert("הלוז הועתק בהצלחה!");
+        alert("הלו״ז הועתק בהצלחה!");
       }).catch(err => {
         alert("התרחשה שגיאה בהעתקה.");
       });
@@ -504,6 +531,3 @@
   </script>
 </body>
 </html>
-
-את הקוד הזה
-תעשה באותו עיצוב כמו הקוד האחרון ששלחתי לך של גם הלוזים שלי
