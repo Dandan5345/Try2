@@ -60,6 +60,16 @@
       text-align: center;
       background-color: #f0f0f0;
     }
+    /* כפתור עזרה (איך משתמשים) שמופיע מעל התפריט הראשי */
+    .help-icon {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      z-index: 1001;
+      font-size: 24px;
+      color: #1e90ff;
+    }
     .topbar {
       background-color: #6dd5ed; /* טורקיז בהיר לתפריט */
       display: flex;
@@ -225,12 +235,17 @@
   </style>
 </head>
 <body>
+  <!-- כפתור עזרה בצורת סימן שאלה שמוביל לדף "איך משתמשים" -->
+  <div class="help-icon" onclick="window.location.href='how-to-use.html'">
+    <i class="fas fa-question-circle"></i>
+  </div>
+
   <nav class="topbar">
     <div class="site-name" onclick="goHome()">זמן זהב</div>
     <div class="nav-links">
       <a href="choose-schedule.html">לו״ז חדש</a>
       <a href="my-schedules.html">הלוזי״ם שלי</a>
-      <a href="how-to-use.html">איך משתמשים</a>
+      <a href="tips.html">טיפים לניהול זמנים</a>
       <a href="auth.html" id="authLink">התחברות</a>
     </div>
   </nav>
