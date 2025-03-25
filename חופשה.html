@@ -10,6 +10,11 @@
   <!-- קישור ל-favicon -->
   <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
   
+  <!-- Font Awesome לסמלים -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
+        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <!-- ספריות וסקריפטים -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -49,7 +54,7 @@
   </script>
   
   <style>
-    /* סגנונות כלליים */
+    /* סגנונות בסיסיים */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -59,6 +64,16 @@
       padding-top: 120px;
       padding-bottom: 40px;
       text-align: center;
+    }
+    /* סגנון לכפתור העזרה – סימן שאלה */
+    .help-icon {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      z-index: 1001;
+      font-size: 24px;
+      color: #1e90ff;
     }
     .topbar {
       background-color: rgba(255,255,255,0.8);
@@ -125,7 +140,7 @@
       font-size: 12px;
       padding: 5px 8px;
     }
-    #templateMenuButton { background-color: #006400; border: none; border-radius: 8px; font-size: 24px; cursor: pointer; color: #fff; padding: 5px 10px; }
+    /* (אלמנטים לתבניות קבועות – לא בשימוש במקרה זה) */
     #templateDropdown {
       position: absolute; bottom: 100%; right: 0;
       background: #f8f8f8; border: 1px solid #ccc; border-radius: 8px;
@@ -201,12 +216,17 @@
   </style>
 </head>
 <body>
+  <!-- כפתור עזרה עם סימן שאלה, המפנה לעמוד "איך משתמשים" -->
+  <div class="help-icon" onclick="window.location.href='how-to-use.html'">
+    <i class="fas fa-question-circle"></i>
+  </div>
+
   <nav class="topbar">
     <div class="site-name" onclick="goHome()">זמן זהב</div>
     <div class="nav-links">
       <a href="choose-schedule.html">לו״ז חדש</a>
       <a href="my-schedules.html">הלוזי״ם שלי</a>
-      <a href="how-to-use.html">איך משתמשים</a>
+      <a href="tips.html">טיפים לניהול זמן</a>
       <a href="auth.html" id="authLink">התחברות</a>
     </div>
   </nav>
@@ -216,11 +236,6 @@
     <p>להוספת חלק ללוז, לחץ על הכפתור +</p>
     <div class="action-buttons">
       <button class="btn" onclick="openAddItemModal()">+</button>
-      <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
-      <div id="templateDropdown">
-        <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
-        <div id="templateList"></div>
-      </div>
     </div>
     <div id="scheduleContainer"></div>
     <div class="button-group">
@@ -429,7 +444,7 @@
     </div>
   </div>
 
-  <!-- כיסוי Loader -->
+  <!-- כיסוי Loader - מכסה את כל חלונות הקופצים -->
   <div class="loader-overlay" id="loader">מחפש פרטי טיסה...✈️</div>
 
   <script>
@@ -545,11 +560,6 @@
         <p>להוספת חלק חדש, לחץ על הכפתור +</p>
         <div class="action-buttons">
           <button class="btn" onclick="openAddItemModal()">+</button>
-          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
-          <div id="templateDropdown">
-            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
-            <div id="templateList"></div>
-          </div>
         </div>
         <div id="scheduleContainer"></div>
         <div class="button-group">
@@ -1196,11 +1206,6 @@
         <p>להוספת חלק חדש, לחץ על הכפתור +</p>
         <div class="action-buttons">
           <button class="btn" onclick="openAddItemModal()">+</button>
-          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
-          <div id="templateDropdown">
-            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
-            <div id="templateList"></div>
-          </div>
         </div>
         <div id="scheduleContainer"></div>
         <div class="button-group">
