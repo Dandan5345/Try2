@@ -13,7 +13,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
+        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <script>
     const firebaseConfig = {
@@ -46,63 +48,73 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
       direction: rtl;
-      padding-top: 70px; /* מוריד את התוכן מתחת לתפריט הקבוע */
+      padding-top: 70px; /* התוכן לא יתחתן לתפריט הקבוע */
       padding-bottom: 40px;
       text-align: center;
-      background: linear-gradient(135deg, #e0f7fa, #b2ebf2); /* רקע טורקיז בהיר */
+      background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+    }
+    /* כפתור עזרה (סימן שאלה) – ממוקם בפינה הימנית העליונה */
+    .help-icon {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      z-index: 1001;
+      font-size: 24px;
+      color: #1e90ff;
     }
     .topbar {
-      background-color: #6dd5ed; /* טורקיז בהיר לתפריט */
+      background-color: #6dd5ed;
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 10px 20px;
       position: fixed;
-      top:0;
-      left:0;
+      top: 0;
+      left: 0;
       width: 100%;
       z-index: 1000;
       transition: transform 0.3s;
-      border-bottom: 2px solid #5bc0de; /* גוון כהה יותר לתיחום */
+      border-bottom: 2px solid #5bc0de;
     }
     .site-name {
       font-size: 28px;
       color: #ecf0f1;
       cursor: pointer;
       font-weight: bold;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* צל קל לשם האתר */
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
     }
     .nav-links {
       display: flex;
       gap: 10px;
     }
     .nav-links a {
-      background-color: #4ab3bf; /* גוון כהה יותר של טורקיז לקישורים */
+      background-color: #4ab3bf;
       padding: 10px 15px;
       border-radius: 8px;
       transition: background-color 0.3s, box-shadow 0.3s;
       font-weight: bold;
       color: #ecf0f1;
-      border-right: 1px solid rgba(236,240,241,0.3); /* תיחום קל בין הקישורים */
+      border-right: 1px solid rgba(236,240,241,0.3);
       text-decoration: none;
     }
     .nav-links a:last-child { border-right: none; }
     .nav-links a:hover {
-      background-color: #8ae3ff; /* טורקיז בהיר יותר בריחוף */
+      background-color: #8ae3ff;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     main {
       padding: 30px;
-      margin-top: 30px;
+      margin-top: 100px; /* העלה את התחלת התוכן כך שלא יסתתר מתחת לתפריט */
       min-height: 70vh;
       text-align: center;
-      background-color: rgba(255, 255, 255, 0.8); /* רקע לבן שקוף לתוכן */
+      background-color: rgba(255, 255, 255, 0.8);
       border-radius: 12px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
     h2 {
       font-size: 2.5em;
-      color: #1e90ff; /* כחול רויאל לכותרת */
+      color: #1e90ff;
       margin-bottom: 30px;
     }
     .button-group {
@@ -121,7 +133,7 @@
       align-items: center;
       justify-content: center;
       padding: 15px 30px;
-      background-color: #6dd5ed; /* טורקיז בהיר כצבע ראשי לכפתורים */
+      background-color: #6dd5ed;
       color: white;
       border: none;
       cursor: pointer;
@@ -137,14 +149,14 @@
     }
     .btn:hover {
       background-color: #5bc0de;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     footer {
       text-align: center;
       padding: 20px;
       color: #7f8c8d;
       font-size: 14px;
-      background-color: #e9ecef; /* רקע אפור בהיר לפוטר */
+      background-color: #e9ecef;
       border-top: 1px solid #ddd;
     }
     @media (max-width:600px) {
@@ -158,12 +170,17 @@
   </style>
 </head>
 <body>
+  <!-- כפתור עזרה (סימן שאלה) המפנה לעמוד "איך משתמשים" -->
+  <div class="help-icon" onclick="window.location.href='how-to-use.html'">
+    <i class="fas fa-question-circle"></i>
+  </div>
+  
   <nav class="topbar">
     <div class="site-name" onclick="goHome()">זמן זהב</div>
     <div class="nav-links">
       <a href="choose-schedule.html">לו״ז חדש</a>
       <a href="my-schedules.html">הלוזי״ם שלי</a>
-      <a href="how-to-use.html">איך משתמשים</a>
+      <a href="tips.html">טיפים לניהול זמן</a>
       <a href="auth.html" id="authLink">התחברות</a>
     </div>
   </nav>
