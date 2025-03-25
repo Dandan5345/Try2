@@ -79,7 +79,18 @@
       transition: all 0.3s ease-in-out;
     }
     
-    /* תפריט ראשי – השארנו את המראה המקורי, אך שינינו את סדר הפריטים כך שכפתור ההתחברות יהיה הכי מצד שמאל */
+    /* כפתור עזרה מעל התפריט הראשי */
+    .help-icon {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      z-index: 1001;
+      font-size: 24px;
+      color: #333;
+    }
+    
+    /* תפריט ראשי – הסדר כפי שהיה */
     .topbar {
       font-family: 'Heebo', sans-serif;
       background-color: #ffb347; /* כתום רך */
@@ -118,17 +129,6 @@
       background-color: #6495ed;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-    /* כאן אנו לא משנים את מיקום הפריטים בתוך התפריט – אלא מחליפים רק את מיקום כפתור ההתחברות.
-       בתצוגה בעברית (RTL) הפריט האחרון במערך (כפתור ההתחברות) יופיע בצד שמאל */
-    /* יש להניח שהסדר ב-HTML יהיה כך:
-         <div class="site-name">...</div>
-         <div class="nav-links">
-            <a href="choose-schedule.html">...</a>
-            <a href="my-schedules.html">...</a>
-            <a href="how-to-use.html">...</a>
-            <a href="auth.html" id="authLink">התחברות</a>
-         </div>
-    */
     
     main { 
       padding: 20px; 
@@ -143,7 +143,7 @@
       font-size: 14px; 
     }
     
-    /* סגנונות ללוז – הוספת רקע לאמוג'י */
+    /* שאר הסגנונות כפי שהוגדרו עבור בניית הלוז */
     .schedule-item {
       position: relative;
       background-color: rgba(255,255,255,0.95);
@@ -180,7 +180,6 @@
       z-index: 0;
     }
     
-    /* כפתורים, מודלים ועוד */
     .action-buttons { 
       display: inline-flex; 
       align-items: center; 
@@ -340,13 +339,18 @@
   </style>
 </head>
 <body>
-  <!-- תפריט ראשי – הסדר כפי שהיה, כאשר כפתור "התחברות" נמצא כילד האחרון בתוך div.nav-links (ובסביבה RTL זה מופיע מצד שמאל) -->
+  <!-- כפתור עזרה בצורת סימן שאלה המפנה לדף "איך משתמשים" -->
+  <div class="help-icon" onclick="window.location.href='how-to-use.html'">
+    <i class="fas fa-question-circle"></i>
+  </div>
+  
+  <!-- תפריט ראשי – סדר הקישורים, כאשר "איך משתמשים" הוחלף ל-"טיפים לניהול זמנים" -->
   <nav class="topbar">
     <div class="site-name" onclick="goHome()">זמן זהב</div>
     <div class="nav-links">
       <a href="choose-schedule.html">לו״ז חדש</a>
       <a href="my-schedules.html">הלוזי״ם שלי</a>
-      <a href="how-to-use.html">איך משתמשים</a>
+      <a href="tips.html">טיפים לניהול זמנים</a>
       <a href="auth.html" id="authLink">התחברות</a>
     </div>
   </nav>
@@ -674,6 +678,7 @@
         const bgEmoji = getBackgroundEmoji(item.subject);
         finalHtml += `<div class="schedule-item" data-subject="${item.subject}">
                         <div class="emoji-background">${bgEmoji}</div>
+                        <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteScheduleItem(${scheduleItems.indexOf(item)})">🗑️</span>
                         <h3>${item.startTime} - ${item.endTime} : ${item.subject}</h3>
                         <p>${item.description}</p>
                       </div>`;
