@@ -24,7 +24,7 @@
   
   <!-- קוד Firebase והגדרות האתר -->
   <script>
-    // עדכן את הקונפיגורציה לפי הפרויקט שלך
+    // עדכון הקונפיגורציה לפי הפרויקט שלך
     const firebaseConfig = {
       apiKey: "AIzaSyCsp7xKutteUAxmjYQsQWDlrjK7URg-MR8",
       authDomain: "zman-zhav.firebaseapp.com",
@@ -66,11 +66,11 @@
       padding-top: 120px;
       padding-bottom: 40px;
       text-align: center;
-      /* רקע עם תבנית גיאומטרית עדינה */
       background-image: url('data:image/svg+xml,%3Csvg width="42" height="42" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cpath d="M0 0h42v42H0z"/%3E%3Cpath d="M3 3h36v36H3z" stroke="%23ddd" stroke-width=".5"/%3E%3C/g%3E%3C/svg%3E');
       background-repeat: repeat;
       transition: all 0.3s ease-in-out;
     }
+    
     /* סגנונות כלליים עם מעבר */
     * {
       margin: 0;
@@ -90,49 +90,98 @@
       color: #333;
     }
     
-    /* תפריט ראשי – הסדר כפי שהיה */
-    .topbar {
-      font-family: 'Heebo', sans-serif;
-      background-color: #ffb347; /* כתום רך */
-      border-bottom: 2px solid #e69138;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
+    /* עיצוב ה-header עם פריסת flex */
+    .main-header {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
+      background-color: #ffb347;
+      border-bottom: 2px solid #e69138;
+      padding: 10px 20px;
       z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      /* הוספנו מעבר לשינוי transform */
+      transition: transform 0.3s ease;
+    }
+    .header-left, .header-right {
+      display: flex;
+      align-items: center;
     }
     .site-name {
       font-size: 28px;
       color: #333;
       cursor: pointer;
       font-weight: bold;
+      /* מיקום absolute למרכז מוחלט */
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
-    .nav-links {
-      display: flex;
-      gap: 10px;
-    }
-    .nav-links a {
-      background-color: #87ceeb; /* כחול בהיר */
+    .login-btn {
+      background-color: #87ceeb;
       padding: 10px 15px;
       border-radius: 8px;
       font-weight: bold;
       color: #333;
-      border-right: 1px solid rgba(51,51,51,0.5);
+      border: 1px solid rgba(51,51,51,0.5);
       text-decoration: none;
+      cursor: pointer;
     }
-    .nav-links a:last-child { border-right: none; }
-    .nav-links a:hover {
+    .login-btn:hover {
       background-color: #6495ed;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     
+    /* סגנון hamburger */
+    .hamburger {
+      width: 30px;
+      height: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .hamburger span {
+      display: block;
+      height: 3px;
+      background-color: #333;
+    }
+    
+    /* סגנון תפריט הצד (side drawer) */
+    .side-drawer {
+      position: fixed;
+      top: 0;
+      right: -250px;
+      width: 250px;
+      height: 100%;
+      background: #fff;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.3);
+      transition: right 0.3s ease;
+      z-index: 1100;
+      padding: 20px;
+    }
+    .side-drawer.open {
+      right: 0;
+    }
+    .side-drawer a {
+      display: block;
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+    .side-drawer a:hover {
+      background-color: #f0f0f0;
+    }
+    
+    /* שאר הסגנונות (דף תוכן, מודלים וכו') */
     main { 
       padding: 20px; 
-      margin-top: 20px; 
+      margin-top: 80px; 
       min-height: 70vh; 
       text-align: center;
     }
@@ -142,8 +191,6 @@
       color: #7f8c8d; 
       font-size: 14px; 
     }
-    
-    /* שאר הסגנונות כפי שהוגדרו עבור בניית הלוז */
     .schedule-item {
       position: relative;
       background-color: rgba(255,255,255,0.95);
@@ -179,7 +226,6 @@
       pointer-events: none;
       z-index: 0;
     }
-    
     .action-buttons { 
       display: inline-flex; 
       align-items: center; 
@@ -297,7 +343,6 @@
       background-color: #f9f9f9;
       text-align: right;
     }
-    
     .saved-schedule-item {
       background-color: #fff;
       margin: 10px auto;
@@ -323,38 +368,40 @@
     }
     
     @media (max-width: 600px) {
-      .topbar {
-        flex-direction: column; 
-        gap: 10px;
-      }
       .site-name {
         font-size: 24px;
-      }
-      .nav-links a {
-        padding: 10px; 
-        width: 100%; 
-        text-align: center;
       }
     }
   </style>
 </head>
 <body>
-  <!-- כפתור עזרה בצורת סימן שאלה המפנה לדף "איך משתמשים" -->
+  <!-- כפתור עזרה -->
   <div class="help-icon" onclick="window.location.href='how-to-use.html'">
     <i class="fas fa-question-circle"></i>
   </div>
   
-  <!-- תפריט ראשי – סדר הקישורים, כאשר "איך משתמשים" הוחלף ל-"טיפים לניהול זמנים" -->
-  <nav class="topbar">
-    <div class="site-name" onclick="goHome()">זמן זהב</div>
-    <div class="nav-links">
-      <a href="choose-schedule.html">לו״ז חדש</a>
-      <a href="my-schedules.html">הלוזי״ם שלי</a>
-      <a href="tips.html">טיפים לניהול זמנים</a>
-      <a href="auth.html" id="authLink">התחברות</a>
+  <!-- Header עם המבורגר בצד שמאל, שם האתר במרכז, והתחברות בצד ימין -->
+  <header class="main-header">
+    <div class="header-left">
+      <div class="hamburger" onclick="toggleDrawer()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
     </div>
-  </nav>
-
+    <div class="site-name" onclick="goHome()">זמן זהב</div>
+    <div class="header-right">
+      <a href="auth.html" id="authLink" class="login-btn">התחברות</a>
+    </div>
+  </header>
+  
+  <!-- תפריט צד (side drawer) -->
+  <div class="side-drawer" id="sideDrawer">
+    <a href="choose-schedule.html">לו״ז חדש</a>
+    <a href="my-schedules.html">הלוזי״ם שלי</a>
+    <a href="tips.html">טיפים לניהול זמנים</a>
+  </div>
+  
   <!-- תוכן עמוד "בניית לוז למידה" -->
   <main id="content">
     <h2>בניית לוז למידה חדש</h2>
@@ -364,6 +411,7 @@
       <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
       <div id="templateDropdown">
         <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+        <button onclick="openAIModal()">יצירת לוז עם AI</button>
         <div id="templateList"></div>
       </div>
     </div>
@@ -483,6 +531,16 @@
     </div>
   </div>
 
+  <!-- מודל AI ליצירת לוז עם AI -->
+  <div id="aiModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeAIModal()">&times;</span>
+      <h2>יצירת לוז עם AI</h2>
+      <p>אפשרות זו בבנייה. בקרוב תוכלו להשתמש בה כדי ליצור לוז אוטומטי עם תמיכת AI!</p>
+      <button class="btn" onclick="closeAIModal()">אישור</button>
+    </div>
+  </div>
+
   <!-- קוד JavaScript לניהול הלוזים, התחברות, עריכה ושמירה -->
   <script>
     // משתנים גלובליים לניהול לוזים
@@ -499,7 +557,7 @@
     let originalScheduleItems = [];
     let originalScheduleName = "";
     
-    // פונקציות התחברות והצגת שם המשתמש
+    // התחברות ועדכון משתמש
     function login() {
       const provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithPopup(provider)
@@ -515,7 +573,6 @@
       const authLink = document.getElementById("authLink");
       let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
       authLink.innerText = greeting + " " + firstName + "!";
-      
       authLink.onclick = function(event) {
         event.preventDefault();
         if (confirm("להתנתק?")) {
@@ -536,7 +593,7 @@
       }
     });
     
-    // טעינת לוזים קיימים מ-Firestore
+    // טעינת לוזים מ-Firestore
     function loadSchedulesFromFirestore() {
       const user = firebase.auth().currentUser;
       if(user) {
@@ -555,7 +612,7 @@
       window.location.href = "index.html";
     }
     
-    /* שינוי – עדכון קטע "לוז חדש" */
+    // טעינת לוז חדש
     function loadNewScheduleBuilder() {
       scheduleItems = [];
       scheduleName = null;
@@ -569,6 +626,7 @@
           <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
           <div id="templateDropdown">
             <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+            <button onclick="openAIModal()">יצירת לוז עם AI</button>
             <div id="templateList"></div>
           </div>
         </div>
@@ -579,82 +637,23 @@
       `;
     }
     
-    function loadMySchedules(event) {
-      event.preventDefault();
-      let html = `<h2>הלוזים שלי</h2>`;
-      if (savedSchedules.length === 0) {
-        html += `<p>אין לוזים שמורים.</p>`;
-      } else {
-        html += `<ul style="list-style: none; padding:0;">`;
-        savedSchedules.forEach((sch, idx) => {
-          html += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${idx})">
-                     <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${idx})">🗑️</span>
-                     ${sch.name}
-                   </li>`;
-        });
-        html += `</ul>`;
+    // ניהול תפריט הצד
+    function toggleDrawer() {
+      const drawer = document.getElementById("sideDrawer");
+      drawer.classList.toggle("open");
+    }
+    // מאזין ללחיצות מחוץ לתפריט הצד
+    document.addEventListener('click', function(event) {
+      const drawer = document.getElementById("sideDrawer");
+      const hamburger = document.querySelector(".hamburger");
+      if (drawer.classList.contains("open") &&
+          !drawer.contains(event.target) &&
+          !hamburger.contains(event.target)) {
+        drawer.classList.remove("open");
       }
-      document.getElementById("content").innerHTML = html;
-    }
+    });
     
-    function deleteSavedSchedule(index) {
-      if (confirm("האם אתה בטוח שברצונך למחוק את הלו״ז הזה?")) {
-        savedSchedules.splice(index, 1);
-        // עדכון במסד הנתונים לאחר המחיקה
-        db.collection("schedules").doc(firebase.auth().currentUser.uid).set({
-          schedules: savedSchedules
-        }).then(() => {
-          loadMySchedules(new Event("click"));
-          alert("הלוז נמחק.");
-        }).catch(error => {
-          console.error("Error deleting schedule: ", error);
-        });
-      }
-    }
-    
-    function viewSavedSchedule(idx) {
-      const sch = savedSchedules[idx];
-      let finalHtml = "";
-      sch.scheduleItems.forEach(item => {
-        const bgEmoji = getBackgroundEmoji(item.subject);
-        finalHtml += `<div class="saved-schedule-item">
-                        <div class="emoji-background">${bgEmoji}</div>
-                        <h3>${item.startTime} - ${item.endTime} : ${item.subject}</h3>
-                        <p>${item.description}</p>
-                      </div>`;
-      });
-      document.getElementById("content").innerHTML = `
-        <h2>${sch.name}</h2>
-        <div id="finalScheduleDisplay">${finalHtml}</div>
-        <div class="button-group">
-          <button class="btn" onclick="captureScreenshotFromElement('finalScheduleDisplay', '${sch.name}')">צילום מסך של הלו״ז</button>
-          <button class="btn" onclick="copyScheduleToClipboardFromSchedule(${idx})">העתקת הלו״ז להודעה</button>
-          <button class="btn" onclick="editSavedSchedule(${idx})">ערוך לוז</button>
-          <button class="btn" onclick="goHome()">סיום</button>
-        </div>
-      `;
-    }
-    
-    // פונקציה לשמירת לוז חדש ל-Firestore מבלי למחוק את הקודמים – שימוש ב-arrayUnion
-    function saveScheduleToFirestore(newSchedule) {
-      const user = firebase.auth().currentUser;
-      if (user) {
-        db.collection("schedules").doc(user.uid).update({
-          schedules: firebase.firestore.FieldValue.arrayUnion(newSchedule)
-        })
-        .then(() => { console.log("Schedule saved successfully"); })
-        .catch((error) => {
-          // אם המסמך לא קיים, ניצור אותו
-          db.collection("schedules").doc(user.uid).set({
-            schedules: [newSchedule]
-          })
-          .then(() => { console.log("Schedule created successfully"); })
-          .catch((err) => { console.error("Error saving schedule: ", err); });
-        });
-      }
-    }
-    
-    // בעת לחיצה על "שומר וסיים לו״ז" – מציג חלון סופי, ולחיצה על כפתור "סיום" או האיקס תעביר לעמוד הבית
+    // פונקציות שמירה והצגה
     function openFinalSchedule() {
       if (!scheduleName) {
         alert("עליך להזין שם ללו״ז ולבנות לפחות חלק אחד.");
@@ -669,7 +668,6 @@
         scheduleItems: JSON.parse(JSON.stringify(scheduleItems))
       };
       savedSchedules.push(newSchedule);
-      // שמירה למסד הנתונים מבלי למחוק לוזים קודמים
       saveScheduleToFirestore(newSchedule);
       document.getElementById("finalScheduleModal").style.display = "block";
       document.getElementById("finalScheduleTitle").innerText = scheduleName;
@@ -686,7 +684,6 @@
       document.getElementById("finalScheduleDisplay").innerHTML = finalHtml;
     }
     
-    // בעת לחיצה על כפתור "סיום" או האיקס בחלון הסופי, נסגור את החלון ונעביר לעמוד הבית
     function closeFinalScheduleModal() {
       document.getElementById("finalScheduleModal").style.display = "none";
       goHome();
@@ -708,6 +705,19 @@
       });
     }
     
+    function copyScheduleToClipboard() {
+      let text = scheduleName + "\n\n";
+      scheduleItems.forEach(item => {
+        const bgEmoji = getBackgroundEmoji(item.subject);
+        text += `*${item.startTime} - ${item.endTime} : ${item.subject} ${bgEmoji}*\n~ ${item.description}\n\n`;
+      });
+      navigator.clipboard.writeText(text).then(() => {
+        alert("הלוז הועתק בהצלחה!");
+      }).catch(err => {
+        alert("התרחשה שגיאה בהעתקה.");
+      });
+    }
+    
     function copyScheduleToClipboardFromSchedule(idx) {
       const sch = savedSchedules[idx];
       let text = sch.name + "\n\n";
@@ -722,20 +732,7 @@
       });
     }
     
-    function copyScheduleToClipboard() {
-      let text = scheduleName + "\n\n";
-      scheduleItems.forEach(item => {
-        const bgEmoji = getBackgroundEmoji(item.subject);
-        text += `*${item.startTime} - ${item.endTime} : ${item.subject} ${bgEmoji}*\n~ ${item.description}\n\n`;
-      });
-      navigator.clipboard.writeText(text).then(() => {
-        alert("הלוז הועתק בהצלחה!");
-      }).catch(err => {
-        alert("התרחשה שגיאה בהעתקה.");
-      });
-    }
-    
-    // פונקציות ניהול נושאים קבועים
+    // ניהול נושאים קבועים
     function openAddSubjectModal() {
       document.getElementById("addItemModal").style.display = "none";
       document.getElementById("addSubjectModal").style.display = "block";
@@ -849,6 +846,7 @@
       }
     }
     
+    // ניהול תבניות קבועות
     function toggleTemplateDropdown() {
       const dropdown = document.getElementById("templateDropdown");
       dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
@@ -904,41 +902,7 @@
       alert("תבנית לוז קבוע נשמרה!");
     }
     
-    // אירוע גלילה לתפריט הראשי
-    window.addEventListener("scroll", function() {
-      const nav = document.querySelector(".topbar");
-      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
-    });
-    
-    // העזר getBackgroundEmoji – אם הסוף של הטקסט הוא אמוג׳י, מחזיר אותו, אחרת משתמש במילון
-    function getBackgroundEmoji(subject) {
-      let lastChar = subject.slice(-1);
-      if (lastChar.codePointAt(0) > 10000) {
-        return lastChar;
-      }
-      return subjectEmojis[subject] || "";
-    }
-    
-    // מילון אמוג׳ים
-    const subjectEmojis = {
-      "קריאה של חומר לימוד": "📖",
-      "תרגול📝": "📝",
-      "מעבר על חומר מהיר": "⏩",
-      "למידה עמוקה": "🔍",
-      "לקום": "⏰",
-      "הפסקה": "☕",
-      "ללכת לישון": "😴",
-      "אוכל": "🍽️"
-    };
-    
-    // פונקציות ניהול לוזים
-    function addOneMinute(timeStr) {
-      let [h, m] = timeStr.split(":").map(Number);
-      m++;
-      if (m >= 60) { m = 0; h = (h + 1) % 24; }
-      return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
-    }
-    
+    // ניהול פריטי לוז
     function openAddItemModal() {
       if (!scheduleName) {
         document.getElementById("scheduleNameModal").style.display = "block";
@@ -969,41 +933,6 @@
           document.getElementById("addItemModal").style.display = "block";
         }
       }
-    }
-    
-    function closeScheduleNameModal() {
-      document.getElementById("scheduleNameModal").style.display = "none";
-    }
-    
-    function saveScheduleName() {
-      const nameInput = document.getElementById("scheduleNameInput").value.trim();
-      if (nameInput === "") {
-        alert("אנא הזן שם ללו״ז.");
-        return;
-      }
-      if (savedSchedules.some(sch => sch.name === nameInput)) {
-        alert("לוז עם שם זה כבר קיים. אנא בחר שם אחר.");
-        return;
-      }
-      scheduleName = nameInput;
-      closeScheduleNameModal();
-      document.getElementById("content").innerHTML = `
-        <h2>${scheduleName}</h2>
-        <p>להוספת חלק חדש, לחץ על הכפתור +</p>
-        <div class="action-buttons">
-          <button class="btn" onclick="openAddItemModal()">+</button>
-          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
-          <div id="templateDropdown">
-            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
-            <div id="templateList"></div>
-          </div>
-        </div>
-        <div id="scheduleContainer"></div>
-        <div class="button-group">
-          <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
-        </div>
-      `;
-      openAddItemModal();
     }
     
     function closeAddItemModal() {
@@ -1040,6 +969,13 @@
       }
     }
     
+    function addOneMinute(timeStr) {
+      let [h, m] = timeStr.split(":").map(Number);
+      m++;
+      if (m >= 60) { m = 0; h = (h + 1) % 24; }
+      return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+    }
+    
     function saveItem() {
       const startTime = document.getElementById("modalStartTime").value;
       const endTime = document.getElementById("modalEndTime").value;
@@ -1071,7 +1007,6 @@
       closeAddItemModal();
     }
     
-    // עדכון renderScheduleItems – מוסיף גם את הרקע של האמוג׳י וגם משאיר את הטקסט כפי שהוזן
     function renderScheduleItems() {
       const container = document.getElementById("scheduleContainer");
       container.innerHTML = "";
@@ -1108,6 +1043,122 @@
         alert("החלק נמחק מהלו״ז.");
       }
     }
+    
+    // שמירת שם לוז
+    function closeScheduleNameModal() {
+      document.getElementById("scheduleNameModal").style.display = "none";
+    }
+    
+    function saveScheduleName() {
+      const nameInput = document.getElementById("scheduleNameInput").value.trim();
+      if (nameInput === "") {
+        alert("אנא הזן שם ללו״ז.");
+        return;
+      }
+      if (savedSchedules.some(sch => sch.name === nameInput)) {
+        alert("לוז עם שם זה כבר קיים. אנא בחר שם אחר.");
+        return;
+      }
+      scheduleName = nameInput;
+      closeScheduleNameModal();
+      document.getElementById("content").innerHTML = `
+        <h2>${scheduleName}</h2>
+        <p>להוספת חלק חדש, לחץ על הכפתור +</p>
+        <div class="action-buttons">
+          <button class="btn" onclick="openAddItemModal()">+</button>
+          <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
+          <div id="templateDropdown">
+            <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+            <button onclick="openAIModal()">יצירת לוז עם AI</button>
+            <div id="templateList"></div>
+          </div>
+        </div>
+        <div id="scheduleContainer"></div>
+        <div class="button-group">
+          <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
+        </div>
+      `;
+      openAddItemModal();
+    }
+    
+    function saveScheduleToFirestore(newSchedule) {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        db.collection("schedules").doc(user.uid).update({
+          schedules: firebase.firestore.FieldValue.arrayUnion(newSchedule)
+        })
+        .then(() => { console.log("Schedule saved successfully"); })
+        .catch((error) => {
+          db.collection("schedules").doc(user.uid).set({
+            schedules: [newSchedule]
+          })
+          .then(() => { console.log("Schedule created successfully"); })
+          .catch((err) => { console.error("Error saving schedule: ", err); });
+        });
+      }
+    }
+    
+    // מודל AI
+    function openAIModal() {
+      document.getElementById("aiModal").style.display = "block";
+    }
+    
+    function closeAIModal() {
+      document.getElementById("aiModal").style.display = "none";
+    }
+    
+    function sendMessageToAI() {
+      const message = document.getElementById("aiMessageInput").value.trim();
+      if (message === "") {
+         alert("אנא הכנס הודעה.");
+         return;
+      }
+      document.getElementById("aiMessageInput").value = "";
+      closeAIModal();
+      
+      const user = firebase.auth().currentUser;
+      if (user) {
+         db.collection("aiRequests").add({
+             uid: user.uid,
+             message: message,
+             timestamp: Date.now()
+         }).then(() => {
+             alert("הודעתך נשלחה ל-AI.");
+         }).catch((error) => {
+             console.error("Error sending AI message: ", error);
+             alert("אירעה שגיאה בשליחת ההודעה.");
+         });
+      } else {
+         alert("לא נמצא משתמש מחובר.");
+      }
+    }
+    
+    // פונקציית עזר להצגת אימוג'י רקע לפי נושא
+    function getBackgroundEmoji(subject) {
+      let lastChar = subject.slice(-1);
+      if (lastChar.codePointAt(0) > 10000) {
+        return lastChar;
+      }
+      return subjectEmojis[subject] || "";
+    }
+    
+    const subjectEmojis = {
+      "קריאה של חומר לימוד": "📖",
+      "תרגול📝": "📝",
+      "מעבר על חומר מהיר": "⏩",
+      "למידה עמוקה": "🔍",
+      "לקום": "⏰",
+      "הפסקה": "☕",
+      "ללכת לישון": "😴",
+      "אוכל": "🍽️"
+    };
+    
+    // הוספת אירוע גלילה להעלמת ה-header בעת גלילה מטה
+    window.addEventListener("scroll", function() {
+      const nav = document.querySelector(".main-header");
+      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
+    });
+    
   </script>
 </body>
 </html>
