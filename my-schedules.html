@@ -4,36 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>זמן זהב - הלוזים שלי</title>
-  
-  <!-- קישור ל-manifest -->
+
   <link rel="manifest" href="manifest.json">
-  <!-- קישור ל-favicon -->
   <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
-  
-  <!-- ספריות וסקריפטים (כולל Firebase) -->
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  
-  <!-- קוד Firebase והגדרות האתר -->
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCsp7xKutteUAxmjYQsQWDlrjK7URg-MR8",
-      authDomain: "zman-zhav.firebaseapp.com",
-      projectId: "zman-zhav",
-      storageBucket: "zman-zhav.firebasestorage.app",
-      messagingSenderId: "685099855512",
-      appId: "1:685099855512:web:c3ad456591e1d92e436aed",
-      measurementId: "G-XJ3LKJSW16"
-    };
-    firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
-    const db = firebase.firestore();
-  </script>
-  
-  <!-- רישום Service Worker -->
+
+  <!-- כלול את הקובץ המשותף של Firebase -->
+  <script src="firebase-config.js"></script>
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
@@ -43,39 +30,30 @@
       });
     }
   </script>
-  
-  <!-- עיצוב כולל – מבוסס על העיצוב המעודכן של דף "הלוזים שלי" -->
+
   <style>
     /* Reset בסיסי */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
       direction: rtl;
-      padding-top: 120px;
-      padding-bottom: 40px;
+      padding-top: 70px;
+      padding-bottom: 60px;
       text-align: center;
-      /* רקע עם גרדיאנט עדין ושילוב תבנית גיאומטרית */
-      background: linear-gradient(135deg, #e0eafc, #cfdef3);
-      background-image: url('data:image/svg+xml,%3Csvg width="42" height="42" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cpath d="M0 0h42v42H0z"/%3E%3Cpath d="M3 3h36v36H3z" stroke="%23ddd" stroke-width=".5"/%3E%3C/g%3E%3C/svg%3E');
-      background-repeat: repeat;
-      transition: all 0.3s ease-in-out;
+      color: #333;
+      /* --- רקע גרדיאנט חדש --- */
+      background-color: #f8f9fa; /* Fallback color */
+      background-image: linear-gradient(to top, #e6f7ff, #f8f9fa); /* Light blue bottom to light gray top */
+      background-repeat: no-repeat; /* Ensure gradient doesn't tile */
+      min-height: 100vh; /* Ensure gradient covers full height */
+      /* --- סוף שינוי רקע --- */
     }
-    
-    /* כפתור עזרה מעל התפריט הראשי */
-    .help-icon {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      cursor: pointer;
-      z-index: 1001;
-      font-size: 24px;
-      color: #ecf0f1;
-    }
-    
+
+    /* --- סגנונות הדר ותפריט צד (מהדף הראשי) --- */
     .topbar {
-      background-color: #34495e;
+      background-color: #0A2342; /* כחול כהה ראשי */
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -85,449 +63,1054 @@
       left: 0;
       width: 100%;
       z-index: 1000;
-      transition: transform 0.3s;
-      border-bottom: 2px solid #2c3e50;
+      transition: transform 0.3s ease;
+      border-bottom: 3px solid #2A558C;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
+
     .site-name {
-      font-size: 28px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 26px;
       color: #ecf0f1;
       cursor: pointer;
-      font-weight: bold;
+      font-weight: 600;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
     }
-    .nav-links {
-      display: flex;
-      gap: 10px;
-    }
-    .nav-links a {
-      background-color: #2c3e50;
-      padding: 10px 15px;
-      border-radius: 8px;
-      transition: background-color 0.3s, box-shadow 0.3s;
-      font-weight: bold;
+
+    .hamburger-menu {
+      font-size: 24px;
       color: #ecf0f1;
-      border-right: 1px solid rgba(236,240,241,0.5);
-      text-decoration: none;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      z-index: 1002;
     }
-    .nav-links a:last-child { border-right: none; }
-    .nav-links a:hover {
-      background-color: #3d566e;
+    .hamburger-menu:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .auth-button {
+      background-color: #007bff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      font-weight: 600;
+      color: #FFFFFF;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 0.95em;
+    }
+    .auth-button:hover {
+      background-color: #0056b3;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-    
+
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -280px;
+      width: 280px;
+      height: 100%;
+      background-color: #0A2342;
+      z-index: 1001;
+      padding-top: 70px;
+      transition: right 0.3s ease;
+      box-shadow: -3px 0 8px rgba(0, 0, 0, 0.15);
+    }
+    .side-menu.active { right: 0; }
+
+    .close-menu {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      font-size: 26px;
+      color: #ecf0f1;
+      cursor: pointer;
+      padding: 5px;
+      line-height: 1;
+    }
+     .close-menu:hover {
+        color: #bdc3c7;
+     }
+
+    .side-menu-links {
+      display: flex;
+      flex-direction: column;
+      padding: 10px 0;
+    }
+    .side-menu-links a {
+      padding: 16px 25px;
+      color: #ecf0f1;
+      text-decoration: none;
+      font-size: 17px;
+      border-bottom: 1px solid rgba(236, 240, 241, 0.15);
+      transition: background-color 0.2s ease-in-out;
+      text-align: right;
+      display: flex;
+      align-items: center;
+    }
+     .side-menu-links a i {
+         margin-left: 12px;
+         width: 20px;
+         text-align: center;
+         font-size: 0.95em;
+     }
+    .side-menu-links a:last-child { border-bottom: none; }
+    .side-menu-links a:hover {
+      background-color: rgba(42, 85, 140, 0.5);
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.55);
+      z-index: 1000;
+      display: none;
+      transition: opacity 0.3s ease;
+       opacity: 0;
+    }
+    .overlay.active {
+      display: block;
+       opacity: 1;
+    }
+    /* --- סוף סגנונות הדר ותפריט צד --- */
+
+
+    /* --- סגנונות תוכן עמוד "הלוזים שלי" --- */
     main {
-      padding: 20px;
-      margin-top: 20px;
-      min-height: 70vh;
-      text-align: center;
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
+      padding: 30px;
+      min-height: calc(100vh - 190px); /* גובה מינימלי בהתחשב בהדר ופוטר */
+      background-color: #ffffff; /* רקע לבן נקי */
+      border-radius: 10px; /* רדיוס מעוגל יותר */
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* צל מעודן */
+      max-width: 850px; /* רוחב מקסימלי מוגדל */
+      margin: 30px auto; /* הגדלת רווח עליון ותחתון */
     }
-    h2 {
-      font-size: 2.5em;
-      color: #1e90ff;
-      margin-bottom: 30px;
+    h2#main-title, h2 { /* Target specific ID or general H2 inside main */
+      font-size: 2.4em; /* גודל כותרת מעודכן */
+      color: #0056b3; /* כחול עמוק יותר לכותרת */
+      margin-bottom: 40px; /* ריווח גדול יותר מתחת לכותרת */
+      font-weight: 600;
+      text-align: center; /* Ensure title remains centered */
     }
-    
-    /* עיצוב קטגוריות – כל קטגוריה עטופה במכולת category-item */
+
+
+    /* עיצוב קטגוריות */
     .category-item {
-      margin-bottom: 20px;
-      max-width: 500px;
+      margin-bottom: 25px; /* ריווח בין קטגוריות */
+      max-width: 550px; /* רוחב קטגוריה מעודכן */
       margin-left: auto;
       margin-right: auto;
     }
     .category-btn {
-      background-color: #2c3e50;
+      background-color: #34495e; /* כחול-אפור כהה */
       color: #ecf0f1;
-      padding: 10px 20px;
+      padding: 12px 25px; /* ריווח פנימי מוגדל */
       border: none;
       border-radius: 8px;
       font-size: 18px;
+      font-weight: 500; /* עיבוי קל */
       cursor: pointer;
       width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    .category-btn:hover { background-color: #3d566e; }
+    .category-btn:hover {
+        background-color: #2c3e50; /* גוון כהה יותר בהובר */
+        transform: translateY(-2px); /* אפקט הרמה קל */
+    }
+     .category-btn:active {
+         transform: translateY(0px); /* חזרה למקום בלחיצה */
+     }
+    .category-btn span:first-child { /* טקסט הקטגוריה */
+        display: flex;
+        align-items: center;
+        gap: 10px; /* רווח בין האייקון לטקסט */
+    }
     .category-btn span.arrow {
       font-size: 16px;
+      transition: transform 0.3s ease; /* אנימציה לחץ */
     }
+     .category-btn[aria-expanded="true"] span.arrow {
+         transform: rotate(180deg); /* סיבוב החץ כשהקטגוריה פתוחה */
+     }
+
     .category-list {
       text-align: center;
       display: none;
-      animation: slideDown 0.3s ease;
-      margin-top: 5px;
+      animation: fadeInDown 0.4s ease-out; /* אנימציה משופרת */
+      margin-top: 15px; /* ריווח מהכפתור */
+      background-color: #f8f9fa; /* רקע אפרפר לרשימה */
+      border-radius: 8px;
+      padding: 15px 0; /* Increased padding */
+      border: 1px solid #e9ecef; /* גבול עדין */
     }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-10px); }
+     .category-list p { /* הודעה על רשימה ריקה */
+        color: #6c757d; /* צבע טקסט אפור */
+        padding: 10px 20px;
+        margin-bottom: 10px;
+     }
+      .category-list .btn { /* Style button inside empty category */
+          margin-top: 5px;
+      }
+
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-15px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
+
+    /* עיצוב פריט לו"ז שמור ברשימה */
     .saved-schedule-item {
-      background-color: #fff;
-      margin: 10px auto;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background-color: #ffffff;
+      margin: 12px auto; /* הגדלת רווח אנכי */
+      padding: 15px 20px; /* ריווח פנימי מעודכן */
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07); /* צל מעודן יותר */
       cursor: pointer;
-      text-align: center;
-      font-weight: bold;
-      color: #2c3e50;
-      max-width: 400px;
+      text-align: right; /* יישור לימין כברירת מחדל */
+      font-weight: 500; /* עובי פונט */
+      color: #34495e;
+      max-width: 95%; /* רוחב יחסי בתוך הקטגוריה */
       position: relative;
+      display: flex; /* שימוש ב-flex ליישור */
+      justify-content: space-between; /* הפרדה בין שם לאייקון מחיקה */
+      align-items: center;
+      transition: background-color 0.2s, transform 0.2s;
+       border: 1px solid #eee; /* Add subtle border */
     }
-    .saved-schedule-item span:first-child {
-      float: left;
+     .saved-schedule-item:hover {
+       background-color: #f1f3f5; /* רקע בהיר מאוד בהובר */
+       transform: translateX(-3px); /* תזוזה קלה בהובר */
+        border-color: #ddd;
+     }
+
+    .saved-schedule-item span[title="מחק לוז זה"] { /* More specific selector for delete icon */
       cursor: pointer;
+      font-size: 1.1em;
+      padding: 5px 8px; /* ריווח לאזור הלחיצה */
+      color: #e74c3c; /* צבע אדום למחיקה */
+      transition: color 0.2s;
+      order: 1; /* מיקום אייקון המחיקה בצד שמאל */
+       margin-right: 10px; /* רווח משם הלוז */
+       line-height: 1; /* Prevent affecting item height */
     }
-    
-    /* כפתורי פעולות */
+     .saved-schedule-item span[title="מחק לוז זה"]:hover {
+         color: #c0392b; /* אדום כהה יותר בהובר */
+     }
+
+    .saved-schedule-item h3 { /* שם הלוז */
+       margin: 0;
+       font-size: 1.05em; /* גודל פונט מעודכן */
+       color: #2c3e50;
+       flex-grow: 1; /* מאפשר לשם לתפוס את שאר הרוחב */
+       text-align: right; /* וידוא יישור לימין */
+    }
+
+
+     /* כפתורי פעולות כלליים */
     .btn {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #3a506b;
+      display: inline-flex; /* שימוש ב-flex ליישור אייקון וטקסט */
+      align-items: center;
+      gap: 8px; /* רווח בין אייקון לטקסט */
+      padding: 10px 22px; /* ריווח מעודכן */
+      background-color: #007bff;
       color: #fff;
       border: none;
       cursor: pointer;
-      font-size: 16px;
-      border-radius: 8px;
-      transition: background-color 0.3s;
+      font-size: 15px; /* גודל פונט לכפתור */
+      font-weight: 500;
+      border-radius: 6px;
+      transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
       margin: 5px;
       text-decoration: none;
+      box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2); /* צל בצבע הכפתור */
     }
-    .btn:hover { background-color: #2a3e56; }
-    
-    @media (max-width: 600px) {
-      .topbar { flex-direction: column; gap: 10px; }
-      .site-name { font-size: 24px; }
-      .nav-links a { padding: 10px; width: 100%; text-align: center; }
-      .category-item { width: 90%; }
-      .btn { font-size: 0.9em; padding: 10px 20px; }
+    .btn:hover {
+        background-color: #0056b3;
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        transform: translateY(-2px); /* אפקט הרמה קל */
     }
-    
-    /* רקע אמוג'י מאחורי הטקסט */
+     .btn:active {
+         transform: translateY(0);
+     }
+     .btn i { /* סגנון לאייקון בתוך כפתור */
+         font-size: 0.9em;
+         line-height: 1; /* מניעת השפעה על גובה הכפתור */
+     }
+
+     .button-group { /* קבוצת כפתורים בתצוגת לוז */
+        margin-top: 30px; /* ריווח מהתוכן */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px; /* הגדלת רווח בין כפתורים */
+    }
+
+    /* רקע אמוג'י בתצוגת לוז */
     .emoji-background {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 100px;
-      opacity: 0.1;
+      font-size: 70px;
+      opacity: 0.06; /* עמעום חזק יותר */
       pointer-events: none;
       z-index: 0;
     }
-    
+
+    /* סגנונות תצוגת לוז ספציפי (Detail View) */
+     #finalScheduleDisplay {
+        border-top: 1px solid #eee; /* קו הפרדה עליון */
+        margin-top: 25px;
+        padding-top: 25px;
+     }
+     #finalScheduleDisplay .saved-schedule-item { /* Reusing class, but specific styling */
+         cursor: default;
+         background-color: #f8f9fa; /* רקע אפרפר בהיר לפריט */
+         text-align: right;
+         padding: 18px 25px; /* ריווח פנימי מוגדל */
+         margin-bottom: 15px; /* הגדלת רווח בין פריטים */
+         display: block; /* חזרה לתצוגה רגילה (לא flex) */
+         box-shadow: none; /* הסרת צל בתוך התצוגה */
+         border: 1px solid #e9ecef; /* גבול עדין */
+          transition: none; /* No hover effect needed here */
+          transform: none; /* No hover effect needed here */
+     }
+     #finalScheduleDisplay .saved-schedule-item:hover {
+          background-color: #f8f9fa; /* אין שינוי רקע בהובר */
+          border-color: #e9ecef;
+          transform: none;
+     }
+     #finalScheduleDisplay .saved-schedule-item h3 {
+         font-size: 1.15em;
+         color: #34495e;
+         margin-bottom: 8px; /* הגדלת רווח מתחת לכותרת */
+         font-weight: 600;
+     }
+      #finalScheduleDisplay .saved-schedule-item p {
+         font-size: 1em;
+         color: #555;
+         line-height: 1.5; /* שיפור קריאות התיאור */
+         margin: 0;
+     }
+      /* Styling for the schedule name title above the detail view */
+     #content > h3 {
+        font-size: 1.6em;
+        color: #34495e;
+        margin-bottom: 25px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        text-align: center;
+     }
+
+      /* Message area styling */
+     #message-area p {
+         margin-top: 20px;
+         padding: 10px 15px;
+         border-radius: 6px;
+         font-size: 1.05em;
+     }
+     #message-area p.info { /* General info message style */
+         background-color: #e9ecef;
+         color: #495057;
+         border: 1px solid #ced4da;
+     }
+      #message-area p.error { /* Error message style */
+         background-color: #f8d7da;
+         color: #721c24;
+         border: 1px solid #f5c6cb;
+     }
+
+
     footer {
       text-align: center;
-      padding: 10px;
+      padding: 25px; /* ריווח מוגדל */
       color: #7f8c8d;
       font-size: 14px;
+      background-color: #e9ecef;
+      border-top: 1px solid #ddd;
+      margin-top: 40px; /* הרחקה מהתוכן */
     }
+
+    /* רספונסיביות (נשארה זהה) */
+    @media (max-width: 768px) {
+        body { padding-top: 60px; }
+        .site-name { font-size: 22px; }
+        main { max-width: 95%; padding: 20px; margin: 20px auto; }
+        h2#main-title, h2 { font-size: 2em; margin-bottom: 30px; }
+         #content > h3 { font-size: 1.4em; margin-bottom: 20px;}
+        .category-item { max-width: 100%; }
+        .category-btn { padding: 12px 20px; font-size: 17px;}
+        #finalScheduleDisplay .saved-schedule-item { padding: 15px 20px; }
+    }
+    @media (max-width: 600px) {
+        .auth-button { padding: 7px 12px; font-size: 0.9em;}
+        .side-menu { width: 250px; } /* הקטנת רוחב תפריט צד */
+        .side-menu-links a { padding: 14px 20px; font-size: 16px; }
+         .side-menu-links a i { margin-left: 10px; }
+
+        main { padding: 15px; }
+        h2#main-title, h2 { font-size: 1.8em; }
+         #content > h3 { font-size: 1.3em;}
+        .category-btn { font-size: 16px; padding: 10px 15px;}
+         .category-btn span:first-child { gap: 8px; }
+
+        .saved-schedule-item { padding: 12px 15px; }
+         .saved-schedule-item h3 { font-size: 1em; }
+         .saved-schedule-item span[title="מחק לוז זה"] { font-size: 1em; padding: 4px 6px; }
+
+        .btn { font-size: 14px; padding: 9px 18px; gap: 6px; }
+        .button-group { flex-direction: column; align-items: stretch; gap: 10px;}
+         .button-group .btn { width: 100%; /* כפתורים ברוחב מלא במובייל */ }
+
+         #finalScheduleDisplay .saved-schedule-item { padding: 15px; }
+         #finalScheduleDisplay .saved-schedule-item h3 { font-size: 1.1em; }
+         #finalScheduleDisplay .saved-schedule-item p { font-size: 0.95em; }
+
+        footer { padding: 20px; }
+    }
+    /* --- סוף סגנונות תוכן --- */
   </style>
 </head>
 <body>
-  <!-- כפתור עזרה בצורת סימן שאלה המפנה לדף "איך משתמשים" -->
-  <div class="help-icon" onclick="window.location.href='how-to-use.html'">
-    <i class="fas fa-question-circle"></i>
-  </div>
-  
-  <!-- תפריט ראשי -->
+  <div class="overlay" id="overlay"></div>
+
   <nav class="topbar">
+    <div class="hamburger-menu" onclick="toggleMenu()">
+      <i class="fas fa-bars"></i>
+    </div>
     <div class="site-name" onclick="goHome()">זמן זהב</div>
-    <div class="nav-links">
-      <a href="choose-schedule.html">לו״ז חדש</a>
-      <a href="my-schedules.html">הלוזים שלי</a>
-      <a href="tips.html">טיפים לניהול זמנים</a>
-      <a href="auth.html" id="authLink">התחברות</a>
-    </div>
+    <a href="auth.html" id="authLink" class="auth-button">התחברות</a>
   </nav>
-  
-  <!-- תוכן עמוד "הלוזים שלי" -->
+
+  <div class="side-menu" id="sideMenu">
+    <div class="close-menu" onclick="toggleMenu()">
+      <i class="fas fa-times"></i>
+    </div>
+    <div class="side-menu-links">
+      <a href="choose-schedule.html"><i class="fas fa-calendar-plus"></i> לו״ז חדש</a>
+      <a href="my-schedules.html"><i class="fas fa-folder-open"></i> הלוזי״ם שלי</a>
+      <a href="tips.html"><i class="fas fa-lightbulb"></i> טיפים לניהול זמנים</a>
+      <a href="how-to-use.html"><i class="fas fa-info-circle"></i> עזרה והסבר</a>
+    </div>
+  </div>
+
   <main id="content">
-    <h2>הלוזים שלי</h2>
-    <!-- קטגוריות עם לחצנים ותפריט נפתח -->
-    <div class="category-item">
-      <button class="category-btn" onclick="toggleCategory('למידה')">
-        <span>📖 למידה</span>
-        <span class="arrow" id="arrow-למידה">▼</span>
-      </button>
-      <div class="category-list" id="category-למידה"></div>
-    </div>
-    <div class="category-item">
-      <button class="category-btn" onclick="toggleCategory('חופשה')">
-        <span>🏖️ חופשה</span>
-        <span class="arrow" id="arrow-חופשה">▼</span>
-      </button>
-      <div class="category-list" id="category-חופשה"></div>
-    </div>
-    <div class="category-item">
-      <button class="category-btn" onclick="toggleCategory('ניהול יום')">
-        <span>📅 ניהול יום</span>
-        <span class="arrow" id="arrow-ניהול יום">▼</span>
-      </button>
-      <div class="category-list" id="category-ניהול יום"></div>
-    </div>
+    <h2 id="main-title">הלוזי״ם שלי</h2>
+    <div id="categories-container">
+        </div>
+    <div id="message-area"></div>
   </main>
-  
+
   <footer>©️doronnakache</footer>
-  
-  <!-- סקריפטים: עדכון מצב משתמש, טעינת לוזים, קטגוריות ועוד -->
+
   <script>
+    // --- פונקציות ניווט ותפריט (מהדף הראשי) ---
     function goHome() {
       window.location.href = "index.html";
     }
-    
-    window.addEventListener("scroll", function() {
-      const nav = document.querySelector(".topbar");
-      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
-    });
-    
-    function updateUserGreeting(user) {
-      let currentHour = new Date().getHours();
-      let greeting = "בוקר טוב";
-      if (currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
-      else if (currentHour >= 18) { greeting = "ערב טוב"; }
-      const authLink = document.getElementById("authLink");
-      let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
-      authLink.innerText = greeting + " " + firstName + "!";
-      authLink.onclick = function(event) {
-        event.preventDefault();
-        if (confirm("להתנתק?")) {
-          firebase.auth().signOut().then(() => {
-            authLink.innerText = "התחברות";
-            authLink.onclick = null;
-          }).catch((error) => {
-            alert("שגיאה בהתנתקות: " + error.message);
-          });
-        }
-      };
+
+    function toggleMenu() {
+      const sideMenu = document.getElementById("sideMenu");
+      const overlay = document.getElementById("overlay");
+      const isActive = sideMenu.classList.contains("active");
+
+      sideMenu.classList.toggle("active");
+      overlay.classList.toggle("active");
+
+      document.body.style.overflow = isActive ? "" : "hidden";
     }
-    
-    firebase.auth().onAuthStateChanged((user) => {
+
+    document.getElementById("overlay").addEventListener("click", toggleMenu);
+
+    // --- ניהול מצב אימות (Auth) ---
+    firebase.auth().onAuthStateChanged(function(user) {
+      const authLink = document.getElementById("authLink");
+       const contentElement = document.getElementById("content");
+       const categoriesContainer = document.getElementById("categories-container");
+       const messageArea = document.getElementById("message-area");
+
+       // נקה אזורים לפני עדכון
+        if (categoriesContainer) categoriesContainer.innerHTML = '';
+        if (messageArea) messageArea.innerHTML = '';
+
+
       if (user) {
-        updateUserGreeting(user);
+        // עדכון כפתור התחברות/ברכה
+        let currentHour = new Date().getHours();
+        let greeting = "בוקר טוב";
+        if (currentHour >= 12 && currentHour < 18) greeting = "צהריים טובים";
+        else if (currentHour >= 18) greeting = "ערב טוב";
+
+        let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email.split("@")[0]; // שימוש בחלק הראשון של האימייל אם אין שם
+        firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1); // אות ראשונה גדולה
+
+        authLink.innerText = `${greeting}, ${firstName}!`;
+        authLink.title = "התנתק"; // הוספת title לכפתור
+        authLink.onclick = function(e) {
+          e.preventDefault();
+          if (confirm("האם אתה בטוח שברצונך להתנתק?")) {
+            firebase.auth().signOut().catch(function(error){
+                console.error("Sign out error", error);
+                alert("שגיאה בהתנתקות: " + error.message);
+            });
+          }
+        };
+        authLink.href = "#";
+
+        // טעינת הלוזים של המשתמש
         loadMySchedules();
+
       } else {
-        document.getElementById("authLink").innerText = "התחברות";
+        // עדכון כפתור להתחברות
+        authLink.innerText = "התחברות";
+        authLink.title = "התחבר או הירשם";
+        authLink.href = "auth.html";
+        authLink.onclick = null;
+
+        // הצגת הודעה למשתמש לא מחובר
+        if (contentElement && !document.getElementById('login-prompt')) { // בדוק אם ההודעה כבר קיימת
+             contentElement.innerHTML = `
+                 <h2 id="main-title">הלוזי״ם שלי</h2>
+                 <p id="login-prompt" style="font-size: 1.1em; color: #555; margin-top: 20px; background-color: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e9ecef;">
+                    נראה שאתה לא מחובר. <br>
+                    <a href="auth.html" class="btn" style="margin-top:15px;">התחבר / הירשם</a>
+                    <br> כדי לראות ולנהל את הלו"זים שלך.
+                 </p>
+            `;
+        }
+         clearScheduleDisplay(); // ניקוי תצוגה קודמת אם קיימת
       }
     });
-    
+
+    // --- הסתרת/הצגת הדר בגלילה ---
+    let lastScrollTop = 0;
+    window.addEventListener("scroll", function() {
+      let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      const nav = document.querySelector(".topbar");
+      const sideMenu = document.getElementById("sideMenu");
+
+      if (nav && (!sideMenu || !sideMenu.classList.contains("active"))) {
+           if (currentScroll > lastScrollTop && currentScroll > 70) { // גלילה למטה
+             nav.style.transform = "translateY(-100%)";
+           } else { // גלילה למעלה או קרוב להתחלה
+             nav.style.transform = "translateY(0)";
+           }
+      }
+      lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+    }, false);
+
+
+    // --- פונקציות ספציפיות לדף "הלוזים שלי" ---
+
+    let savedSchedules = []; // מערך גלובלי לאחסון הלוזים
+
+     function showMessage(msg, type = 'info') {
+         const messageArea = document.getElementById("message-area");
+         if (messageArea) {
+             // Remove any existing messages first
+             messageArea.innerHTML = '';
+             if (msg) { // Only add message if msg is not empty
+                 const p = document.createElement('p');
+                 p.className = `message ${type}`;
+                 p.innerHTML = msg; // Use innerHTML to allow links
+                 messageArea.appendChild(p);
+             }
+         }
+     }
+
     // טעינת הלוזים מ-Firestore
-    let savedSchedules = [];
-    
     function loadMySchedules() {
       const user = firebase.auth().currentUser;
-      if (user) {
-        db.collection("schedules").doc(user.uid).get()
-          .then((doc) => {
-            if (doc.exists) {
-              savedSchedules = doc.data().schedules || [];
-              // קביעת קטגוריה לפי שם הלוז:
-              savedSchedules.forEach(sch => {
-                if (sch.name.includes("חופשה")) {
-                  sch.category = "חופשה";
-                } else if (sch.name.includes("ניהול")) {
-                  sch.category = "ניהול יום";
-                } else {
-                  sch.category = "למידה";
-                }
-              });
-              renderSavedSchedules();
+       const categoriesContainer = document.getElementById("categories-container");
+       if (!user || !categoriesContainer) return; // יציאה אם אין משתמש או קונטיינר
+
+       showMessage("טוען לו\"זים...", 'info'); // הצגת הודעת טעינה
+
+      db.collection("schedules").doc(user.uid).get()
+        .then((doc) => {
+           showMessage(""); // ניקוי הודעת טעינה/שגיאה קודמת
+          if (doc.exists && doc.data().schedules) { // Check also if schedules array exists
+            savedSchedules = doc.data().schedules || [];
+            // קביעת/וידוא קטגוריה לכל לו"ז
+            savedSchedules.forEach(sch => {
+              if (!sch.category) {
+                   if (sch.name.toLowerCase().includes("חופשה")) sch.category = "חופשה"; // Case insensitive check
+                   else if (sch.name.toLowerCase().includes("ניהול") || sch.name.toLowerCase().includes("יומי")) sch.category = "ניהול יום";
+                   else sch.category = "למידה";
+              }
+            });
+            renderCategoriesAndSchedules(); // קריאה לפונקציה שמציגה הכל
+          } else {
+            savedSchedules = [];
+            renderCategoriesAndSchedules(); // הצגת מצב ריק (יציג הודעה בפנים)
+            console.log("No schedules found for user or document is empty.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error loading schedules: ", error);
+          showMessage("אירעה שגיאה בטעינת הלו\"זים. נסה לרענן את הדף.", 'error');
+        });
+    }
+
+    // יצירה ורינדור של הקטגוריות והלוזים בתוכן
+    function renderCategoriesAndSchedules() {
+        const categoriesContainer = document.getElementById("categories-container");
+        if (!categoriesContainer) return;
+
+        // איפוס הקונטיינר
+        categoriesContainer.innerHTML = '';
+
+        const schedulesByCategory = { "למידה": [], "חופשה": [], "ניהול יום": [] };
+        savedSchedules.forEach((sch, originalIndex) => {
+            const category = sch.category || "למידה";
+            if (category in schedulesByCategory) {
+                schedulesByCategory[category].push({ schedule: sch, index: originalIndex });
             } else {
-              savedSchedules = [];
-              renderSavedSchedules();
+                schedulesByCategory["למידה"].push({ schedule: sch, index: originalIndex }); // ברירת מחדל
             }
-          })
-          .catch((error) => {
-            console.error("Error loading schedules: ", error);
-          });
-      }
+        });
+
+        const categoryOrder = ["למידה", "חופשה", "ניהול יום"]; // סדר תצוגה רצוי
+        const categoryDetails = {
+            "למידה": { icon: "📖", emptyMsg: "עדיין לא שמרת לוז למידה.", createLink: "learning-schedule.html" },
+            "חופשה": { icon: "🏖️", emptyMsg: "עדיין לא שמרת לוז חופשה.", createLink: "vacation-schedule.html" },
+            "ניהול יום": { icon: "📅", emptyMsg: "עדיין לא שמרת לוז ניהול יום.", createLink: "daily-schedule.html" }
+        };
+
+        let hasRenderedCategories = false;
+        categoryOrder.forEach(catName => {
+            if (catName in categoryDetails) {
+                hasRenderedCategories = true; // Mark that we attempted to render categories
+                const details = categoryDetails[catName];
+                const schedulesList = schedulesByCategory[catName];
+
+                // יצירת אלמנט הקטגוריה
+                const categoryItemDiv = document.createElement('div');
+                categoryItemDiv.className = 'category-item';
+
+                // יצירת כפתור הקטגוריה
+                const categoryBtn = document.createElement('button');
+                categoryBtn.className = 'category-btn';
+                categoryBtn.setAttribute('onclick', `toggleCategory('${catName}')`);
+                categoryBtn.setAttribute('aria-expanded', 'false'); // נגישות: מצב התחלתי סגור
+                categoryBtn.innerHTML = `
+                    <span>${details.icon} ${catName}</span>
+                    <span class="arrow" id="arrow-${catName}" style="transform: rotate(0deg);">▼</span>
+                `;
+
+                // יצירת רשימת הלוזים
+                const categoryListDiv = document.createElement('div');
+                categoryListDiv.className = 'category-list';
+                categoryListDiv.id = `category-${catName}`;
+                categoryListDiv.style.display = 'none'; // התחלה במצב מוסתר
+
+                let listHtml = "";
+                if (schedulesList.length === 0) {
+                    listHtml = `<p>${details.emptyMsg}</p><button class="btn" onclick="window.location.href='${details.createLink}'"><i class="fas fa-plus"></i> צור לו"ז כזה</button>`;
+                } else {
+                    listHtml += "<ul style='list-style: none; padding:0;'>";
+                    schedulesList.forEach(item => {
+                        // Added check for item.schedule before accessing name
+                        const scheduleName = item.schedule ? (item.schedule.name || 'לו"ז ללא שם') : 'לו"ז לא תקין';
+                        listHtml += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${item.index})" title="לחץ לצפייה בפרטי הלוז">
+                                       <h3>${scheduleName}</h3>
+                                       <span title="מחק לוז זה" onclick="event.stopPropagation(); deleteSavedSchedule(${item.index})">🗑️</span>
+                                     </li>`;
+                    });
+                    listHtml += "</ul>";
+                }
+                categoryListDiv.innerHTML = listHtml;
+
+                // הוספת הכפתור והרשימה ל-div של הקטגוריה
+                categoryItemDiv.appendChild(categoryBtn);
+                categoryItemDiv.appendChild(categoryListDiv);
+
+                // הוספת ה-div של הקטגוריה לקונטיינר הראשי
+                categoriesContainer.appendChild(categoryItemDiv);
+            }
+        });
+         // אם אין לוזים בכלל, והקטגוריות רונדרו (כלומר, המשתמש מחובר), הצג הודעה
+         if (hasRenderedCategories && savedSchedules.length === 0 && !document.getElementById('login-prompt')) {
+              showMessage('עדיין לא יצרת לו"זים. <a href="choose-schedule.html">לחץ כאן</a> כדי להתחיל.', 'info');
+         }
     }
-    
-    function renderSavedSchedules() {
-      const schedulesByCategory = {
-        "למידה": [],
-        "חופשה": [],
-        "ניהול יום": []
-      };
-      
-      savedSchedules.forEach((sch, originalIndex) => {
-        if (sch.category in schedulesByCategory) {
-          schedulesByCategory[sch.category].push({ schedule: sch, index: originalIndex });
-        }
-      });
-      
-      // קטגוריה "למידה"
-      const containerLearning = document.getElementById("category-למידה");
-      let htmlLearning = "";
-      if (schedulesByCategory["למידה"].length === 0) {
-        htmlLearning = `
-          <p>עדיין לא שמרת לוז למידה.</p>
-          <button class="btn" onclick="window.location.href='learning-schedule.html'">התחל לבנות כאן</button>
-        `;
-      } else {
-        htmlLearning += "<ul style='list-style: none; padding:0;'>";
-        schedulesByCategory["למידה"].forEach(item => {
-          htmlLearning += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${item.index})">
-                             <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${item.index})">🗑️</span>
-                             ${item.schedule.name}
-                           </li>`;
-        });
-        htmlLearning += "</ul>";
-      }
-      containerLearning.innerHTML = htmlLearning;
-      
-      // קטגוריה "חופשה"
-      const containerVacation = document.getElementById("category-חופשה");
-      let htmlVacation = "";
-      if (schedulesByCategory["חופשה"].length === 0) {
-        htmlVacation = `
-          <p>עדיין לא שמרת לוז חופשה.</p>
-          <button class="btn" onclick="window.location.href='חופשה.html'">התחל לבנות כאן</button>
-        `;
-      } else {
-        htmlVacation += "<ul style='list-style: none; padding:0;'>";
-        schedulesByCategory["חופשה"].forEach(item => {
-          htmlVacation += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${item.index})">
-                             <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${item.index})">🗑️</span>
-                             ${item.schedule.name}
-                           </li>`;
-        });
-        htmlVacation += "</ul>";
-      }
-      containerVacation.innerHTML = htmlVacation;
-      
-      // קטגוריה "ניהול יום"
-      const containerDaily = document.getElementById("category-ניהול יום");
-      let htmlDaily = "";
-      if (schedulesByCategory["ניהול יום"].length === 0) {
-        htmlDaily = `
-          <p>עדיין לא שמרת לוז ניהול יום.</p>
-          <button class="btn" onclick="window.location.href='יומי.html'">התחל לבנות כאן</button>
-        `;
-      } else {
-        htmlDaily += "<ul style='list-style: none; padding:0;'>";
-        schedulesByCategory["ניהול יום"].forEach(item => {
-          htmlDaily += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${item.index})">
-                             <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${item.index})">🗑️</span>
-                             ${item.schedule.name}
-                           </li>`;
-        });
-        htmlDaily += "</ul>";
-      }
-      containerDaily.innerHTML = htmlDaily;
-    }
-    
+
+     // ניקוי תצוגת הלוזים (במקרה של התנתקות)
+     function clearScheduleDisplay() {
+         const categoriesContainer = document.getElementById("categories-container");
+         if(categoriesContainer) categoriesContainer.innerHTML = '';
+         showMessage(''); // Clear any messages
+     }
+
+    // פתיחה/סגירה של רשימת הלוזים בקטגוריה
     function toggleCategory(cat) {
-      const categories = ["למידה", "חופשה", "ניהול יום"];
-      categories.forEach(c => {
-        if (c !== cat) {
-          document.getElementById("category-" + c).style.display = "none";
-          document.getElementById("arrow-" + c).innerText = "▼";
-        }
-      });
       const list = document.getElementById("category-" + cat);
       const arrow = document.getElementById("arrow-" + cat);
-      if (list.style.display === "none" || list.style.display === "") {
-        list.style.display = "block";
-        arrow.innerText = "▲";
-      } else {
-        list.style.display = "none";
-        arrow.innerText = "▼";
+      const btn = list ? list.previousElementSibling : null; // הכפתור שמגיע לפני הרשימה
+
+      if (!list || !arrow || !btn) return;
+
+      const isHidden = list.style.display === "none";
+
+      // סגירת כל הקטגוריות האחרות
+      if (isHidden) {
+          document.querySelectorAll('.category-list').forEach(l => {
+              if (l.id !== list.id) {
+                 l.style.display = 'none';
+                 const otherBtn = l.previousElementSibling;
+                 if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+                 const otherArrow = otherBtn ? otherBtn.querySelector('.arrow') : null;
+                  if (otherArrow) otherArrow.style.transform = 'rotate(0deg)';
+              }
+          });
       }
+
+      // פתיחה/סגירה של הקטגוריה הנוכחית
+      list.style.display = isHidden ? "block" : "none";
+      btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+       arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
     }
-    
+
+    // מחיקת לוז שמור
     function deleteSavedSchedule(index) {
-      if (confirm("האם אתה בטוח שברצונך למחוק את הלו״ז הזה?")) {
+      if (index < 0 || index >= savedSchedules.length || !savedSchedules[index]) { // Added check for existence
+           console.error("Invalid index or schedule for deletion:", index);
+           alert("שגיאה: אינדקס לא תקין או לו\"ז לא קיים למחיקה.");
+           return;
+      }
+
+      const scheduleNameToDelete = savedSchedules[index].name || 'לו"ז ללא שם';
+      if (confirm(`האם למחוק את הלו"ז "${scheduleNameToDelete}"?`)) {
         savedSchedules.splice(index, 1);
-        saveSchedulesToFirestore();
-        loadMySchedules();
-        alert("הלו״ז נמחק.");
+        saveSchedulesToFirestore(); // שמירה ב-Firestore
+         // רינדור מחדש של כל הקטגוריות והלוזים
+         renderCategoriesAndSchedules();
+        alert(`הלו"ז "${scheduleNameToDelete}" נמחק.`);
       }
     }
-    
+
+    // הצגת לוז ספציפי שנבחר
     function viewSavedSchedule(idx) {
+       if (idx < 0 || idx >= savedSchedules.length || !savedSchedules[idx]) { // Added check for existence
+           console.error("Invalid index or schedule for viewing:", idx);
+           alert("שגיאה: אינדקס לא תקין או לו\"ז לא קיים לצפייה.");
+           goBackToCategoriesView(); // חזרה לתצוגת הקטגוריות
+           return;
+       }
+
       const sch = savedSchedules[idx];
+      const contentElement = document.getElementById('content');
+       if (!contentElement) return;
+
+       // שימור הכותרת הראשית של הדף
+       const mainTitleHTML = `<h2 id="main-title">הלוזי״ם שלי</h2>`;
+
       let finalHtml = "";
-      sch.scheduleItems.forEach(item => {
-        finalHtml += `<div class="saved-schedule-item">
-                        <div class="emoji-background">${getBackgroundEmoji(item.subject)}</div>
-                        <h3>${item.startTime} - ${item.endTime} : ${item.subject}</h3>
-                        <p>${item.description}</p>
-                      </div>`;
-      });
-      document.getElementById("content").innerHTML = `
-        <h2>${sch.name}</h2>
-        <div id="finalScheduleDisplay">${finalHtml}</div>
-        <div class="button-group">
-          <button class="btn" onclick="captureScreenshotFromElement('finalScheduleDisplay', '${sch.name}')">צילום מסך של הלו״ז</button>
-          <button class="btn" onclick="copyScheduleToClipboardFromSchedule(${idx})">העתקת הלו״ז להודעה</button>
-          <button class="btn" onclick="window.location.href='עריכה.html'">ערוך לוז</button>
-          <button class="btn" onclick="goHome()">סיום</button>
-        </div>
-      `;
+      // Added check for scheduleItems existence and type
+      if (sch.scheduleItems && Array.isArray(sch.scheduleItems) && sch.scheduleItems.length > 0) {
+          finalHtml += `<div id="finalScheduleDisplay">`; // עטיפה לתצוגת הלוז
+          sch.scheduleItems.forEach(item => {
+             // Basic check if item is valid
+             if (item && item.subject) {
+                 const emoji = getBackgroundEmoji(item.subject || '');
+                 const startTime = item.startTime || '??:??';
+                 const endTime = item.endTime || '??:??';
+                 const subject = item.subject || 'ללא נושא';
+                 const description = item.description ? `<p>${item.description}</p>` : '';
+
+                 finalHtml += `<div class="saved-schedule-item">
+                                <div class="emoji-background">${emoji}</div>
+                                <h3>${startTime} - ${endTime} : ${subject}</h3>
+                                ${description}
+                              </div>`;
+             }
+          });
+           finalHtml += `</div>`;
+      } else {
+           finalHtml = `<div id="finalScheduleDisplay"><p style="margin-top: 20px; color: #6c757d;">לו"ז זה ריק מפעילויות.</p></div>`;
+      }
+
+       const scheduleName = sch.name || 'לו"ז ללא שם';
+       const safeScheduleName = scheduleName.replace(/'/g, "\\'"); // Escape single quotes for JS string
+
+       // עדכון ה-DOM עם הכותרת, שם הלוז, התוכן והכפתורים
+       contentElement.innerHTML = `
+          ${mainTitleHTML}
+          <h3 style="font-size: 1.6em; color: #34495e; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px;">${scheduleName}</h3>
+          ${finalHtml}
+          <div class="button-group">
+             <button class="btn" onclick="captureScreenshotFromElement('finalScheduleDisplay', '${safeScheduleName}')">
+                 <i class="fas fa-camera"></i> צילום מסך
+             </button>
+             <button class="btn" onclick="copyScheduleToClipboardFromSchedule(${idx})">
+                 <i class="fas fa-copy"></i> העתק כטקסט
+             </button>
+             <button class="btn" onclick="editSchedule(${idx})">
+                 <i class="fas fa-edit"></i> ערוך לו"ז
+             </button>
+             <button class="btn" onclick="goBackToCategoriesView()">
+                 <i class="fas fa-arrow-right"></i> חזור לרשימה
+             </button>
+          </div>
+       `;
     }
-    
+
+     // פונקציה לחזרה לתצוגת הקטגוריות
+     function goBackToCategoriesView() {
+        const contentElement = document.getElementById('content');
+        if (contentElement) {
+             // איפוס ה-HTML למבנה הבסיסי של הדף
+             contentElement.innerHTML = `
+                 <h2 id="main-title">הלוזי״ם שלי</h2>
+                 <div id="categories-container"></div>
+                 <div id="message-area"></div>
+             `;
+             // רינדור מחדש של הקטגוריות והלוזים (טוען מחדש מהמערך הקיים)
+             renderCategoriesAndSchedules();
+        }
+     }
+
+     // פונקציה לעריכת לו"ז
+     function editSchedule(idx) {
+          if (idx < 0 || idx >= savedSchedules.length || !savedSchedules[idx]) { // Added check for existence
+              alert("שגיאה: לא ניתן לערוך לו\"ז לא קיים.");
+              return;
+          }
+         try {
+            // Ensure the schedule object is valid before stringifying
+            const scheduleToEdit = { schedule: savedSchedules[idx], originalIndex: idx };
+            if (!scheduleToEdit.schedule || typeof scheduleToEdit.schedule !== 'object') {
+                throw new Error("Invalid schedule object for editing.");
+            }
+            localStorage.setItem('scheduleToEdit', JSON.stringify(scheduleToEdit));
+            window.location.href = 'edit-schedule.html'; // ודא ששם הקובץ נכון
+         } catch (e) {
+             console.error("Error saving schedule to localStorage or invalid schedule:", e);
+             alert("שגיאה בהכנה לעריכה. ייתכן שהלו\"ז אינו תקין או שאין מספיק מקום באחסון הדפדפן.");
+         }
+     }
+
+    // שמירת כל מערך הלוזים ב-Firestore
     function saveSchedulesToFirestore() {
       const user = firebase.auth().currentUser;
       if (user) {
-        db.collection("schedules").doc(user.uid).set({
-          schedules: savedSchedules
-        })
-        .then(() => { console.log("Schedules saved successfully"); })
-        .catch((error) => { console.error("Error saving schedules: ", error); });
+        // Enhanced filtering for valid schedules
+        const validSchedules = savedSchedules.filter(sch =>
+             sch && typeof sch === 'object' && sch.name && typeof sch.name === 'string' &&
+             Array.isArray(sch.scheduleItems) &&
+             // Optional: check if items inside scheduleItems are valid too
+             sch.scheduleItems.every(item => item && typeof item === 'object' && item.subject)
+        );
+
+        db.collection("schedules").doc(user.uid).set({ schedules: validSchedules })
+        .then(() => { console.log("Schedules saved successfully to Firestore"); })
+        .catch((error) => {
+             console.error("Error saving schedules to Firestore: ", error);
+             // Provide more specific feedback if possible, e.g., based on error code
+             alert(`אירעה שגיאה בשמירת הלו"זים: ${error.message}`);
+        });
+      } else {
+           console.warn("Cannot save schedules. User not logged in.");
+           // Maybe alert the user they need to log in again
+           // alert("אינך מחובר. לא ניתן לשמור את השינויים.");
       }
     }
-    
-    // עזר: getBackgroundEmoji – בודק אם התו האחרון הוא אמוג'י, אחרת משתמש במילון
-    function getBackgroundEmoji(subject) {
-      let lastChar = subject.slice(-1);
-      if (lastChar.codePointAt(0) > 10000) {
-        return lastChar;
-      }
-      return subjectEmojis[subject] || "";
-    }
-    
+
+    // מילון אמוג'י ומציאת אמוג'י מתאים (נשאר זהה לגרסה הקודמת)
     const subjectEmojis = {
-      "קריאה של חומר לימוד": "📖",
-      "תרגול📝": "📝",
-      "מעבר על חומר מהיר": "⏩",
-      "למידה עמוקה": "🔍",
-      "לקום": "⏰",
-      "הפסקה": "☕",
-      "ללכת לישון": "😴",
-      "אוכל": "🍽️"
+      "קריאה": "📖", "קריאת חומר": "📖", "חומר לימוד": "📖",
+      "תרגול": "📝", "תרגילים": "📝",
+      "מעבר": "⏩", "חזרה": "⏩", "סיכום": "📑",
+      "למידה": "💡", "שיעור": "🧑‍🏫", "פרויקט": "💻",
+      "לקום": "⏰", "השכמה": "⏰",
+      "הפסקה": "☕", "מנוחה": "🧘",
+      "שינה": "😴", "לישון": "😴",
+      "אוכל": "🍽️", "ארוחה": "🍽️", "בוקר": "🥐", "צהריים": "🥪", "ערב": "🍲",
+      "ספורט": "🏋️‍♀️", "אימון": "🏃‍♂️", "הליכה": "🚶‍♀️",
+      "פגישה": "👥", "שיחה": "📞",
+      "סידורים": "🛒", "קניות": "🛍️",
+      "נסיעה": "🚗", "טיסה": "✈️", "אוטובוס": "🚌", "רכבת": "🚆",
+      "בילוי": "🎉", "סרט": "🎬", "מסעדה": "🍜",
+      "חוף": "🏖️", "ים": "🌊", "בריכה": "🏊",
+      "טיול": "🏞️", "טבע": "🌲",
+       "כללי": "📌" // ברירת מחדל
     };
-    
+
+    function getBackgroundEmoji(subject) {
+      if (!subject || typeof subject !== 'string') return subjectEmojis["כללי"]; // Added type check
+      const lowerSubject = subject.toLowerCase();
+
+       // חיפוש מדויק יותר של אמוג'י בסוף או בתחילת המחרוזת
+       const trimmedSubject = subject.trim();
+       // Use regex for more robust emoji detection at start/end
+       const emojiAtEnd = trimmedSubject.match(/\p{Emoji_Presentation}$/u);
+       if (emojiAtEnd) return emojiAtEnd[0];
+       const emojiAtStart = trimmedSubject.match(/^\p{Emoji_Presentation}/u);
+       if (emojiAtStart) return emojiAtStart[0];
+
+
+      // חיפוש מילה במילון
+      for (const key in subjectEmojis) {
+        // Ensure key exists and is a string before calling toLowerCase
+        if (subjectEmojis.hasOwnProperty(key) && typeof key === 'string' && lowerSubject.includes(key.toLowerCase())) {
+          return subjectEmojis[key];
+        }
+      }
+      // חיפוש אמוג'י כלשהו בתוך המחרוזת
+       const emojiMatch = subject.match(/\p{Emoji_Presentation}/u);
+       if (emojiMatch) return emojiMatch[0];
+
+      return subjectEmojis["כללי"];
+    }
+
+    // צילום מסך של אלמנט ספציפי
     function captureScreenshotFromElement(elementId, name) {
       const elem = document.getElementById(elementId);
-      html2canvas(elem).then(canvas => {
+      if (!elem) {
+          console.error("Element not found for screenshot:", elementId);
+          alert("שגיאה: לא נמצא האלמנט לצילום.");
+          return;
+      }
+
+      // יצירת עטיפה זמנית עם רקע לבן לצילום נקי יותר
+       const wrapper = document.createElement('div');
+       wrapper.style.padding = '20px';
+       wrapper.style.backgroundColor = '#ffffff';
+       wrapper.style.display = 'inline-block';
+       wrapper.style.minWidth = elem.offsetWidth + 'px'; // Ensure wrapper is at least as wide
+
+       // שכפול האלמנט לתוך העטיפה
+       const clone = elem.cloneNode(true);
+       wrapper.appendChild(clone);
+
+       // הוספת העטיפה ל-body באופן זמני ובלתי נראה
+       wrapper.style.position = 'absolute';
+       wrapper.style.left = '-9999px';
+       wrapper.style.top = '-9999px';
+       document.body.appendChild(wrapper);
+
+
+      html2canvas(wrapper, {
+          backgroundColor: "#ffffff",
+          useCORS: true,
+           scale: 1.5, // Slightly higher resolution
+           logging: false // Disable html2canvas logging to console
+      }).then(canvas => {
+        document.body.removeChild(wrapper); // הסרת העטיפה הזמנית
+
         canvas.toBlob(function(blob) {
-          const link = document.createElement("a");
-          link.download = name + ".png";
-          link.href = URL.createObjectURL(blob);
-          link.click();
-        });
-      });
-    }
-    
-    function copyScheduleToClipboardFromSchedule(idx) {
-      const sch = savedSchedules[idx];
-      let text = sch.name + "\n\n";
-      sch.scheduleItems.forEach(item => {
-        text += `*${item.startTime} - ${item.endTime} : ${item.subject} ${getBackgroundEmoji(item.subject)}*\n~ ${item.description}\n\n`;
-      });
-      navigator.clipboard.writeText(text).then(() => {
-        alert("הלו״ז הועתק בהצלחה!");
+          if (blob) {
+              const link = document.createElement("a");
+              // Sanitize filename more thoroughly
+              const safeName = (name || 'לוז')
+                 .replace(/[\s]/g, '_') // Replace spaces with underscore
+                 .replace(/[^a-z0-9א-ת_\-]/gi, '') // Remove invalid characters
+                 || 'לוז'; // Fallback name
+              link.download = safeName + ".png";
+              link.href = URL.createObjectURL(blob);
+              link.click();
+              // Clean up the object URL after a short delay
+              setTimeout(() => URL.revokeObjectURL(link.href), 100);
+          } else {
+               console.error("Failed to create blob from canvas.");
+               alert("שגיאה ביצירת קובץ התמונה.");
+          }
+        }, 'image/png');
       }).catch(err => {
-        alert("התרחשה שגיאה בהעתקה.");
+           if (document.body.contains(wrapper)) {
+                 document.body.removeChild(wrapper);
+           }
+           console.error("Error capturing screenshot:", err);
+           alert("שגיאה בצילום המסך.");
       });
     }
+
+    // העתקת לוז ללוח כטקסט מעוצב
+    function copyScheduleToClipboardFromSchedule(idx) {
+        if (idx < 0 || idx >= savedSchedules.length || !savedSchedules[idx]) { // Added existence check
+            alert("שגיאה: לא ניתן להעתיק לו\"ז לא קיים.");
+            return;
+         }
+      const sch = savedSchedules[idx];
+      let text = `*${sch.name || 'לו"ז ללא שם'}*\n\n`;
+
+      if (sch.scheduleItems && Array.isArray(sch.scheduleItems) && sch.scheduleItems.length > 0) {
+          sch.scheduleItems.forEach(item => {
+             if (item && item.subject) { // Check item validity
+                 const emoji = getBackgroundEmoji(item.subject || '');
+                 const startTime = item.startTime || '??:??';
+                 const endTime = item.endTime || '??:??';
+                 const subject = item.subject || 'ללא נושא';
+                 text += `*${startTime} - ${endTime}* : ${subject} ${emoji}\n`;
+                 if (item.description) {
+                      text += `   - ${item.description.trim()}\n`;
+                 }
+                 text += "\n";
+             }
+          });
+      } else {
+           text += "(לו\"ז ריק)\n";
+      }
+
+       const finalText = text.trim(); // Trim final text
+
+       // Use Clipboard API first
+       if (navigator.clipboard && navigator.clipboard.writeText) {
+           navigator.clipboard.writeText(finalText).then(() => {
+             alert("הלו״ז הועתק ללוח בהצלחה!");
+           }).catch(err => {
+             console.error("Clipboard API error:", err);
+             // Fallback to execCommand if Clipboard API fails
+             copyUsingExecCommand(finalText);
+           });
+       } else {
+           // Fallback immediately if Clipboard API is not available
+           copyUsingExecCommand(finalText);
+       }
+    }
+
+     // Fallback copy function using execCommand
+     function copyUsingExecCommand(textToCopy) {
+         const textArea = document.createElement("textarea");
+         textArea.value = textToCopy;
+         // Make textarea non-editable and visually hidden
+         textArea.style.position = "fixed";
+         textArea.style.top = "-9999px";
+         textArea.style.left = "-9999px";
+         textArea.setAttribute("readonly", "");
+         document.body.appendChild(textArea);
+         textArea.select();
+         try {
+             const successful = document.execCommand('copy');
+             if (successful) {
+                 alert("הלו״ז הועתק ללוח בהצלחה!");
+             } else {
+                  console.error("execCommand failed to copy.");
+                  alert("העתקה נכשלה. ייתכן שהדפדפן שלך אינו תומך בפעולה זו.");
+             }
+         } catch (err) {
+             console.error("Error during execCommand:", err);
+             alert("העתקה נכשלה. ייתכן שהדפדפן שלך אינו תומך בפעולה זו.");
+         } finally {
+             document.body.removeChild(textArea);
+         }
+     }
+
+
+    // --- סוף פונקציות ספציפיות ---
+
   </script>
 </body>
 </html>
