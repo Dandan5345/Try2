@@ -4,207 +4,354 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>התחברות - זמן זהב</title>
-  <!-- Firebase SDKs (גרסת compat לצורך פשטות) -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- טעינת ספריות Firebase (בלי קוד הגדרות - זה נטען בקובץ נפרד) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script>
-    // עדכן את הקונפיגורציה לפי הפרויקט שלך
-    const firebaseConfig = {
-      apiKey: "AIzaSyCsp7xKutteUAxmjYQsQWDlrjK7URg-MR8",
-      authDomain: "zman-zhav.firebaseapp.com",
-      projectId: "zman-zhav",
-      storageBucket: "zman-zhav.firebasestorage.app",
-      messagingSenderId: "685099855512",
-      appId: "1:685099855512:web:c3ad456591e1d92e436aed",
-      measurementId: "G-XJ3LKJSW16"
-    };
-    // אתחל את Firebase
-    firebase.initializeApp(firebaseConfig);
-  </script>
+  <!-- כלול את קובץ הקונפיגורציה של Firebase -->
+  <script src="firebase-config.js"></script>
+
   <style>
+    :root {
+      --primary-color: #3a506b; /* כחול כהה */
+      --secondary-color: #5bc0be; /* טורקיז */
+      --background-start: #f0f4f8; /* תכלת בהיר מאוד */
+      --background-end: #d9e2ec; /* אפור-תכלת */
+      --text-color: #333;
+      --text-light: #fff;
+      --border-color: #ccc;
+      --error-color: #e74c3c; /* אדום */
+      --success-color: #2ecc71; /* ירוק */
+      --input-focus-border: #5bc0be; /* טורקיז */
+      --font-family: 'Rubik', sans-serif;
+      --container-bg: #ffffff;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      font-family: var(--font-family);
+      background: linear-gradient(135deg, var(--background-start), var(--background-end));
       direction: rtl;
-      text-align: center;
-      padding: 40px 20px;
-    }
-    h1 {
-      font-size: 32px;
-      margin-bottom: 20px;
-      color: #34495e;
-    }
-    .auth-container {
-      max-width: 400px;
-      margin: 0 auto;
-      background-color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-color);
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-    .auth-container input {
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary-color);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .auth-container {
+      max-width: 420px;
       width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
+      background-color: var(--container-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
-    .auth-container button {
-      width: 100%;
-      padding: 10px;
-      background-color: #3a506b;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    .auth-container button:hover {
-      background-color: #2a3e56;
-    }
+
     .toggle-buttons {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 1.5rem;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
     }
+
     .toggle-buttons button {
-      width: 48%;
-      padding: 10px;
+      flex: 1;
+      padding: 0.8rem;
       border: none;
-      border-radius: 6px;
-      font-size: 16px;
+      background-color: #f8f9fa;
+      color: var(--primary-color);
+      font-size: 1rem;
+      font-weight: 500;
       cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-family: var(--font-family);
     }
+
+    .toggle-buttons button:not(:last-child) {
+      border-left: 1px solid var(--border-color);
+    }
+
     .toggle-buttons button.active {
-      background-color: #3a506b;
-      color: #fff;
+      background-color: var(--primary-color);
+      color: var(--text-light);
     }
-    .toggle-buttons button:not(.active) {
-      background-color: #f0f0f0;
-      color: #333;
+
+    .toggle-buttons button:not(.active):hover {
+      background-color: #e9ecef;
     }
-    /* הודעת שגיאה */
+
+    /* עיצוב הטפסים */
+    #signinForm, #signupForm {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: var(--font-family);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--input-focus-border);
+      box-shadow: 0 0 0 3px rgba(91, 192, 190, 0.25);
+    }
+
+    input.input-error {
+      border-color: var(--error-color);
+    }
+    input.input-error:focus {
+      border-color: var(--error-color);
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.25);
+    }
+
+    .auth-container button:not(.toggle-button) {
+      width: 100%;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+      font-family: var(--font-family);
+      margin-top: 0.5rem;
+    }
+
+    .auth-container button:not(.toggle-button):hover {
+      opacity: 0.9;
+    }
+    .auth-container button:not(.toggle-button):active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: var(--text-light);
+    }
+
+    .btn-google {
+      background-color: #fff;
+      color: #444;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-google:hover {
+      background-color: #f5f5f5;
+      border-color: #ccc;
+    }
+
+    .google-icon {
+      width: 18px;
+      height: 18px;
+    }
+
     .error-message {
-      color: red;
-      font-size: 14px;
-      margin-top: 5px;
+      color: var(--error-color);
+      font-size: 0.875rem;
+      text-align: right;
+      margin-top: -0.5rem;
+      margin-bottom: 0.5rem;
       display: none;
+    }
+
+    .error-message.visible {
+      display: block;
     }
   </style>
 </head>
 <body>
-  <h1>התחברות - זמן זהב</h1>
+
   <div class="auth-container">
+    <h1>זמן זהב</h1>
     <div class="toggle-buttons">
-      <button id="signinToggle" class="active" onclick="showSignIn()">התחברות</button>
-      <button id="signupToggle" onclick="showSignUp()">יצירת חשבון</button>
+      <button id="signinToggle" class="toggle-button active" onclick="showSignIn()">התחברות</button>
+      <button id="signupToggle" class="toggle-button" onclick="showSignUp()">יצירת חשבון</button>
     </div>
-    <!-- טופס התחברות -->
+
     <div id="signinForm">
-      <input type="email" id="signinEmail" placeholder="אימייל">
-      <input type="password" id="signinPassword" placeholder="סיסמה">
-      <button onclick="signIn()">התחבר</button>
-      <button onclick="signInWithGoogle()">התחבר עם גוגל</button>
+      <input type="email" id="signinEmail" placeholder="אימייל" required>
+      <input type="password" id="signinPassword" placeholder="סיסמה" required>
+      <button class="btn-primary" onclick="signIn()">התחבר</button>
+      <button class="btn-google" onclick="signInWithGoogle()">
+        <svg class="google-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="display: block;">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+          <path fill="none" d="M0 0h48v48H0z"></path>
+        </svg>
+        התחבר עם גוגל
+      </button>
     </div>
-    <!-- טופס יצירת חשבון -->
+
     <div id="signupForm" style="display: none;">
-      <input type="text" id="signupFirstName" placeholder="שם פרטי">
-      <input type="text" id="signupLastName" placeholder="שם משפחה">
-      <input type="email" id="signupEmail" placeholder="אימייל">
-      <input type="password" id="signupPassword" placeholder="סיסמה">
-      <input type="password" id="signupPasswordConfirm" placeholder="אמת סיסמה">
-      <div id="passwordError" class="error-message">הסיסמה חייבת לכלול לפחות אות גדולה אחת או סימן מיוחד ולהיות באנגלית בלבד</div>
-      <button onclick="signUp()">צור חשבון</button>
-      <button onclick="signInWithGoogle()">התחבר עם גוגל</button>
+      <input type="text" id="signupFirstName" placeholder="שם פרטי" required>
+      <input type="text" id="signupLastName" placeholder="שם משפחה" required>
+      <input type="email" id="signupEmail" placeholder="אימייל" required>
+      <input type="password" id="signupPassword" placeholder="סיסמה" required>
+      <input type="password" id="signupPasswordConfirm" placeholder="אמת סיסמה" required>
+      <div id="passwordError" class="error-message" aria-live="polite">
+        הסיסמה חייבת לכלול לפחות אות גדולה אחת או סימן מיוחד ולהיות באנגלית בלבד.
+      </div>
+      <button class="btn-primary" onclick="signUp()">צור חשבון</button>
+      <button class="btn-google" onclick="signInWithGoogle()">
+        <svg class="google-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="display: block;">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+          <path fill="none" d="M0 0h48v48H0z"></path>
+        </svg>
+        הירשם עם גוגל
+      </button>
     </div>
   </div>
-  
+
   <script>
+    // שליפת אלמנטים מה-DOM
+    const signinForm = document.getElementById("signinForm");
+    const signupForm = document.getElementById("signupForm");
+    const signinToggle = document.getElementById("signinToggle");
+    const signupToggle = document.getElementById("signupToggle");
+    const passwordInput = document.getElementById("signupPassword");
+    const passwordConfirmInput = document.getElementById("signupPasswordConfirm");
+    const passwordErrorDiv = document.getElementById("passwordError");
+
     function showSignIn() {
-      document.getElementById("signinForm").style.display = "block";
-      document.getElementById("signupForm").style.display = "none";
-      document.getElementById("signinToggle").classList.add("active");
-      document.getElementById("signupToggle").classList.remove("active");
+      signinForm.style.display = "flex";
+      signupForm.style.display = "none";
+      signinToggle.classList.add("active");
+      signupToggle.classList.remove("active");
     }
-    
+
     function showSignUp() {
-      document.getElementById("signinForm").style.display = "none";
-      document.getElementById("signupForm").style.display = "block";
-      document.getElementById("signupToggle").classList.add("active");
-      document.getElementById("signinToggle").classList.remove("active");
+      signinForm.style.display = "none";
+      signupForm.style.display = "flex";
+      signupToggle.classList.add("active");
+      signinToggle.classList.remove("active");
     }
-    
+
+    function handleAuthError(error) {
+      console.error("Firebase Auth Error:", error);
+      alert("אירעה שגיאה: " + error.message);
+    }
+
     function signIn() {
       const email = document.getElementById("signinEmail").value;
       const password = document.getElementById("signinPassword").value;
+      if (!email || !password) {
+        alert("אנא מלא אימייל וסיסמה.");
+        return;
+      }
       firebase.auth().signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
+          console.log("התחברות הצליחה:", userCredential.user);
           window.location.href = "index.html";
         })
         .catch((error) => {
-          alert("שם משתמש או סיסמא לא נכונים");
+          if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+            alert("שם משתמש או סיסמא לא נכונים.");
+          } else {
+            handleAuthError(error);
+          }
         });
     }
-    
+
     function signUp() {
       const firstName = document.getElementById("signupFirstName").value.trim();
       const lastName = document.getElementById("signupLastName").value.trim();
       const email = document.getElementById("signupEmail").value.trim();
-      const password = document.getElementById("signupPassword").value;
-      const passwordConfirm = document.getElementById("signupPasswordConfirm").value;
-      
+      const password = passwordInput.value;
+      const passwordConfirm = passwordConfirmInput.value;
+
+      // איפוס הודעות ושגיאות קודמות
+      passwordInput.classList.remove('input-error');
+      passwordConfirmInput.classList.remove('input-error');
+      passwordErrorDiv.classList.remove('visible');
+
       if (!firstName || !lastName || !email || !password || !passwordConfirm) {
         alert("אנא מלא את כל השדות");
         return;
       }
       if (password !== passwordConfirm) {
         alert("הסיסמאות אינן תואמות");
+        passwordInput.classList.add('input-error');
+        passwordConfirmInput.classList.add('input-error');
         return;
       }
-      
-      // בדיקת סיסמה: חייבת לכלול לפחות אות גדולה אחת או סימן מיוחד
-      // ולהיות מורכבת רק מתווים באנגלית
+
+      // בדיקת סיסמה: חייבת לכלול לפחות אות גדולה אחת או סימן מיוחד ולהיות באנגלית בלבד
       const uppercaseRegex = /[A-Z]/;
       const specialRegex = /[!@#$%^&*(),.?":{}|<>]/;
       const englishRegex = /^[\x00-\x7F]+$/;
-      
+
       if (!(uppercaseRegex.test(password) || specialRegex.test(password)) || !englishRegex.test(password)) {
-        document.getElementById("signupPassword").style.borderColor = "red";
-        document.getElementById("signupPasswordConfirm").style.borderColor = "red";
-        document.getElementById("passwordError").style.display = "block";
+        passwordInput.classList.add('input-error');
+        passwordConfirmInput.classList.add('input-error');
+        passwordErrorDiv.classList.add('visible');
         return;
-      } else {
-        document.getElementById("signupPassword").style.borderColor = "";
-        document.getElementById("signupPasswordConfirm").style.borderColor = "";
-        document.getElementById("passwordError").style.display = "none";
       }
-      
+
       firebase.auth().createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
           const user = userCredential.user;
+          console.log("חשבון נוצר בהצלחה עבור:", email);
           return user.updateProfile({
             displayName: firstName + " " + lastName
           }).then(() => {
+            console.log("פרופיל המשתמש עודכן.");
             window.location.href = "index.html";
           });
         })
-        .catch((error) => {
-          alert("שגיאה: " + error.message);
-        });
+        .catch(handleAuthError);
     }
-    
+
     function signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithPopup(provider)
         .then((result) => {
+          console.log("התחברות עם גוגל הצליחה:", result.user);
           window.location.href = "index.html";
         })
-        .catch((error) => {
-          alert("שגיאה: " + error.message);
-        });
+        .catch(handleAuthError);
     }
+
+    document.addEventListener('DOMContentLoaded', showSignIn);
   </script>
 </body>
 </html>
