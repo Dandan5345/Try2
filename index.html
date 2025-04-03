@@ -13,8 +13,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
-        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <script>
@@ -58,20 +58,12 @@
       padding-top: 70px; /* מוריד את התוכן מתחת לתפריט הקבוע */
       padding-bottom: 40px;
       text-align: center;
-      background-color: #f0f0f0;
+      background-color: #f0f0f0; /* רקע בהיר נשמר */
     }
-    /* כפתור עזרה (איך משתמשים) שמופיע מעל התפריט הראשי */
-    .help-icon {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      cursor: pointer;
-      z-index: 1001;
-      font-size: 24px;
-      color: #1e90ff;
-    }
+
+    /* עיצוב התפריט הראשי למעלה - עודכן */
     .topbar {
-      background-color: #6dd5ed; /* טורקיז בהיר לתפריט */
+      background-color: #0A2342; /* כחול כהה ראשי */
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -82,36 +74,126 @@
       width: 100%;
       z-index: 1000;
       transition: transform 0.3s;
-      border-bottom: 2px solid #5bc0de;
+      border-bottom: 2px solid #2A558C; /* גוון כחול משלים */
     }
-    .site-name {
-      font-size: 28px;
-      color: #ecf0f1;
+
+    /* עיצוב לוגו האתר */
+  .site-name {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  color: #ecf0f1;
+  cursor: pointer;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  /* ניתן להסיר או להתאים את ה-padding במידת הצורך */
+}
+
+    /* כפתור המבורגר */
+    .hamburger-menu {
+      font-size: 24px;
+      color: #ecf0f1; /* צבע טקסט בהיר */
       cursor: pointer;
-      font-weight: bold;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+      padding: 5px 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      z-index: 1002;
     }
-    .nav-links {
-      display: flex;
-      gap: 10px;
+
+    .hamburger-menu:hover {
+      background-color: rgba(255, 255, 255, 0.1); /* הובר בהיר יותר */
     }
-    .nav-links a {
-      background-color: #4ab3bf;
+
+    /* כפתור התחברות - עודכן */
+    .auth-button {
+      background-color: #007bff; /* כחול סטנדרטי לכפתור */
       padding: 10px 15px;
       border-radius: 8px;
       transition: background-color 0.3s, box-shadow 0.3s;
       font-weight: bold;
-      color: #ecf0f1;
-      border-right: 1px solid rgba(236,240,241,0.3);
+      color: #FFFFFF; /* טקסט לבן */
+      border: none;
+      cursor: pointer;
       text-decoration: none;
     }
-    .nav-links a:last-child { border-right: none; }
-    .nav-links a:hover {
-      background-color: #8ae3ff;
+
+    .auth-button:hover {
+      background-color: #0056b3; /* כחול כהה יותר בהובר */
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
+
+    /* תפריט צד - עודכן */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -280px; /* מתחיל מחוץ למסך */
+      width: 280px;
+      height: 100%;
+      background-color: #0A2342; /* כחול כהה ראשי */
+      z-index: 1001;
+      padding-top: 80px;
+      transition: right 0.3s ease;
+      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .side-menu.active {
+      right: 0; /* מציג את התפריט */
+    }
+
+    /* סגירת תפריט צד */
+    .close-menu {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      color: #ecf0f1; /* צבע בהיר */
+      cursor: pointer;
+    }
+
+    /* קישורים בתפריט צד */
+    .side-menu-links {
+      display: flex;
+      flex-direction: column;
+      padding: 0 20px;
+    }
+
+    .side-menu-links a {
+      padding: 15px;
+      color: #ecf0f1; /* צבע בהיר */
+      text-decoration: none;
+      font-size: 18px;
+      border-bottom: 1px solid rgba(236, 240, 241, 0.2); /* קו הפרדה עדין יותר */
+      transition: background-color 0.3s;
+      text-align: right;
+    }
+
+    .side-menu-links a:last-child {
+      border-bottom: none;
+    }
+
+    .side-menu-links a:hover {
+      background-color: rgba(255, 255, 255, 0.1); /* הובר בהיר יותר */
+    }
+
+    /* כיסוי כהה כשהתפריט פתוח */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: none;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
     main#content {
-      background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url('URL_של_תמונה_מתאימה');
+      background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url('URL_של_תמונה_מתאימה'); /* כדאי לעדכן URL אם יש */
       background-size: cover;
       background-position: center;
       color: #333;
@@ -124,21 +206,24 @@
       align-items: center;
       justify-content: center;
     }
+
     main#content h1 {
       font-size: 3em;
       margin-bottom: 20px;
-      color: #1e90ff;
+      color: #0A2342; /* כחול כהה ראשי לכותרת */
     }
+
     main#content p {
       font-size: 1.5em;
       max-width: 700px;
       margin-bottom: 30px;
-      color: #555;
+      color: #555; /* צבע טקסט רגיל נשמר */
     }
+
     main#content .btn {
       font-size: 1.2em;
       padding: 15px 30px;
-      background-color: #6dd5ed;
+      background-color: #007bff; /* כחול סטנדרטי לכפתור */
       color: white;
       border: none;
       border-radius: 10px;
@@ -146,9 +231,11 @@
       transition: background-color 0.3s;
       text-decoration: none;
     }
+
     main#content .btn:hover {
-      background-color: #5bc0de;
+      background-color: #0056b3; /* כחול כהה יותר בהובר */
     }
+
     .features {
       display: flex;
       justify-content: space-around;
@@ -156,26 +243,30 @@
       text-align: center;
       max-width: 1200px;
       margin: 40px auto;
-      background-color: #f8f9fa;
+      background-color: #f8f9fa; /* רקע בהיר נשמר */
       border-radius: 12px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
+
     .feature {
       flex: 1;
       padding: 20px;
       margin: 0 10px;
       border-radius: 8px;
-      background-color: #fff;
+      background-color: #fff; /* רקע לבן נשמר */
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+
     .feature i {
-      color: #ffb347;
+      color: #ffb347; /* צבע כתום נשמר כאקסנט */
       margin-bottom: 15px;
     }
+
     .feature h3 {
       margin-bottom: 10px;
-      color: #3a506b;
+      color: #3a506b; /* צבע כותרת משנה נשמר */
     }
+
     .options {
       display: flex;
       justify-content: space-around;
@@ -183,12 +274,13 @@
       max-width: 1200px;
       margin: 20px auto;
       flex-wrap: wrap;
-      background-color: #f8f9fa;
+      background-color: #f8f9fa; /* רקע בהיר נשמר */
       border-radius: 12px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
+
     .option-card {
-      background-color: #fff;
+      background-color: #fff; /* רקע לבן נשמר */
       border-radius: 8px;
       padding: 30px;
       margin: 20px;
@@ -198,36 +290,40 @@
       cursor: pointer;
       transition: transform 0.3s;
       text-decoration: none;
-      color: #3a506b;
+      color: #3a506b; /* צבע טקסט כרטיסייה נשמר */
     }
+
     .option-card:hover {
       transform: scale(1.05);
-      background-color: #e9ecef;
+      background-color: #e9ecef; /* הובר אפרפר נשמר */
     }
+
     .option-card i {
-      color: #1e90ff;
+      color: #007bff; /* כחול סטנדרטי לאייקון */
       margin-bottom: 15px;
     }
+
     .option-card h3 {
       margin-bottom: 10px;
     }
+
     footer {
       text-align: center;
       padding: 20px;
-      color: #7f8c8d;
+      color: #7f8c8d; /* צבע טקסט פוטר נשמר */
       font-size: 14px;
-      background-color: #e9ecef;
+      background-color: #e9ecef; /* רקע פוטר נשמר */
       border-top: 1px solid #ddd;
     }
+
     @media (max-width: 768px) {
       .options { flex-direction: column; align-items: center; }
       .option-card { width: 80%; }
     }
+
     @media (max-width: 600px) {
-      .topbar { flex-direction: column; gap: 10px; }
       .site-name { font-size: 24px; }
-      .nav-links a { padding: 10px; width: 100%; text-align: center; }
-      main#content h1 { font-size: 2.5em; color: #1e90ff; }
+      main#content h1 { font-size: 2.5em; color: #0A2342; /* עדכון צבע כותרת במובייל */ }
       main#content p { font-size: 1.2em; color: #555; }
       .features { flex-direction: column; align-items: center; background-color: #f8f9fa; }
       .feature { margin: 15px 0; width: 80%; background-color: #fff; }
@@ -235,20 +331,29 @@
   </style>
 </head>
 <body>
-  <!-- כפתור עזרה בצורת סימן שאלה שמוביל לדף "איך משתמשים" -->
-  <div class="help-icon" onclick="window.location.href='how-to-use.html'">
-    <i class="fas fa-question-circle"></i>
-  </div>
+  <div class="overlay" id="overlay"></div>
 
   <nav class="topbar">
-    <div class="site-name" onclick="goHome()">זמן זהב</div>
-    <div class="nav-links">
-      <a href="choose-schedule.html">לו״ז חדש</a>
-      <a href="my-schedules.html">הלוזי״ם שלי</a>
-      <a href="tips.html">טיפים לניהול זמנים</a>
-      <a href="auth.html" id="authLink">התחברות</a>
+    <div class="hamburger-menu" onclick="toggleMenu()">
+      <i class="fas fa-bars"></i>
     </div>
+
+    <div class="site-name" onclick="goHome()">זמן זהב</div>
+
+    <a href="auth.html" id="authLink" class="auth-button">התחברות</a>
   </nav>
+
+  <div class="side-menu" id="sideMenu">
+    <div class="close-menu" onclick="toggleMenu()">
+      <i class="fas fa-times"></i>
+    </div>
+    <div class="side-menu-links">
+      <a href="choose-schedule.html"><i class="fas fa-calendar-plus"></i> לו״ז חדש</a>
+      <a href="my-schedules.html"><i class="fas fa-folder-open"></i> הלוזי״ם שלי</a>
+      <a href="tips.html"><i class="fas fa-lightbulb"></i> טיפים לניהול זמנים</a>
+      <a href="how-to-use.html"><i class="fas fa-info-circle"></i> עזרה והסבר</a>
+    </div>
+  </div>
 
   <main id="content">
     <h1>ארגון הזמן שלך - לכל מטרה</h1>
@@ -276,18 +381,18 @@
 
   <section class="options">
     <a href="choose-schedule.html" class="option-card">
-      <i class="fas fa-plus-circle fa-4x" style="color: #1e90ff;"></i>
+      <i class="fas fa-plus-circle fa-4x" style="color: #007bff;"></i>
       <h3>לו״ז חדש</h3>
-      <p>התחל לתכנן את הלוז הבא שלך.</p>
+      <p>התחל לתכנן את הלוз הבא שלך.</p>
     </a>
     <a href="my-schedules.html" class="option-card">
-      <i class="fas fa-folder-open fa-4x" style="color: #1e90ff;"></i>
+      <i class="fas fa-folder-open fa-4x" style="color: #007bff;"></i>
       <h3>הלוזי״ם שלי</h3>
       <p>גש ללוזים השמורים וערוך אותם.</p>
     </a>
     <a href="how-to-use.html" class="option-card">
-      <i class="fas fa-question-circle fa-4x" style="color: #1e90ff;"></i>
-      <h3>איך משתמשים</h3>
+      <i class="fas fa-info-circle fa-4x" style="color: #007bff;"></i>
+      <h3>עזרה והסבר</h3>
       <p>המדריך המלא לשימוש באתר.</p>
     </a>
   </section>
@@ -298,6 +403,27 @@
     function goHome() {
       window.location.href = "index.html";
     }
+
+    // פונקציה לפתיחה וסגירה של תפריט הצד
+    function toggleMenu() {
+      const sideMenu = document.getElementById("sideMenu");
+      const overlay = document.getElementById("overlay");
+
+      sideMenu.classList.toggle("active");
+      overlay.classList.toggle("active");
+
+      // מניעת גלילה כשהתפריט פתוח
+      if (sideMenu.classList.contains("active")) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    }
+
+    // סגירת התפריט בלחיצה על הכיסוי הכהה
+    document.getElementById("overlay").addEventListener("click", function() {
+      toggleMenu();
+    });
 
     // מאזין לשינוי במצב האימות - עדכון כפתור ההתחברות בהתאם למצב המשתמש
     firebase.auth().onAuthStateChanged(function(user) {
@@ -311,23 +437,28 @@
           greeting = "ערב טוב";
         }
         let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
-        authLink.innerText = greeting + " " + firstName + "!";
+        // עדכון הטקסט בכפתור - נוסף סימן קריאה
+        authLink.innerText = greeting + ", " + firstName + "!";
         authLink.onclick = function(e) {
           e.preventDefault();
           if (confirm("להתנתק?")) {
             firebase.auth().signOut().then(function() {
-              authLink.innerText = "התחברות";
-              authLink.onclick = login;
+              // לא צריך לעדכן כאן את הטקסט וה-onclick, כי onAuthStateChanged ירוץ שוב ויטפל בזה
+            }).catch(function(error){
+                console.error("Sign out error", error);
             });
           }
         };
+        authLink.href = "#"; // שינוי ה-href למניעת ניווט
       } else {
         authLink.innerText = "התחברות";
-        authLink.onclick = login;
+        authLink.href = "auth.html"; // החזרת הקישור לדף ההתחברות
+        // הסרת ה-onclick אם היה קיים מהתנתקות קודמת
+        authLink.onclick = null;
       }
     });
 
-    // פונקציית התחברות – משתמש ב-GoogleAuthProvider
+    // פונקציית התחברות – משתמש ב-GoogleAuthProvider - לא נמצאת בשימוש ישיר כרגע כי הכפתור מנוהל על ידי onAuthStateChanged
     function login() {
       var provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithPopup(provider)
@@ -339,14 +470,19 @@
         });
     }
 
+    // קוד להסתרת התפריט העליון בגלילה - מופעל מחדש
+    let lastScrollTop = 0;
     window.addEventListener("scroll", function() {
+      let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
       const nav = document.querySelector(".topbar");
-      if (window.scrollY > 50) {
+      if (currentScroll > lastScrollTop && currentScroll > 50) { // גלילה למטה ואחרי 50 פיקסלים
         nav.style.transform = "translateY(-100%)";
-      } else {
+      } else { // גלילה למעלה או קרוב לחלק העליון
         nav.style.transform = "translateY(0)";
       }
-    });
+      lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // For Mobile or negative scrolling
+    }, false);
+
   </script>
 </body>
 </html>
