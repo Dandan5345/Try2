@@ -13,58 +13,44 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
-        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCsp7xKutteUAxmjYQsQWDlrjK7URg-MR8",
-      authDomain: "zman-zhav.firebaseapp.com",
-      projectId: "zman-zhav",
-      storageBucket: "zman-zhav.firebasestorage.app",
-      messagingSenderId: "685099855512",
-      appId: "1:685099855512:web:c3ad456591e1d92e436aed",
-      measurementId: "G-XJ3LKJSW16"
-    };
-    firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
-    const db = firebase.firestore();
-  </script>
+
+  <!-- כלול את הקובץ המשותף של Firebase -->
+  <script src="firebase-config.js"></script>
 
   <script>
+    // רישום Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/service-worker.js')
-          .then(registration => console.log('Service Worker registered with scope:', registration.scope))
-          .catch(err => console.log('Service Worker registration failed:', err));
+          .then(function(registration) {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch(function(err) {
+            console.log('Service Worker registration failed:', err);
+          });
       });
     }
   </script>
 
   <style>
-    * { margin:0; padding:0; box-sizing: border-box; }
+    /* Reset בסיסי */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
       direction: rtl;
-      padding-top: 70px; /* התוכן לא יתחתן לתפריט הקבוע */
+      padding-top: 70px; /* כדי לא להסתתר מתחת להאדר הקבוע */
       padding-bottom: 40px;
       text-align: center;
-      background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+      background-color: #f0f0f0;
     }
-    /* כפתור עזרה (סימן שאלה) – ממוקם בפינה הימנית העליונה */
-    .help-icon {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      cursor: pointer;
-      z-index: 1001;
-      font-size: 24px;
-      color: #1e90ff;
-    }
+    /* עיצוב האדיר (header) */
     .topbar {
-      background-color: #6dd5ed;
+      background-color: #0A2342;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -75,81 +61,142 @@
       width: 100%;
       z-index: 1000;
       transition: transform 0.3s;
-      border-bottom: 2px solid #5bc0de;
+      border-bottom: 2px solid #2A558C;
+    }
+    .hamburger-menu {
+      font-size: 24px;
+      color: #ecf0f1;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      z-index: 1002;
+    }
+    .hamburger-menu:hover {
+      background-color: rgba(255, 255, 255, 0.1);
     }
     .site-name {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
       font-size: 28px;
       color: #ecf0f1;
       cursor: pointer;
       font-weight: bold;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
     }
-    .nav-links {
-      display: flex;
-      gap: 10px;
-    }
-    .nav-links a {
-      background-color: #4ab3bf;
+    .auth-button {
+      background-color: #007bff;
       padding: 10px 15px;
       border-radius: 8px;
       transition: background-color 0.3s, box-shadow 0.3s;
       font-weight: bold;
-      color: #ecf0f1;
-      border-right: 1px solid rgba(236,240,241,0.3);
+      color: #FFFFFF;
+      border: none;
+      cursor: pointer;
       text-decoration: none;
     }
-    .nav-links a:last-child { border-right: none; }
-    .nav-links a:hover {
-      background-color: #8ae3ff;
+    .auth-button:hover {
+      background-color: #0056b3;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-    main {
-      padding: 30px;
-      margin-top: 100px; /* העלה את התחלת התוכן כך שלא יסתתר מתחת לתפריט */
-      min-height: 70vh;
-      text-align: center;
-      background-color: rgba(255, 255, 255, 0.8);
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* תפריט צד */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -280px;
+      width: 280px;
+      height: 100%;
+      background-color: #0A2342;
+      z-index: 1001;
+      padding-top: 80px;
+      transition: right 0.3s ease;
+      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
     }
-    h2 {
+    .side-menu.active {
+      right: 0;
+    }
+    .close-menu {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      color: #ecf0f1;
+      cursor: pointer;
+    }
+    .side-menu-links {
+      display: flex;
+      flex-direction: column;
+      padding: 0 20px;
+    }
+    .side-menu-links a {
+      padding: 15px;
+      color: #ecf0f1;
+      text-decoration: none;
+      font-size: 18px;
+      border-bottom: 1px solid rgba(236, 240, 241, 0.2);
+      transition: background-color 0.3s;
+      text-align: right;
+    }
+    .side-menu-links a:last-child {
+      border-bottom: none;
+    }
+    .side-menu-links a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: none;
+    }
+    .overlay.active {
+      display: block;
+    }
+    /* עיצוב תוכן העמוד */
+    main#content {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      margin: 40px auto;
+      margin-top: 100px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 600px;
+    }
+    main#content h2 {
       font-size: 2.5em;
-      color: #1e90ff;
+      color: #0A2342;
       margin-bottom: 30px;
     }
     .button-group {
-      margin-top: 30px;
       display: flex;
       flex-direction: column;
-      align-items: center;
       gap: 20px;
-      width: 100%;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
     }
     .btn {
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 15px 30px;
-      background-color: #6dd5ed;
+      background-color: #007bff;
       color: white;
       border: none;
       cursor: pointer;
       font-size: 1.2em;
       border-radius: 10px;
-      transition: background-color 0.3s, box-shadow 0.3s;
+      transition: background-color 0.3s;
       text-decoration: none;
-      width: 100%;
     }
     .btn i {
       margin-left: 10px;
       font-size: 1.5em;
     }
     .btn:hover {
-      background-color: #5bc0de;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      background-color: #0056b3;
     }
     footer {
       text-align: center;
@@ -159,31 +206,44 @@
       background-color: #e9ecef;
       border-top: 1px solid #ddd;
     }
-    @media (max-width:600px) {
-      .topbar { flex-direction: column; gap:10px; }
-      .site-name { font-size:24px; }
-      .nav-links a { padding:10px; width:100%; text-align:center; }
-      h2 { font-size: 2em; }
+    @media (max-width: 768px) {
+      main#content {
+        margin: 20px;
+      }
+      .site-name { font-size: 24px; }
+      main#content h2 { font-size: 2em; }
       .btn { font-size: 1em; padding: 10px 20px; }
       .btn i { font-size: 1.2em; }
     }
   </style>
 </head>
 <body>
-  <!-- כפתור עזרה (סימן שאלה) המפנה לעמוד "איך משתמשים" -->
-  <div class="help-icon" onclick="window.location.href='how-to-use.html'">
-    <i class="fas fa-question-circle"></i>
-  </div>
-  
+  <!-- כיסוי כהה לתפריט הצד -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- האדיר העליון -->
   <nav class="topbar">
-    <div class="site-name" onclick="goHome()">זמן זהב</div>
-    <div class="nav-links">
-      <a href="choose-schedule.html">לו״ז חדש</a>
-      <a href="my-schedules.html">הלוזי״ם שלי</a>
-      <a href="tips.html">טיפים לניהול זמן</a>
-      <a href="auth.html" id="authLink">התחברות</a>
+    <div class="hamburger-menu" onclick="toggleMenu()">
+      <i class="fas fa-bars"></i>
     </div>
+    <div class="site-name" onclick="goHome()">זמן זהב</div>
+    <a href="auth.html" id="authLink" class="auth-button">התחברות</a>
   </nav>
+
+  <!-- תפריט הצד -->
+  <div class="side-menu" id="sideMenu">
+    <div class="close-menu" onclick="toggleMenu()">
+      <i class="fas fa-times"></i>
+    </div>
+    <div class="side-menu-links">
+      <a href="choose-schedule.html"><i class="fas fa-calendar-plus"></i> לו״ז חדש</a>
+      <a href="my-schedules.html"><i class="fas fa-folder-open"></i> הלוזי״ם שלי</a>
+      <a href="tips.html"><i class="fas fa-lightbulb"></i> טיפים לניהול זמנים</a>
+      <a href="how-to-use.html"><i class="fas fa-info-circle"></i> עזרה והסבר</a>
+    </div>
+  </div>
+
+  <!-- תוכן העמוד -->
   <main id="content">
     <h2>איזה לוז תרצה ליצור?</h2>
     <div class="button-group">
@@ -192,39 +252,67 @@
       <a href="יומי.html" class="btn"><i class="fas fa-calendar-day"></i> לוז ניהול יום</a>
     </div>
   </main>
+
   <footer>©️doronnakache</footer>
+
   <script>
     function goHome() {
       window.location.href = "index.html";
     }
-    window.addEventListener("scroll", function() {
-      const nav = document.querySelector(".topbar");
-      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
-    });
-    function updateUserGreeting(user) {
-      let currentHour = new Date().getHours();
-      let greeting = "בוקר טוב";
-      if(currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
-      else if(currentHour >= 18) { greeting = "ערב טוב"; }
-      const authLink = document.getElementById("authLink");
-      let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
-      authLink.innerText = greeting + " " + firstName + "!";
-      authLink.onclick = function(event) {
-        event.preventDefault();
-        if(confirm("להתנתק?")) {
-          firebase.auth().signOut().then(() => {
-            authLink.innerText = "התחברות";
-            authLink.onclick = null;
-          }).catch(error => {
-            alert("שגיאה בהתנתקות: " + error.message);
-          });
-        }
-      };
+    function toggleMenu() {
+      const sideMenu = document.getElementById("sideMenu");
+      const overlay = document.getElementById("overlay");
+      sideMenu.classList.toggle("active");
+      overlay.classList.toggle("active");
+      document.body.style.overflow = sideMenu.classList.contains("active") ? "hidden" : "";
     }
-    firebase.auth().onAuthStateChanged(user => {
-      if(user) { updateUserGreeting(user); }
-      else { document.getElementById("authLink").innerText = "התחברות"; }
+    // סגירת תפריט הצד בלחיצה על הכיסוי
+    document.getElementById("overlay").addEventListener("click", toggleMenu);
+
+    // עדכון כפתור ההתחברות לפי מצב המשתמש
+    firebase.auth().onAuthStateChanged(function(user) {
+      const authLink = document.getElementById("authLink");
+      if (user) {
+        let currentHour = new Date().getHours();
+        let greeting = "בוקר טוב";
+        if (currentHour >= 12 && currentHour < 18) {
+          greeting = "צהריים טובים";
+        } else if (currentHour >= 18) {
+          greeting = "ערב טוב";
+        }
+        let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
+        authLink.innerText = greeting + ", " + firstName + "!";
+        authLink.onclick = function(e) {
+          e.preventDefault();
+          if (confirm("להתנתק?")) {
+            firebase.auth().signOut().then(function() {
+              authLink.innerText = "התחברות";
+              authLink.onclick = null;
+            }).catch(function(error){
+                console.error("Sign out error", error);
+            });
+          }
+        };
+        authLink.href = "#";
+      } else {
+        authLink.innerText = "התחברות";
+        authLink.href = "auth.html";
+        authLink.onclick = null;
+      }
     });
+
+    // קוד להסתרת ההאדר בגלילה
+    let lastScrollTop = 0;
+    window.addEventListener("scroll", function() {
+      let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      const nav = document.querySelector(".topbar");
+      if (currentScroll > lastScrollTop && currentScroll > 50) {
+        nav.style.transform = "translateY(-100%)";
+      } else {
+        nav.style.transform = "translateY(0)";
+      }
+      lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+    }, false);
   </script>
 </body>
 </html>
