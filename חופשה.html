@@ -62,29 +62,47 @@
     }
 
     /* --- Header & Side Menu --- */
-     .topbar { background-color: #0A2342; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; transition: transform 0.3s ease; border-bottom: 3px solid #2A558C; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
-     .site-name { position: absolute; left: 50%; transform: translateX(-50%); font-size: 26px; color: #ecf0f1; cursor: pointer; font-weight: 600; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); }
-     .hamburger-menu { font-size: 24px; color: #ecf0f1; cursor: pointer; padding: 8px 12px; border-radius: 5px; transition: background-color 0.3s; z-index: 1002; }
-     .hamburger-menu:hover { background-color: rgba(255, 255, 255, 0.15); }
-     .auth-button { background-color: #007bff; padding: 8px 16px; border-radius: 6px; transition: background-color 0.3s, box-shadow 0.3s; font-weight: 600; color: #FFFFFF; border: none; cursor: pointer; text-decoration: none; font-size: 0.95em; }
-     .auth-button:hover { background-color: #0056b3; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
-     .side-menu { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background-color: #0A2342; z-index: 1001; padding-top: 70px; transition: right 0.3s ease; box-shadow: -3px 0 8px rgba(0, 0, 0, 0.15); }
-     .side-menu.active { right: 0; }
-     .close-menu { position: absolute; top: 15px; left: 15px; font-size: 26px; color: #ecf0f1; cursor: pointer; padding: 5px; line-height: 1; }
-     .close-menu:hover { color: #bdc3c7; }
-     .side-menu-links { display: flex; flex-direction: column; padding: 10px 0; }
-     .side-menu-links a { padding: 16px 25px; color: #ecf0f1; text-decoration: none; font-size: 17px; border-bottom: 1px solid rgba(236, 240, 241, 0.15); transition: background-color 0.2s ease-in-out; text-align: right; display: flex; align-items: center; }
-     .side-menu-links a i { margin-left: 12px; width: 20px; text-align: center; font-size: 0.95em; }
-     .side-menu-links a:last-child { border-bottom: none; }
-     .side-menu-links a:hover { background-color: rgba(42, 85, 140, 0.5); }
-     .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.55); z-index: 999; /* Lower than menu/modals */ display: none; transition: opacity 0.3s ease; opacity: 0; }
-     .overlay.active { display: block; opacity: 1; }
+    .topbar { 
+      background-color: #0A2342; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 10px 20px; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      z-index: 1000; 
+      transition: transform 0.3s ease, top 0.3s ease; /* הוספת מעבר גם ל־top */
+      border-bottom: 3px solid #2A558C; 
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    }
+    .site-name { position: absolute; left: 50%; transform: translateX(-50%); font-size: 26px; color: #ecf0f1; cursor: pointer; font-weight: 600; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); }
+    .hamburger-menu { font-size: 24px; color: #ecf0f1; cursor: pointer; padding: 8px 12px; border-radius: 5px; transition: background-color 0.3s; z-index: 1002; }
+    .hamburger-menu:hover { background-color: rgba(255, 255, 255, 0.15); }
+    .auth-button { background-color: #007bff; padding: 8px 16px; border-radius: 6px; transition: background-color 0.3s, box-shadow 0.3s; font-weight: 600; color: #FFFFFF; border: none; cursor: pointer; text-decoration: none; font-size: 0.95em; }
+    .auth-button:hover { background-color: #0056b3; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    .side-menu { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background-color: #0A2342; z-index: 1001; padding-top: 70px; transition: right 0.3s ease; box-shadow: -3px 0 8px rgba(0, 0, 0, 0.15); }
+    .side-menu.active { right: 0; }
+    .close-menu { position: absolute; top: 15px; left: 15px; font-size: 26px; color: #ecf0f1; cursor: pointer; padding: 5px; line-height: 1; }
+    .close-menu:hover { color: #bdc3c7; }
+    .side-menu-links { display: flex; flex-direction: column; padding: 10px 0; }
+    .side-menu-links a { padding: 16px 25px; color: #ecf0f1; text-decoration: none; font-size: 17px; border-bottom: 1px solid rgba(236, 240, 241, 0.15); transition: background-color 0.2s ease-in-out; text-align: right; display: flex; align-items: center; }
+    .side-menu-links a i { margin-left: 12px; width: 20px; text-align: center; font-size: 0.95em; }
+    .side-menu-links a:last-child { border-bottom: none; }
+    .side-menu-links a:hover { background-color: rgba(42, 85, 140, 0.5); }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.55); z-index: 999; display: none; transition: opacity 0.3s ease; opacity: 0; }
+    .overlay.active { display: block; opacity: 1; }
 
     /* --- Main Content & General Styles --- */
     main {
-      padding: 25px; margin: 30px auto; min-height: calc(100vh - 190px);
-      background-color: rgba(255, 255, 255, 0.9); border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); max-width: 900px;
+      padding: 25px; 
+      margin: 30px auto; 
+      min-height: calc(100vh - 190px);
+      background-color: rgba(255, 255, 255, 0.9); 
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); 
+      max-width: 900px;
       text-align: center;
     }
     main h2 { font-size: 2.5em; color: #17a2b8; margin-bottom: 15px; font-weight: 600; }
@@ -101,7 +119,7 @@
     .btn:hover { background-color: #138496; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transform: translateY(-2px); }
     .btn:active { transform: translateY(0); }
     .btn i { font-size: 0.95em; line-height: 1; }
-     /* Action Buttons (Add Item, Add Accommodation) */
+     /* Action Buttons */
      .action-buttons {
         display: flex;
         justify-content: center;
@@ -121,7 +139,7 @@
          min-width: auto;
     }
 
-    /* Button Group (Save, Screenshot, etc.) */
+    /* Button Group */
     .button-group { margin-top: 30px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
 
     /* --- Schedule Display --- */
@@ -308,7 +326,7 @@
 
   <main id="content">
     <h2>בניית לוז חופשה חדש 🏖️</h2>
-    <p>הוסף פעילויות ומקומות שהייה ללו"ז שלך.</p>
+    <p>הוסף פעילויות ומקומות שהייה ללו״ז שלך.</p>
     <div class="action-buttons">
       <button class="btn" onclick="openAddItemModal()" title="הוסף פריט ללוז">+</button>
       <button class="btn" onclick="openAccommodationModal()" title="הוסף מקום שהייה">
@@ -462,8 +480,11 @@
       const nav = document.querySelector(".topbar");
       const sideMenu = document.getElementById("sideMenu");
       if (nav && (!sideMenu || !sideMenu.classList.contains("active"))) {
-           if (currentScroll > lastScrollTop && currentScroll > 70) nav.style.transform = "translateY(-100%)";
-           else nav.style.transform = "translateY(0)";
+           // במקום שימוש ב־transform, נעביר את התפריט באמצעות top
+           if (currentScroll > lastScrollTop && currentScroll > 70)
+              nav.style.top = "-70px";
+           else
+              nav.style.top = "0px";
       }
       lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
     }, false);
@@ -478,7 +499,7 @@
             }
             content.innerHTML = `
                 <h2>בניית לוז חופשה חדש 🏖️</h2>
-                <p>הוסף פעילויות ומקומות שהייה ללו"ז שלך.</p>
+                <p>הוסף פעילויות ומקומות שהייה ללו״ז שלך.</p>
                 <div class="action-buttons">
                   <button class="btn" onclick="openAddItemModal()" title="הוסף פריט ללוז">+</button>
                   <button class="btn" onclick="openAccommodationModal()" title="הוסף מקום שהייה">
@@ -760,157 +781,15 @@
             document.getElementById("addItemModal").style.display = "flex";
         }
      }
-    function closeAddItemModal() { document.getElementById("addItemModal").style.display = "none"; }
-    function saveItem() {
-        let dateValue = document.getElementById("modalDate")?.value;
-        let startTime = document.getElementById("modalStartTime")?.value;
-        let endTime = document.getElementById("modalEndTime")?.value;
-        const subject = document.getElementById("modalSubject")?.value;
-        const description = document.getElementById("modalDescription")?.value.trim();
-        const location = document.getElementById("locationInput")?.value.trim();
-        if (!dateValue || !startTime || !endTime || !subject) {
-            alert("אנא מלא את כל שדות החובה (תאריך, שעות, נושא).");
-            return;
-        }
-        if (endTime <= startTime) {
-            alert("שעת הסיום חייבת להיות מאוחרת משעת ההתחלה.");
-            return;
-        }
-        const newItem = { date: dateValue, startTime, endTime, subject, description };
-        if (subject === "הליכה" || subject === "נסיעה") {
-            newItem.fromAddress = document.getElementById("fromAddress")?.value.trim();
-            newItem.toAddress = document.getElementById("toAddress")?.value.trim();
-            if (!newItem.fromAddress || !newItem.toAddress) {
-                alert("עבור הליכה/נסיעה, יש למלא מאיפה ולאן.");
-                return;
-            }
-            if (subject === "נסיעה") newItem.travelMode = document.getElementById("travelModeSelect")?.value;
-        }
-        else if (subject === "אוכל") {
-            newItem.foodType = document.getElementById("foodTypeSelect")?.value;
-            if (!newItem.foodType) {
-                alert("עבור אוכל, יש לבחור סוג.");
-                return;
-            }
-            if(["מסעדה", "אוכל מהיר", "בית קפה"].includes(newItem.foodType)) {
-                newItem.foodLocation = document.getElementById("foodLocationInput")?.value.trim();
-                if (!newItem.foodLocation) {
-                    alert("עבור סוג אוכל זה, יש למלא שם או מיקום.");
-                    return;
-                }
-            } else if (location) newItem.location = location;
-        }
-        else if (subject === "טיסה") {
-            newItem.flightNumber = document.getElementById("flightNumberInput")?.value.trim().toUpperCase();
-            newItem.airline = document.getElementById("airlineInput")?.value.trim();
-            newItem.departureAirport = document.getElementById("departureAirportInput")?.value.trim();
-            newItem.arrivalAirport = document.getElementById("arrivalAirportInput")?.value.trim();
-            newItem.departureTime = startTime;
-            newItem.arrivalTime = endTime;
-            if (!newItem.flightNumber || !newItem.departureAirport || !newItem.arrivalAirport) {
-                alert("עבור טיסה, יש למלא לפחות מספר טיסה ושדות תעופה.");
-                return;
-            }
-        }
-        else if (!['שינה', 'לקום'].includes(subject) && location) {
-            newItem.location = location;
-        }
-        if (editingIndex === -1) { scheduleItems.push(newItem); }
-        else if (editingIndex >= 0 && editingIndex < scheduleItems.length) { scheduleItems[editingIndex] = newItem; editingIndex = -1; }
-        else { alert("שגיאה בעדכון פריט."); return; }
-        renderScheduleItems();
-        closeAddItemModal();
-    }
-    function showItemDetail(index) {
-        if (index < 0 || index >= scheduleItems.length) return;
-        editingIndex = index;
-        const item = scheduleItems[index];
-        const form = document.getElementById("addItemForm");
-        if (!form) return;
-        form.reset();
-        document.getElementById("modalDate").value = item.date;
-        document.getElementById("modalStartTime").value = item.startTime;
-        document.getElementById("modalEndTime").value = item.endTime;
-        document.getElementById("modalDescription").value = item.description || "";
-        updateSubjectDropdownOptions();
-        document.getElementById("modalSubject").value = item.subject;
-        subjectChangeHandler();
-        if (item.subject === "הליכה" || item.subject === "נסיעה") {
-            document.getElementById("fromAddress").value = item.fromAddress || "";
-            document.getElementById("toAddress").value = item.toAddress || "";
-            if (item.subject === "נסיעה")
-                document.getElementById("travelModeSelect").value = item.travelMode || "taxi";
-        }
-        else if (item.subject === "אוכל") {
-            document.getElementById("foodTypeSelect").value = item.foodType || "";
-            foodTypeChangeHandler();
-            if (item.foodLocation)
-                document.getElementById("foodLocationInput").value = item.foodLocation;
-            else if (item.location)
-                document.getElementById("locationInput").value = item.location;
-        }
-        else if (item.subject === "טיסה") {
-            document.getElementById("flightNumberInput").value = item.flightNumber || "";
-            document.getElementById("airlineInput").value = item.airline || "";
-            document.getElementById("departureAirportInput").value = item.departureAirport || "";
-            document.getElementById("arrivalAirportInput").value = item.arrivalAirport || "";
-            document.getElementById("modalStartTime").value = item.departureTime || item.startTime;
-            document.getElementById("modalEndTime").value = item.arrivalTime || item.endTime;
-            updateFlightTimeNote();
-        }
-        else if (item.location) {
-            document.getElementById("locationInput").value = item.location;
-        }
-        document.getElementById("addItemModalTitle").innerText = "עריכת פריט בלו״ז";
-        document.getElementById("addItemBtn").innerHTML = '<i class="fas fa-save"></i> שמור שינויים';
-        document.getElementById("addItemModal").style.display = "flex";
-    }
-    function deleteScheduleItem(index) {
-        if (index < 0 || index >= scheduleItems.length) return;
-        const itemSubject = scheduleItems[index].subject || 'פריט זה';
-        if (confirm(`האם אתה בטוח שברצונך למחוק את הפריט "${itemSubject}" מהלו״ז?`)) {
-            scheduleItems.splice(index, 1);
-            renderScheduleItems();
-        }
-    }
-
-    // --- Accommodation Specific Functions ---
-     function getAccommodationIcon(type) {
-         switch (type) {
-             case 'מלון': return '🏨';
-             case 'דירה': return '🏢';
-             case 'Airbnb': return '<i class="fab fa-airbnb"></i>';
-             case 'הוסטל': return '🎒';
-             case 'קמפינג': return '⛺';
-             default: return '❓';
-         }
-     }
-     function findAccommodationForDate(date) {
-         if (!date) return null;
-         let foundAcc = null;
-         for (let i = accommodations.length - 1; i >= 0; i--) {
-             const acc = accommodations[i];
-             if (acc.checkInDate && acc.checkOutDate && date >= acc.checkInDate && date < acc.checkOutDate) {
-                 foundAcc = acc;
-                 break;
-             }
-         }
-         return foundAcc;
-     }
-     function getDatesInRange(startDate, endDate) {
-         const dates = [];
-         if (!startDate || !endDate || startDate >= endDate) return dates;
-         try {
-             let currentDate = new Date(startDate + 'T00:00:00Z');
-             const stopDate = new Date(endDate + 'T00:00:00Z');
-             while (currentDate < stopDate) {
-                 dates.push(currentDate.toISOString().split('T')[0]);
-                 currentDate.setUTCDate(currentDate.getUTCDate() + 1);
-             }
-         } catch(e) { console.error("Error getting dates in range:", e); }
-         return dates;
-     }
+    // שינוי: בעת פתיחת חלונית הוספת מקום שהייה, אם זה הפעולה הראשונה (שלא הוגדר שם ללו"ז), נבקש קודם את שם הלו״ז
     function openAccommodationModal() {
+        if (!scheduleName) {
+            const scheduleNameModal = document.getElementById("scheduleNameModal");
+            if (scheduleNameModal) {
+                scheduleNameModal.style.display = "flex";
+                return;
+            }
+        }
         const form = document.getElementById('accommodationForm');
         if (form) form.reset();
         const lastDate = scheduleItems.length > 0 ? scheduleItems[scheduleItems.length - 1].date : null;
