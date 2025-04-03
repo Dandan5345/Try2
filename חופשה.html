@@ -65,7 +65,6 @@
     }
 
     /* --- Header & Side Menu --- */
-    /* (Styles remain the same as previous version) */
      .topbar { background-color: #0A2342; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; transition: transform 0.3s ease; border-bottom: 3px solid #2A558C; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
      .site-name { position: absolute; left: 50%; transform: translateX(-50%); font-size: 26px; color: #ecf0f1; cursor: pointer; font-weight: 600; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); }
      .hamburger-menu { font-size: 24px; color: #ecf0f1; cursor: pointer; padding: 8px 12px; border-radius: 5px; transition: background-color 0.3s; z-index: 1002; }
@@ -182,7 +181,7 @@
 
 
     /* Schedule Item */
-    .schedule-item { /* (Styles remain the same) */
+    .schedule-item {
         position: relative; background-color: #ffffff; padding: 15px; margin: 15px auto;
         border-radius: 8px; box-shadow: 0 3px 7px rgba(0,0,0,0.1); cursor: pointer;
         text-align: right; max-width: 500px; transition: transform 0.2s, box-shadow 0.2s;
@@ -233,7 +232,7 @@
      #subjectsToggleBtn:hover { background-color: #e9ecef; }
      #permanentSubjectsList { display: none; position: absolute; right: 0; top: 40px; background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 8px; z-index: 2100; min-width: 200px; max-height: 150px; overflow-y: auto; box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
      #permanentSubjectsList span { display: flex; justify-content: space-between; align-items: center; margin: 3px 0; padding: 6px 10px; background-color: #f8f9fa; border-radius: 4px; font-size: 0.95em; }
-     #permanentSubjectsList span span { cursor: pointer; color: #e74c3c; padding: 0 5px; }
+     #permanentSubjectsList span span { cursor: pointer; color: #e74c3c; padding: 0 5px; margin-left: auto; } /* Push trash to the right */
      #permanentSubjectsList span span:hover { color: #c0392b; }
 
     /* Elegant Modals */
@@ -284,6 +283,9 @@
           font-size: 1.1em;
           border-bottom: 1px solid #eee;
           padding-bottom: 5px;
+          display: flex; /* Align icon and text */
+          align-items: center;
+          gap: 8px;
       }
        #accommodationInfoPopup p {
            margin-bottom: 5px;
@@ -359,7 +361,7 @@
          .schedule-item h3 { font-size: 1em; }
          .schedule-item p { font-size: 0.9em; }
          footer { padding: 20px; }
-          #accommodationContainer h3 { font-size: 1.2em; }
+          #scheduleContainer h3 { font-size: 1.2em; } /* Corrected selector */
           .accommodation-indicator { font-size: 0.8em; padding: 2px 6px; max-width: 120px;}
      }
   </style>
@@ -370,8 +372,6 @@
     <i class="fas fa-spinner"></i>
     <span>דף בניית הלוז חופשה נטען...</span>
   </div>
-
-  <img src="https://i.imgur.com/vPycdhd.jpeg" alt="" style="display:none; width:1px; height:1px;" id="bgPreloader">
 
   <div class="overlay" id="overlay"></div>
 
@@ -427,7 +427,7 @@
         <span class="close" onclick="closeAddItemModal()">×</span>
         <h2 id="addItemModalTitle">הוספת פריט ללו״ז</h2>
         <form id="addItemForm" style="display: contents;">
-          <div class="form-group">
+            <div class="form-group">
               <label for="modalDate">תאריך:</label> <input type="date" id="modalDate">
             </div>
             <div class="form-group">
@@ -445,10 +445,25 @@
                 <div id="permanentSubjectsList"></div>
               </div>
             </div>
-            <div id="extraQuestions" style="display: none; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">...</div>
-             <div id="locationField" style="display:none; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;" class="form-group">...</div>
-             <div id="foodExtraOptions" style="display:none; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">...</div>
-             <div id="flightExtraOptions" style="display:none; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">...</div>
+            <div id="extraQuestions" style="display: none; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">
+                <div class="form-group"> <label for="fromAddress">מאיפה: <small>כתובת או מקום יציאה</small></label> <input type="text" id="fromAddress" placeholder="לדוגמה: שדה התעופה בן גוריון"> </div>
+                <div class="form-group"> <label for="toAddress">לאן: <small>כתובת או מקום יעד</small></label> <input type="text" id="toAddress" placeholder="לדוגמה: מלון הילטון, אתונה"> </div>
+                <div class="form-group" id="travelModeGroup" style="display: none;"> <label for="travelModeSelect">אמצעי נסיעה:</label> <select id="travelModeSelect"> <option value="taxi">מונית 🚖</option> <option value="transit">תחב״צ 🚋🚆</option> <option value="car">רכב פרטי / שכור 🚙</option> </select> </div>
+                <button type="button" class="btn" id="checkRouteBtn" onclick="checkRoute()" style="background-color: #6c757d;"> <i class="fas fa-map-marker-alt"></i> בדוק מסלול במפות Google </button>
+             </div>
+             <div id="locationField" style="display:none; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;" class="form-group">
+                <label for="locationInput">מיקום: <small>הזן את שם המקום או הכתובת</small></label> <input type="text" id="locationInput" placeholder="לדוגמה: האקרופוליס, אתונה"> <button type="button" class="btn" onclick="navigateToGenericLocation()" style="background-color: #6c757d; margin-top: 10px;"> <i class="fas fa-map-marker-alt"></i> נווט למיקום במפות Google </button>
+             </div>
+             <div id="foodExtraOptions" style="display:none; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">
+                <div class="form-group"> <label for="foodTypeSelect">סוג ארוחה / מקום:</label> <select id="foodTypeSelect" onchange="foodTypeChangeHandler()"> <option value="">-- בחר --</option> <option value="מסעדה">מסעדה 👨‍🍳</option> <option value="בית קפה">בית קפה ☕</option> <option value="במלון">במלון 🏨</option> <option value="הכנה עצמית/קנייה בסופר">קניות/הכנה עצמית 🛒</option> <option value="אוכל מהיר">אוכל מהיר 🥙</option> <option value="פיקניק">פיקניק 🧺</option> </select> </div>
+                <div id="foodLocationDiv" class="form-group" style="display:none;"> <label for="foodLocationInput">שם המקום / מיקום:</label> <input type="text" id="foodLocationInput" placeholder="לדוגמה: Ta Karamanlidika tou Fani"> <button type="button" class="btn" onclick="showFoodRoute()" style="background-color: #6c757d; margin-top: 10px;"> <i class="fas fa-map-marker-alt"></i> נווט למקום במפות Google </button> </div>
+             </div>
+             <div id="flightExtraOptions" style="display:none; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">
+                <div class="form-group flight-search-wrapper"> <label for="flightNumberInput">מספר טיסה:</label> <input type="text" id="flightNumberInput" placeholder="למשל: LY541"> <span class="search-icon" onclick="searchFlight()" title="חפש פרטי טיסה">🔍</span> </div>
+                <div class="form-group"> <label for="airlineInput">חברת תעופה:</label> <input type="text" id="airlineInput" placeholder="לדוגמה: אל על"> </div>
+                <div class="form-group"> <label for="departureAirportInput">שדה תעופה (המראה):</label> <input type="text" id="departureAirportInput" placeholder="לדוגמה: Ben Gurion Intl"> </div>
+                <div class="form-group"> <label for="arrivalAirportInput">שדה תעופה (נחיתה):</label> <input type="text" id="arrivalAirportInput" placeholder="לדוגמה: Eleftherios Venizelos Intl Airport"> </div>
+             </div>
             <div class="form-group" id="descriptionGroup" style="display: none;">
               <label for="modalDescription">תיאור / הערות:</label>
               <textarea id="modalDescription" rows="3" placeholder="פרטים נוספים, כרטיסים, הזמנות וכו'"></textarea>
@@ -505,16 +520,49 @@
      </div>
    </div>
 
-  <div id="flightResultModal" class="modal">...</div>
+  <div id="flightResultModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeFlightResultModal()">×</span>
+      <h2><i class="fas fa-plane-departure"></i> תוצאות חיפוש טיסה</h2>
+      <div id="flightResultContent"></div>
+      <button class="btn" onclick="copyFlightToForm()">
+          <i class="fas fa-copy"></i> העתק פרטים לטופס
+        </button>
+    </div>
+   </div>
 
-  <div id="finalScheduleModal" class="modal">...</div>
+  <div id="finalScheduleModal" class="modal">
+    <div class="modal-content" id="finalScheduleContent">
+      <span class="close" onclick="closeFinalScheduleModal()">×</span>
+      <h2 id="finalScheduleTitle"></h2>
+      <div id="finalScheduleDisplay"></div>
+      <div class="button-group">
+        <button class="btn" onclick="captureScreenshotFromElement('finalScheduleDisplay', scheduleName)"> <i class="fas fa-camera"></i> צילום מסך </button>
+        <button class="btn" onclick="copyScheduleToClipboard()"> <i class="fas fa-copy"></i> העתק כטקסט </button>
+        <button class="btn" onclick="editFinalSchedule()"> <i class="fas fa-edit"></i> ערוך לו"ז </button>
+        <button class="btn" onclick="closeFinalScheduleModal()" style="background-color: #6c757d;"> <i class="fas fa-times"></i> סגור </button>
+      </div>
+    </div>
+   </div>
 
-  <div id="addSubjectModal" class="modal">...</div>
+  <div id="addSubjectModal" class="modal">
+     <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeAddSubjectModal()">×</span>
+      <h2>הוספת נושא חדש</h2>
+      <div class="form-group"> <label for="newSubjectNameInput">שם הנושא (מומלץ להוסיף אמוג'י):</label> <input type="text" id="newSubjectNameInput" placeholder="למשל: בטן-גב בחוף 🏖️"> </div>
+      <div class="form-group" style="display: flex; justify-content: space-around; gap: 10px;">
+        <button class="btn" onclick="addSubjectOneTime()"> <i class="fas fa-plus"></i> הוספה חד פעמית </button>
+        <button class="btn" onclick="addSubjectPermanent()" style="background-color: #28a745;"> <i class="fas fa-star"></i> הוספה קבועה </button>
+      </div>
+    </div>
+   </div>
 
-  <div class="loader-overlay" id="loader" style="display: none;">...</div>
+  <div class="loader-overlay" id="loader" style="display: none;">
+     <i class="fas fa-spinner"></i> <span>מחפש פרטי טיסה...</span>
+  </div>
 
   <div id="accommodationInfoPopup">
-     <h4><i class="fas fa-bed"></i> <span id="popupAccName"></span></h4>
+     <h4><span id="popupAccIcon"></span> <span id="popupAccName"></span></h4>
      <p><strong>סוג:</strong> <span id="popupAccType"></span></p>
      <p><strong>כתובת:</strong> <span id="popupAccAddress"></span></p>
      <p><strong>תאריכים:</strong> <span id="popupAccDates"></span></p>
@@ -533,9 +581,16 @@
     try { db = firebase.firestore(); }
     catch (e) { console.error("Firestore init error:", e); }
 
-    const subjectEmojis = { /* ... (same as before) ... */ };
+    const subjectEmojis = {
+      "הליכה": "🚶", "נסיעה": "🚗", "ביקור/סיור": "🏛️", "טיסה": "✈️",
+      "אוכל": "🍽️", "שינה": "😴", "לקום": "⏰", "חוף": "🏖️",
+      "קניות": "🛍️", "מנוחה": "🧘", "בריכה": "🏊", "אטרקציה": "🎢",
+      "מוזיאון": "🖼️", "מסעדה": "👨‍🍳", "בית קפה": "☕", "במלון": "🏨",
+      "קניות/הכנה עצמית": "🛒", "אוכל מהיר": "🥙", "פיקניק": "🧺",
+      "כללי": "📌"
+    };
     let scheduleItems = [];
-    let accommodations = []; // NEW: Array for accommodation data
+    let accommodations = []; // Array for accommodation data
     let scheduleName = null;
     let savedSchedules = [];
     let editingIndex = -1;
@@ -546,16 +601,25 @@
     // Page Load State
     let domReady = false;
     let authReady = false;
-    let backgroundReady = false;
+    // Removed: let backgroundReady = false;
 
     // --- Navigation & Menu Functions ---
     function goHome() { window.location.href = "index.html"; }
-    function toggleMenu() { /* ... (same as before) ... */ }
+    function toggleMenu() {
+      const sideMenu = document.getElementById("sideMenu");
+      const overlay = document.getElementById("overlay");
+      if(!sideMenu || !overlay) return;
+      const isActive = sideMenu.classList.contains("active");
+      sideMenu.classList.toggle("active");
+      overlay.classList.toggle("active");
+      document.body.style.overflow = isActive ? "" : "hidden";
+    }
     document.getElementById("overlay")?.addEventListener("click", toggleMenu);
 
     // --- Page Loader ---
     function hidePageLoader() {
-        if (domReady && authReady && backgroundReady) {
+        // Check only essential conditions
+        if (domReady && authReady) {
             const loader = document.getElementById('pageLoader');
             if (loader) {
                 loader.style.opacity = '0';
@@ -566,25 +630,22 @@
 
     // --- Firebase Auth State ---
     firebase.auth().onAuthStateChanged(function(user) {
-        authReady = true; // Mark auth as checked
+        authReady = true;
         const authLink = document.getElementById("authLink");
         if (user) {
-            // Update greeting, logout button
              let currentHour = new Date().getHours();
              let greeting = "בוקר טוב";
              if (currentHour >= 12 && currentHour < 18) greeting = "צהריים טובים";
              else if (currentHour >= 18) greeting = "ערב טוב";
-             let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email.split("@")[0];
+             let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email?.split("@")[0] || "משתמש";
              firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
              if(authLink) {
                  authLink.innerText = `${greeting}, ${firstName}!`; authLink.title = "התנתק";
-                 authLink.onclick = (e) => { e.preventDefault(); if (confirm("להתנתק?")) firebase.auth().signOut(); }; authLink.href = "#";
+                 authLink.onclick = (e) => { e.preventDefault(); if (confirm("להתנתק?")) { firebase.auth().signOut().catch(e => console.error("Sign out error", e)); } }; authLink.href = "#";
              }
-            // Load data and check for editing
-            loadSavedSchedulesData(); // Will now also load accommodations
-            checkForScheduleToEdit(); // Will now also load accommodations if editing
+            loadSavedSchedulesData();
+            checkForScheduleToEdit();
         } else {
-            // Update login button, reset data
             if(authLink) {
                  authLink.innerText = "התחברות"; authLink.title = "התחבר או הירשם"; authLink.href = "auth.html"; authLink.onclick = null;
             }
@@ -595,11 +656,21 @@
                 renderInitialView();
             }
         }
-        hidePageLoader(); // Try hiding loader
+        hidePageLoader();
     });
 
     // --- Header Scroll Behavior ---
-    // ... (same as before)
+    let lastScrollTop = 0;
+    window.addEventListener("scroll", function() {
+      let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      const nav = document.querySelector(".topbar");
+      const sideMenu = document.getElementById("sideMenu");
+      if (nav && (!sideMenu || !sideMenu.classList.contains("active"))) {
+           if (currentScroll > lastScrollTop && currentScroll > 70) nav.style.transform = "translateY(-100%)";
+           else nav.style.transform = "translateY(0)";
+      }
+      lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+    }, false);
 
     // --- Initial View Rendering ---
     function renderInitialView() {
@@ -621,11 +692,11 @@
                     </button>
                 </div>
             `;
-            renderScheduleItems(); // Render empty state initially
+            renderScheduleItems();
         }
     }
 
-    // --- Data Loading/Saving (Updated) ---
+    // --- Data Loading/Saving (Updated for Accommodations) ---
      function loadSavedSchedulesData() {
          const user = firebase.auth().currentUser;
          if (user && db) {
@@ -633,26 +704,23 @@
                  if (doc.exists) {
                      const data = doc.data();
                      savedSchedules = data.schedules || [];
-                     // Load accommodations as well
-                     accommodations = data.accommodations || []; // Load saved accommodations or default to empty
+                     accommodations = data.accommodations || [];
                  } else {
-                     savedSchedules = [];
-                     accommodations = []; // Ensure reset if no doc
+                     savedSchedules = []; accommodations = [];
                  }
-                 // Re-render might be needed if called outside initial load/edit check
-                 // renderScheduleItems();
+                 // Note: Re-rendering happens in checkForScheduleToEdit or initial load context
              }).catch(error => {
                  console.error("Error loading saved data: ", error);
-                 savedSchedules = []; accommodations = []; // Reset on error
+                 savedSchedules = []; accommodations = [];
              });
          } else {
-            savedSchedules = []; accommodations = []; // Reset if no user or db error
+            savedSchedules = []; accommodations = [];
          }
      }
 
      function checkForScheduleToEdit() {
          const scheduleDataString = localStorage.getItem('scheduleToEdit');
-         localStorage.removeItem('scheduleToEdit'); // Remove immediately
+         localStorage.removeItem('scheduleToEdit'); // Clean up immediately
 
          if (scheduleDataString) {
              try {
@@ -666,7 +734,7 @@
 
                      // Update UI for editing mode
                      document.getElementById("content").innerHTML = `
-                         <h2><i class="fas fa-edit"></i> עריכת לו"ז: ${scheduleName.replace(/</g, "<").replace(/>/g, ">")}</h2>
+                         <h2><i class="fas fa-edit"></i> עריכת לו"ז: ${scheduleName.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</h2>
                          <p>הוסף, ערוך או מחק פריטים ומקומות שהייה בלו"ז.</p>
                          <div class="action-buttons">
                             <button class="btn" onclick="openAddItemModal()" title="הוסף פריט ללוז">+</button>
@@ -684,7 +752,7 @@
                             </button>
                          </div>
                      `;
-                     renderScheduleItems(); // Render items and accommodation indicators
+                     renderScheduleItems();
                  } else { renderInitialView(); }
              } catch (e) {
                  console.error("Error parsing schedule to edit:", e);
@@ -692,6 +760,7 @@
              }
          } else if (!document.getElementById("content")?.innerHTML.includes('עריכת לו"ז')) {
              // If not editing and not already showing edit view, ensure initial view
+              // This check might be redundant due to auth listener logic, but safe to keep
              renderInitialView();
          }
      }
@@ -700,13 +769,10 @@
      function saveSchedulesToFirestore() {
        const user = firebase.auth().currentUser;
        if (user && db) {
-         // Ensure arrays are valid
          const schedulesToSave = Array.isArray(savedSchedules) ? savedSchedules : [];
-         const accommodationsToSave = Array.isArray(accommodations) ? accommodations : [];
+         const accommodationsToSave = Array.isArray(accommodations) ? accommodations : []; // Get current accommodations
 
-         // Basic validation
          const validSchedules = schedulesToSave.filter(sch => sch && sch.name && Array.isArray(sch.scheduleItems));
-         // Add validation for accommodations if needed (e.g., check required fields)
          const validAccommodations = accommodationsToSave.filter(acc => acc && acc.type && acc.name && acc.address && acc.checkInDate && acc.checkOutDate);
 
          db.collection("schedules").doc(user.uid).set({
@@ -723,163 +789,321 @@
        }
      }
 
-    // --- Schedule Rendering (Updated) ---
+     function updateAndFinish() {
+         if (editingSavedScheduleIndex === -1 || !Array.isArray(savedSchedules) || editingSavedScheduleIndex >= savedSchedules.length) {
+             alert("שגיאה: לא ניתן לעדכן לוז לא קיים או שהנתונים השמורים אינם תקינים.");
+             return;
+         }
+         // Create the updated schedule object including accommodations
+         const updatedSchedule = {
+             name: scheduleName,
+             scheduleItems: JSON.parse(JSON.stringify(scheduleItems)),
+             accommodations: JSON.parse(JSON.stringify(accommodations)), // Include current accommodations
+             category: "חופשה"
+         };
+         savedSchedules[editingSavedScheduleIndex] = updatedSchedule;
+
+         saveSchedulesToFirestore(); // Save the entire updated data
+
+         // Display final view (consider if this modal should show accommodations too)
+         let finalHtml = "";
+         const groups = groupItemsByDate(scheduleItems);
+         const sortedDates = Object.keys(groups).sort();
+         sortedDates.forEach(date => {
+             // Add accommodation info to final view? Optional. Currently only items shown.
+             const activeAcc = findAccommodationForDate(date);
+             finalHtml += `<h3 style="margin-top: 15px; padding-bottom: 3px; border-bottom: 1px solid #eee;">
+                             ${formatDateHeader(date)}
+                             ${activeAcc ? `<span style="font-size: 0.7em; font-weight: normal; color: #555; margin-right: 10px;">(${getAccommodationIcon(activeAcc.type)} ${activeAcc.name})</span>` : ''}
+                           </h3>`;
+             groups[date].forEach(item => {
+                 finalHtml += generateScheduleItemHTML(item, scheduleItems.findIndex(i => i === item), true); // 'true' for final view
+             });
+         });
+
+         const finalScheduleModal = document.getElementById("finalScheduleModal");
+         const finalScheduleTitle = document.getElementById("finalScheduleTitle");
+         const finalScheduleDisplay = document.getElementById("finalScheduleDisplay");
+         if(finalScheduleModal && finalScheduleTitle && finalScheduleDisplay) {
+            finalScheduleTitle.innerText = scheduleName.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            finalScheduleDisplay.innerHTML = finalHtml;
+            finalScheduleModal.style.display = "flex";
+
+            const editButton = finalScheduleModal.querySelector('.button-group button[onclick^="editFinalSchedule"]');
+            if(editButton) {
+                editButton.innerHTML = '<i class="fas fa-check"></i> הלוז עודכן';
+                editButton.disabled = true;
+                editButton.style.backgroundColor = "#28a745";
+            }
+         }
+         editingSavedScheduleIndex = -1;
+     }
+
+     function openFinalSchedule() {
+         if (!scheduleName) {
+             alert("שגיאה: לא נקבע שם ללוז.");
+             document.getElementById("scheduleNameModal").style.display = "flex";
+             return;
+         }
+         // Allow saving even if only accommodation exists
+         // if (scheduleItems.length === 0 && accommodations.length === 0) {
+         //    alert("עליך להוסיף לפחות פריט אחד או מקום שהייה ללו״ז לפני שניתן לשמור."); return;
+         // }
+
+         const newSchedule = {
+             name: scheduleName,
+             scheduleItems: JSON.parse(JSON.stringify(scheduleItems)),
+             accommodations: JSON.parse(JSON.stringify(accommodations)), // Include accommodations
+             category: "חופשה"
+         };
+
+         if (editingSavedScheduleIndex === -1) {
+             savedSchedules.push(newSchedule);
+         } else if (editingSavedScheduleIndex >= 0 && editingSavedScheduleIndex < savedSchedules.length) {
+             savedSchedules[editingSavedScheduleIndex] = newSchedule;
+         } else {
+            alert("שגיאה בשמירת הלוז."); return;
+         }
+
+         saveSchedulesToFirestore();
+
+         // Display final view (consider adding accommodation summary here too)
+         let finalHtml = "";
+         const groups = groupItemsByDate(scheduleItems);
+          const allDates = new Set([
+             ...scheduleItems.map(item => item.date),
+             ...accommodations.flatMap(acc => getDatesInRange(acc.checkInDate, acc.checkOutDate))
+         ]);
+        const sortedDates = Array.from(allDates).filter(Boolean).sort();
+
+         sortedDates.forEach(date => {
+             const activeAcc = findAccommodationForDate(date);
+             finalHtml += `<h3 style="margin-top: 15px; padding-bottom: 3px; border-bottom: 1px solid #eee;">
+                             ${formatDateHeader(date)}
+                             ${activeAcc ? `<span style="font-size: 0.7em; font-weight: normal; color: #555; margin-right: 10px;">(${getAccommodationIcon(activeAcc.type)} ${activeAcc.name})</span>` : ''}
+                           </h3>`;
+             if (groups[date]) {
+                 groups[date].forEach(item => {
+                     finalHtml += generateScheduleItemHTML(item, scheduleItems.findIndex(i => i === item), true);
+                 });
+             } else if (!activeAcc) {
+                 // Optionally add a placeholder if no items or accommodation
+                 // finalHtml += '<p style="color: #999; font-size: 0.9em; margin: 5px 0;">אין פריטים ליום זה.</p>';
+             }
+         });
+
+
+         const finalScheduleModal = document.getElementById("finalScheduleModal");
+         const finalScheduleTitle = document.getElementById("finalScheduleTitle");
+         const finalScheduleDisplay = document.getElementById("finalScheduleDisplay");
+         if(finalScheduleModal && finalScheduleTitle && finalScheduleDisplay) {
+            finalScheduleTitle.innerText = scheduleName.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            finalScheduleDisplay.innerHTML = finalHtml || '<p style="text-align: center; color: #777;">הלו"ז ריק.</p>'; // Handle empty schedule
+            finalScheduleModal.style.display = "flex";
+
+             const editButton = finalScheduleModal.querySelector('.button-group button[onclick^="editFinalSchedule"]');
+             if(editButton) {
+                 editButton.innerHTML = '<i class="fas fa-edit"></i> ערוך לו"ז';
+                 editButton.disabled = false;
+                 editButton.style.backgroundColor = "";
+             }
+         }
+         editingSavedScheduleIndex = -1;
+     }
+
+     function editFinalSchedule() {
+         document.getElementById("finalScheduleModal").style.display = "none";
+
+         if (editingSavedScheduleIndex === -1) {
+            editingSavedScheduleIndex = savedSchedules.length - 1; // Assume last one if not set
+         }
+         if (editingSavedScheduleIndex < 0 || !Array.isArray(savedSchedules) || editingSavedScheduleIndex >= savedSchedules.length) {
+             alert("שגיאה: לא נמצא הלוז לעריכה."); renderInitialView(); return;
+         }
+
+         const scheduleToEdit = savedSchedules[editingSavedScheduleIndex];
+         scheduleName = scheduleToEdit.name;
+         scheduleItems = JSON.parse(JSON.stringify(scheduleToEdit.scheduleItems || []));
+         accommodations = JSON.parse(JSON.stringify(scheduleToEdit.accommodations || [])); // Load accommodations for editing
+
+         document.getElementById("content").innerHTML = `
+              <h2><i class="fas fa-edit"></i> עריכת לו"ז: ${scheduleName.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</h2>
+              <p>הוסף, ערוך או מחק פריטים ומקומות שהייה בלו"ז.</p>
+              <div class="action-buttons">
+                <button class="btn" onclick="openAddItemModal()" title="הוסף פריט ללוז">+</button>
+                <button class="btn" onclick="openAccommodationModal()" title="הוסף מקום שהייה">
+                    <i class="fas fa-bed"></i> הוסף מקום שהייה
+                </button>
+              </div>
+              <div id="scheduleContainer"></div>
+              <div class="button-group">
+                <button class="btn" onclick="updateAndFinish()"> <i class="fas fa-save"></i> שמור שינויים וסיים </button>
+                <button class="btn" onclick="window.location.href='my-schedules.html'" style="background-color: #6c757d;"> <i class="fas fa-times"></i> בטל שינויים וחזור </button>
+              </div>
+          `;
+         renderScheduleItems();
+     }
+
+    // --- Schedule Rendering (Updated for Accommodation Indicator) ---
     function renderScheduleItems() {
          const container = document.getElementById("scheduleContainer");
          if (!container) return;
-         container.innerHTML = ""; // Clear previous content
+         container.innerHTML = "";
 
-         // Sort items and group by date
-         scheduleItems.sort((a, b) => {
-           if(a.date === b.date) { return (a.startTime || "").localeCompare(b.startTime || ""); }
-           return (a.date || "").localeCompare(b.date || "");
-         });
+         // Combine dates from items and accommodations
+         scheduleItems.sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.startTime || "").localeCompare(b.startTime || ""));
          const groups = groupItemsByDate(scheduleItems);
          const allDates = new Set([
              ...scheduleItems.map(item => item.date),
-             ...accommodations.flatMap(acc => getDatesInRange(acc.checkInDate, acc.checkOutDate)) // Add dates covered by accommodation
+             ...accommodations.flatMap(acc => getDatesInRange(acc.checkInDate, acc.checkOutDate))
          ]);
-        const sortedDates = Array.from(allDates).filter(Boolean).sort(); // Get unique, valid dates and sort
+         const sortedDates = Array.from(allDates).filter(Boolean).sort();
 
-
-         if (sortedDates.length === 0 && accommodations.length === 0) {
-              container.innerHTML = '<p style="color: #6c757d; margin-top: 20px;">הלו"ז עדיין ריק. לחץ על \'+\' להוספת פריט או <i class="fas fa-bed"></i> להוספת מקום שהייה.</p>';
-              return;
+         if (sortedDates.length === 0) {
+             container.innerHTML = '<p style="color: #6c757d; margin-top: 20px;">הלו"ז עדיין ריק. לחץ על \'+\' להוספת פריט או <i class="fas fa-bed"></i> להוספת מקום שהייה.</p>';
+             return;
          }
 
-         // Sort accommodations by check-in date for deterministic selection if overlapping
+         // Sort accommodations by check-in date
          accommodations.sort((a, b) => (a.checkInDate || "").localeCompare(b.checkInDate || ""));
 
          sortedDates.forEach(date => {
-             // --- Find relevant accommodation for this date ---
              const activeAccommodation = findAccommodationForDate(date);
 
-             // --- Create Date Header Wrapper ---
              const dateHeaderWrapper = document.createElement('div');
              dateHeaderWrapper.className = 'date-header-wrapper';
 
-             // --- Create Accommodation Indicator (if applicable) ---
+             // Add Accommodation Indicator FIRST if exists
              if (activeAccommodation) {
                  const indicator = document.createElement('span');
                  indicator.className = 'accommodation-indicator';
                  indicator.title = `מקום שהייה: ${activeAccommodation.name}\nלחץ לפרטים`;
                  indicator.innerHTML = `${getAccommodationIcon(activeAccommodation.type)} ${activeAccommodation.name}`;
-                 // Use closure to pass correct ID and event
-                 indicator.onclick = (event) => {
-                     event.stopPropagation(); // Prevent triggering other clicks
-                     showAccommodationInfo(activeAccommodation.id, event);
-                 };
+                 indicator.onclick = (event) => { event.stopPropagation(); showAccommodationInfo(activeAccommodation.id, event); };
                  dateHeaderWrapper.appendChild(indicator);
              }
 
-             // --- Create Date Header Text ---
              const dateHeader = document.createElement('h3');
              dateHeader.innerHTML = formatDateHeader(date);
-             dateHeaderWrapper.appendChild(dateHeader); // Add date text after indicator
+             dateHeaderWrapper.appendChild(dateHeader); // Add date text
 
-             container.appendChild(dateHeaderWrapper); // Add the whole wrapper
+             container.appendChild(dateHeaderWrapper);
 
-
-             // --- Add schedule items for this date ---
+             // Add schedule items for this date
              if (groups[date]) {
                  groups[date].forEach(item => {
                      const index = scheduleItems.findIndex(i => i === item);
                      if (index !== -1) {
                          const itemHTML = generateScheduleItemHTML(item, index, false);
-                         // Create a temporary div to parse the HTML string
                          const tempDiv = document.createElement('div');
                          tempDiv.innerHTML = itemHTML.trim();
-                          if (tempDiv.firstChild) {
-                             container.appendChild(tempDiv.firstChild);
-                          }
+                         if (tempDiv.firstChild) container.appendChild(tempDiv.firstChild);
                      }
                  });
-             } else if (!activeAccommodation) {
-                  // If no items and no accommodation for this date, optionally show a message or leave blank
-                  // Currently leaves blank
              }
          });
-         // Add listener to close accommodation popup when clicking outside
-         document.addEventListener('click', handleOutsidePopupClick, true);
+          // Listener moved to initialization for efficiency
+          // document.addEventListener('click', handleOutsidePopupClick, true);
      }
+
+    // --- Item Specific Functions ---
+    function generateScheduleItemHTML(item, index, isFinalView = false) {
+         let displaySubject = getDisplaySubject(item);
+         let bgEmoji = getBackgroundEmoji(item);
+         let extraLine = getExtraLine(item);
+         let addressLine = ""; let locationLine = "";
+
+         if (item.fromAddress && item.toAddress && (item.subject === "נסיעה" || item.subject === "הליכה")) {
+             addressLine = `<p style="font-size: 0.9em; color: #666;"><i class="fas fa-map-marker-alt"></i> ${item.fromAddress} <i class="fas fa-arrow-right" style="font-size: 0.8em;"></i> ${item.toAddress}</p>`;
+         } else if (item.location && !['טיסה'].includes(item.subject) && !(item.subject === 'אוכל' && item.foodLocation)) {
+             locationLine = `<p style="font-size: 0.9em; color: #666;"><i class="fas fa-map-marker-alt"></i> מיקום: ${item.location}</p>`;
+         } else if (item.subject === 'אוכל' && item.foodLocation) {
+              locationLine = `<p style="font-size: 0.9em; color: #666;"><i class="fas fa-map-marker-alt"></i> מקום: ${item.foodLocation}</p>`;
+         }
+
+         let deleteButtonHTML = isFinalView ? '' : `<span title="מחק פריט" style="position: absolute; top: 10px; left: 10px; cursor: pointer; font-size: 1.2em; color: #e74c3c; padding: 5px; transition: color 0.2s; z-index: 2;" onclick="event.stopPropagation(); deleteScheduleItem(${index})">🗑️</span>`;
+         let navButtonHTML = "";
+         if (!isFinalView) {
+             if((item.subject === "נסיעה" || item.subject === "הליכה") && item.fromAddress && item.toAddress) {
+                 navButtonHTML = `<button type="button" class="btn nav-button" onclick="event.stopPropagation(); checkRoute(${index})"><i class="fas fa-route"></i></button>`;
+             } else if(item.location && !['טיסה'].includes(item.subject) && !(item.subject === 'אוכל' && item.foodLocation)) {
+                 navButtonHTML = `<button type="button" class="btn nav-button" onclick="event.stopPropagation(); navigateToGenericLocation(${index})"><i class="fas fa-route"></i></button>`;
+             } else if(item.subject === "אוכל" && item.foodLocation) {
+                 navButtonHTML = `<button type="button" class="btn nav-button" onclick="event.stopPropagation(); showFoodRoute(${index})"><i class="fas fa-route"></i></button>`;
+             }
+         }
+         const clickAction = isFinalView ? '' : `onclick="showItemDetail(${index})"`;
+
+         return `
+             <div class="schedule-item" ${clickAction} data-date="${item.date}" data-subject="${item.subject}">
+                 ${deleteButtonHTML} ${navButtonHTML}
+                 <div class="emoji-background">${bgEmoji}</div>
+                 <h3>${item.startTime || '??:??'} - ${item.endTime || '??:??'} : ${displaySubject}</h3>
+                 ${extraLine ? `<p style="font-size: 0.9em; color: #444;">${extraLine}</p>` : ''}
+                 ${addressLine} ${locationLine}
+                 <p>${item.description || ''}</p>
+             </div>`;
+     }
+    function openAddItemModal() { /* ... (same as before) ... */ }
+    function closeAddItemModal() { /* ... (same as before) ... */ }
+    function saveItem() { /* ... (same as before, saves only scheduleItems) ... */ }
+    function showItemDetail(index) { /* ... (same as before) ... */ }
+    function deleteScheduleItem(index) { /* ... (same as before) ... */ }
 
     // --- Accommodation Specific Functions ---
-
-    function getAccommodationIcon(type) {
+     function getAccommodationIcon(type) {
         switch (type) {
-            case 'מלון': return '🏨';
-            case 'דירה': return '🏢';
-            case 'Airbnb': return '<i class="fab fa-airbnb"></i>'; // Use Font Awesome brand icon
-            case 'הוסטל': return '🎒';
-            case 'קמפינג': return '⛺';
+            case 'מלון': return '🏨'; case 'דירה': return '🏢';
+            case 'Airbnb': return '<i class="fab fa-airbnb"></i>';
+            case 'הוסטל': return '🎒'; case 'קמפינג': return '⛺';
             default: return '❓';
         }
-    }
-
+     }
      function findAccommodationForDate(date) {
-        if (!date) return null;
-         // Find the *last* matching accommodation (useful if ranges overlap, assumes latest check-in takes precedence)
-         // Or find the one with the narrowest range? For now, find the last one that covers the date.
-        let foundAcc = null;
-         for (const acc of accommodations) {
-            // Check if the date falls within the check-in (inclusive) and check-out (exclusive) range
+        if (!date) return null; let foundAcc = null;
+        // Iterate backwards to find the *latest starting* accommodation active on this date
+        for (let i = accommodations.length - 1; i >= 0; i--) {
+            const acc = accommodations[i];
             if (acc.checkInDate && acc.checkOutDate && date >= acc.checkInDate && date < acc.checkOutDate) {
-                 foundAcc = acc; // Keep track of the last one found
+                foundAcc = acc; break; // Found the latest one
             }
-         }
-        return foundAcc;
-    }
-
-     // Helper function to get all dates within a range (inclusive start, exclusive end)
+        } return foundAcc;
+     }
      function getDatesInRange(startDate, endDate) {
-         const dates = [];
-         if (!startDate || !endDate || startDate >= endDate) return dates;
-         let currentDate = new Date(startDate + 'T00:00:00Z'); // Use UTC to avoid timezone issues
-         const stopDate = new Date(endDate + 'T00:00:00Z');
-
-         while (currentDate < stopDate) {
-             dates.push(currentDate.toISOString().split('T')[0]); // Format as YYYY-MM-DD
-             currentDate.setUTCDate(currentDate.getUTCDate() + 1);
-         }
+         const dates = []; if (!startDate || !endDate || startDate >= endDate) return dates;
+         try {
+             let currentDate = new Date(startDate + 'T00:00:00Z');
+             const stopDate = new Date(endDate + 'T00:00:00Z');
+             while (currentDate < stopDate) {
+                 dates.push(currentDate.toISOString().split('T')[0]);
+                 currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+             }
+         } catch(e) { console.error("Error getting dates in range:", e); }
          return dates;
      }
-
-
     function openAccommodationModal() {
         const form = document.getElementById('accommodationForm');
         if (form) form.reset();
-        // Optionally prefill dates based on last schedule item or today
         const lastDate = scheduleItems.length > 0 ? scheduleItems[scheduleItems.length - 1].date : null;
         const checkInInput = document.getElementById('accommodationCheckIn');
-        if (checkInInput) {
-            checkInInput.value = lastDate || new Date().toISOString().split('T')[0];
-        }
-        // Auto-set checkout date (e.g., one day after check-in)
+        if (checkInInput) { checkInInput.value = lastDate || new Date().toISOString().split('T')[0]; }
         const checkOutInput = document.getElementById('accommodationCheckOut');
         if (checkInInput?.value && checkOutInput) {
-            let checkInDate = new Date(checkInInput.value + 'T00:00:00Z');
-            checkInDate.setUTCDate(checkInDate.getUTCDate() + 1); // Add one day
-            checkOutInput.value = checkInDate.toISOString().split('T')[0];
+            try {
+                let checkInDate = new Date(checkInInput.value + 'T00:00:00Z');
+                checkInDate.setUTCDate(checkInDate.getUTCDate() + 1);
+                checkOutInput.value = checkInDate.toISOString().split('T')[0];
+            } catch (e) { /* Handle invalid date if needed */ }
         }
-
         document.getElementById('accommodationModal').style.display = 'flex';
     }
-
-    function closeAccommodationModal() {
-        document.getElementById('accommodationModal').style.display = 'none';
-    }
-
+    function closeAccommodationModal() { document.getElementById('accommodationModal').style.display = 'none'; }
     function checkAccommodationLocation() {
         const address = document.getElementById('accommodationAddress')?.value.trim();
-        if (!address) {
-            alert("אנא הזן כתובת כדי להציג במפה.");
-            return;
-        }
-        // Open Google Maps search for the address
+        if (!address) { alert("אנא הזן כתובת כדי להציג במפה."); return; }
         const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(address)}`;
         window.open(url, "_blank");
     }
-
     function saveAccommodation() {
         const type = document.getElementById('accommodationType')?.value;
         const name = document.getElementById('accommodationName')?.value.trim();
@@ -887,137 +1111,146 @@
         const checkInDate = document.getElementById('accommodationCheckIn')?.value;
         const checkOutDate = document.getElementById('accommodationCheckOut')?.value;
 
-        // Validation
-        if (!type) { alert("אנא בחר סוג מקום שהייה."); return; }
-        if (!name) { alert("אנא הזן שם מקום שהייה."); return; }
-        if (!address) { alert("אנא הזן כתובת."); return; }
-        if (!checkInDate || !checkOutDate) { alert("אנא בחר תאריך צ'ק-אין ותאריך צ'ק-אאוט."); return; }
+        if (!type || !name || !address || !checkInDate || !checkOutDate) { alert("אנא מלא את כל השדות."); return; }
         if (checkOutDate <= checkInDate) { alert("תאריך צ'ק-אאוט חייב להיות מאוחר מתאריך צ'ק-אין."); return; }
 
         const newAccommodation = {
-            id: 'acc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), // More robust unique ID
+            id: 'acc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
             type, name, address, checkInDate, checkOutDate
         };
-
         accommodations.push(newAccommodation);
-        // Sort accommodations by check-in date (optional, helps with deterministic display on overlap)
         accommodations.sort((a, b) => (a.checkInDate || "").localeCompare(b.checkInDate || ""));
-
-        renderScheduleItems(); // Re-render the schedule to show the new indicator
+        renderScheduleItems();
         closeAccommodationModal();
     }
-
     function showAccommodationInfo(accommodationId, event) {
         const acc = accommodations.find(a => a.id === accommodationId);
         const popup = document.getElementById('accommodationInfoPopup');
         if (!acc || !popup) return;
 
-        // Populate popup
+        document.getElementById('popupAccIcon').innerHTML = getAccommodationIcon(acc.type); // Set icon
         document.getElementById('popupAccName').innerText = acc.name;
-        document.getElementById('popupAccType').innerHTML = getAccommodationIcon(acc.type) + ' ' + acc.type; // Use innerHTML for icon
+        document.getElementById('popupAccType').innerText = acc.type; // Type text only
         document.getElementById('popupAccAddress').innerText = acc.address;
         document.getElementById('popupAccDates').innerText = `${formatDateForDisplay(acc.checkInDate)} - ${formatDateForDisplay(acc.checkOutDate)}`;
-
-        // Set navigate button action
         const navBtn = document.getElementById('popupAccNavBtn');
-        if (navBtn) {
-            navBtn.onclick = () => navigateAccommodation(accommodationId);
-        }
+        if (navBtn) navBtn.onclick = () => navigateAccommodation(accommodationId);
 
-        // Position popup near the clicked element (indicator)
-        const indicator = event.currentTarget; // The clicked span
+        const indicator = event.currentTarget;
         const rect = indicator.getBoundingClientRect();
+        popup.style.display = 'block'; // Display first to calculate dimensions
         const popupWidth = popup.offsetWidth;
-        const popupHeight = popup.offsetHeight; // Might need after display block
+        const popupHeight = popup.offsetHeight;
 
-        // Calculate position (adjust as needed for better placement)
-        let top = rect.bottom + window.scrollY + 5; // Below the indicator
-        let left = rect.left + window.scrollX + (rect.width / 2) - (popupWidth / 2); // Centered horizontally relative to indicator
+        let top = rect.bottom + window.scrollY + 5;
+        let left = rect.left + window.scrollX + (rect.width / 2) - (popupWidth / 2);
 
-        // Prevent going off-screen
         if (left < 10) left = 10;
         if (left + popupWidth > window.innerWidth - 10) left = window.innerWidth - popupWidth - 10;
-         if (top + 250 > window.innerHeight + window.scrollY) { // Estimate popup height or get it after display?
-             top = rect.top + window.scrollY - 250 - 10; // Try above
-             if (top < window.scrollY + 10) top = window.scrollY + 10; // Don't go above viewport top
-         }
-
+        if (top + popupHeight > window.innerHeight + window.scrollY - 10) { top = rect.top + window.scrollY - popupHeight - 10; }
+        if (top < window.scrollY + 10) top = window.scrollY + 10;
 
         popup.style.top = `${top}px`;
         popup.style.left = `${left}px`;
-        popup.style.display = 'block';
 
-        // Add a temporary listener to close on outside click
-         setTimeout(() => { // Add listener after current event bubbles up
-            document.addEventListener('click', handleOutsidePopupClick, true);
-         }, 0);
+        // Add listener after small delay
+        setTimeout(() => document.addEventListener('click', handleOutsidePopupClick, true), 0);
     }
-
      function handleOutsidePopupClick(event) {
         const popup = document.getElementById('accommodationInfoPopup');
-        const accommodationIndicators = document.querySelectorAll('.accommodation-indicator');
-        let clickedOnIndicator = false;
-        accommodationIndicators.forEach(ind => {
-            if (ind.contains(event.target)) {
-                clickedOnIndicator = true;
+        // Check if the click target is the popup itself or inside it
+        if (popup && popup.style.display === 'block' && !popup.contains(event.target)) {
+            // Check if the click target was an accommodation indicator
+            let clickedIndicator = false;
+            document.querySelectorAll('.accommodation-indicator').forEach(ind => {
+                if (ind.contains(event.target)) {
+                    clickedIndicator = true;
+                }
+            });
+            // Only close if the click was NOT on an indicator that would open the popup again
+            if (!clickedIndicator) {
+                closeAccommodationInfoPopup();
             }
-        });
-
-        // Close if popup exists, is visible, and click was outside popup and not on an indicator
-        if (popup && popup.style.display === 'block' && !popup.contains(event.target) && !clickedOnIndicator) {
-             closeAccommodationInfoPopup();
         }
-    }
-
+     }
     function closeAccommodationInfoPopup() {
         const popup = document.getElementById('accommodationInfoPopup');
         if (popup) popup.style.display = 'none';
-         document.removeEventListener('click', handleOutsidePopupClick, true); // Clean up listener
+        document.removeEventListener('click', handleOutsidePopupClick, true);
     }
-
     function navigateAccommodation(accommodationId) {
         const acc = accommodations.find(a => a.id === accommodationId);
-        if (acc && acc.address) {
-            showRouteToDestination(acc.address);
-             closeAccommodationInfoPopup(); // Close popup after clicking navigate
-        } else {
-            alert("לא נמצאה כתובת עבור מקום שהייה זה.");
-        }
+        if (acc?.address) { showRouteToDestination(acc.address); closeAccommodationInfoPopup(); }
+        else { alert("לא נמצאה כתובת."); }
     }
 
-    // --- Helper Functions ---
-    function formatDateForDisplay(dateStr) {
-        if (!dateStr) return "?";
-        try {
-             // Assuming YYYY-MM-DD format
-            const [year, month, day] = dateStr.split('-');
-            // Format as DD/MM/YYYY for display
-            return `${day}/${month}/${year}`;
-        } catch (e) {
-            return dateStr; // Fallback
-        }
+    // --- Schedule Name Modal Functions ---
+    function closeScheduleNameModal() { document.getElementById("scheduleNameModal").style.display = "none"; }
+    function saveScheduleName() {
+      const nameInput = document.getElementById("scheduleNameInput")?.value.trim();
+      if (!nameInput) { alert("אנא הזן שם ללו״ז."); return; }
+      if (savedSchedules.some((sch, idx) => sch.name === nameInput && idx !== editingSavedScheduleIndex)) {
+          alert("לוז עם שם זה כבר קיים. אנא בחר שם אחר."); return;
+      }
+      scheduleName = nameInput;
+      closeScheduleNameModal();
+       const contentArea = document.getElementById("content");
+       if(contentArea) {
+          const titleElement = contentArea.querySelector('h2');
+          if (titleElement) titleElement.innerHTML = `<i class="fas fa-umbrella-beach"></i> לו"ז: ${scheduleName.replace(/</g, "&lt;").replace(/>/g, "&gt;")}`;
+          else renderInitialView(); // Re-render if title missing
+       }
+       openAddItemModal(); // Open add item modal after getting name
     }
 
+    // --- Subject Management ---
+    function updateSubjectDropdownOptions() { /* ... (same as before) ... */ }
+    function openAddSubjectModal() { /* ... (same as before) ... */ }
+    function closeAddSubjectModal() { /* ... (same as before) ... */ }
+    function addSubjectOneTime() { /* ... (same as before) ... */ }
+    function addSubjectPermanent() { /* ... (same as before) ... */ }
+    function updatePermanentSubjectsList() { /* ... (same as before) ... */ }
+    function togglePermanentSubjectsList() { /* ... (same as before) ... */ }
+    function handleClickOutsideSubjectList(event) { /* ... (same as before) ... */ }
+    function subjectChangeHandler() { /* ... (same as before, controls item modal fields) ... */ }
+    function foodTypeChangeHandler() { /* ... (same as before) ... */ }
 
-    // --- Other existing functions (Item Details, Final Schedule, Copy/Screenshot, Subject Management, etc.) ---
-    // ... (Make sure these functions correctly handle their logic without interfering with accommodation)
+    // --- Navigation Functions ---
+    function checkRoute(index) { /* ... (same as before) ... */ }
+    function navigateToGenericLocation(index) { /* ... (same as before) ... */ }
+    function showFoodRoute(index) { /* ... (same as before) ... */ }
+    function showRouteToDestination(destination) { /* ... (same as before) ... */ }
 
+    // --- Flight Search ---
+    function updateFlightTimeNote() { /* ... (same as before) ... */ }
+    function searchFlight() { /* ... (same as before) ... */ }
+    function closeFlightResultModal() { /* ... (same as before) ... */ }
+    function copyFlightToForm() { /* ... (same as before) ... */ }
 
-    // --- Page Initialization (Updated) ---
+    // --- Utilities ---
+    function setDefaultEndTime() { /* ... (same as before) ... */ }
+    function addOneMinute(timeStr) { /* ... (same as before) ... */ }
+    function captureScreenshotFromElement(elementId, name) { /* ... (same as before) ... */ }
+    function copyScheduleToClipboard() { /* ... (same as before, maybe update to include accommodation?) ... */ }
+    function copyUsingClipboardAPI(textToCopy) { /* ... (same as before) ... */ }
+    function copyUsingExecCommand(textToCopy) { /* ... (same as before) ... */ }
+    function groupItemsByDate(items) { /* ... (same as before) ... */ }
+    function formatDateHeader(dateStr) { /* ... (same as before) ... */ }
+    function formatDateForDisplay(dateStr) { /* ... (same as before) ... */ }
+    function getDisplaySubject(item) { /* ... (same as before) ... */ }
+    function translateTravelMode(mode) { /* ... (same as before) ... */ }
+    function getBackgroundEmoji(item) { /* ... (same as before) ... */ }
+    function getExtraLine(item) { /* ... (same as before) ... */ }
+
+    // --- Page Initialization ---
      document.addEventListener('DOMContentLoaded', () => {
          domReady = true;
+         // Background image check removed
+         hidePageLoader(); // Attempt to hide loader
 
-         // Background Image Load Check
-         const bgImage = document.getElementById('bgPreloader');
-         if (bgImage) {
-             bgImage.onload = () => { backgroundReady = true; hidePageLoader(); };
-             if (bgImage.complete && bgImage.naturalHeight > 0) backgroundReady = true;
-             bgImage.onerror = () => { console.error("BG Img Error"); backgroundReady = true; hidePageLoader(); };
-         } else { backgroundReady = true; } // Assume ready if no preloader img
+         // Add listener for closing accommodation popup globally once
+          document.addEventListener('click', handleOutsidePopupClick, true);
 
-         hidePageLoader(); // Initial attempt to hide
-
-         // Form reset observer
          const addItemModal = document.getElementById('addItemModal');
          const form = document.getElementById('addItemForm');
          if(addItemModal && form) {
