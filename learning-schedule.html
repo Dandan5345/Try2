@@ -151,32 +151,43 @@
     }
     
     /* סגנון תפריט הצד (side drawer) */
-    .side-drawer {
-      position: fixed;
-      top: 0;
-      right: -250px;
-      width: 250px;
-      height: 100%;
-      background: #fff;
-      box-shadow: -2px 0 5px rgba(0,0,0,0.3);
-      transition: right 0.3s ease;
-      z-index: 1100;
-      padding: 20px;
-    }
-    .side-drawer.open {
-      right: 0;
-    }
-    .side-drawer a {
-      display: block;
-      padding: 10px 0;
-      border-bottom: 1px solid #ddd;
-      text-decoration: none;
-      color: #333;
-      font-weight: bold;
-    }
-    .side-drawer a:hover {
-      background-color: #f0f0f0;
-    }
+/* ===== Vacation‑themed Side Drawer ===== */
+.side-drawer {
+  position: fixed;
+  top: 0; right: -280px;
+  width: 280px; height: 100%;
+  background: linear-gradient(135deg, #76e2e0 0%, #c3f0f2 100%);
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+  transition: right 0.3s ease;
+  z-index: 1100;
+  padding-top: 80px;
+}
+.side-drawer.open {
+  right: 0;
+}
+/* הסמדול לכל קישור */
+.side-drawer a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  font-size: 1.1rem;
+  color: #05445E;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(5,68,94,0.1);
+  transition: background 0.2s;
+}
+.side-drawer a:last-child {
+  border-bottom: none;
+}
+.side-drawer a:hover {
+  background: rgba(255,255,255,0.3);
+}
+/* ה‑overlay הכהה */
+.overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+}
     
     /* שאר הסגנונות (דף תוכן, מודלים וכו') */
     main { 
@@ -395,12 +406,15 @@
     </div>
   </header>
   
-  <!-- תפריט צד (side drawer) -->
-  <div class="side-drawer" id="sideDrawer">
-    <a href="choose-schedule.html">לו״ז חדש</a>
-    <a href="my-schedules.html">הלוזי״ם שלי</a>
-    <a href="tips.html">טיפים לניהול זמנים</a>
-  </div>
+
+<!-- תפריט צד (side drawer) -->
+<div class="side-drawer" id="sideDrawer">
+  <a href="choose-schedule.html">➕ לוז חדש</a>
+  <a href="my-schedules.html">📂 הלוזים שלי</a>
+  <a href="mesimot.html">✅ לוח משימות</a>
+  <a href="tips.html">💡 טיפים לניהול זמנים</a>
+  <a href="how-to-use.html">ℹ️ עזרה והסבר</a>
+</div>
   
   <!-- תוכן עמוד "בניית לוז למידה" -->
   <main id="content">
@@ -638,20 +652,32 @@
     }
     
     // ניהול תפריט הצד
-    function toggleDrawer() {
-      const drawer = document.getElementById("sideDrawer");
-      drawer.classList.toggle("open");
+  
+  // 1. פונקציה לפתיחה/סגירה של ה‑drawer וה‑overlay
+  function toggleDrawer() {
+    const drawer  = document.getElementById("sideDrawer");
+    const overlay = document.getElementById("overlay");
+    drawer.classList.toggle("open");
+    overlay.classList.toggle("active");
+  }
+
+  // 2. סגירת ה‑drawer בלחיצה מחוץ לו (כולל על ה‑overlay עצמו)
+  document.addEventListener('click', function(event) {
+    const drawer    = document.getElementById("sideDrawer");
+    const overlay   = document.getElementById("overlay");
+    const hamburger = document.querySelector(".hamburger");
+    // אם ה‑drawer פתוח ולחצו איפה שאינו בתוך ה‑drawer או על ההמבורגר
+    if (drawer.classList.contains("open") &&
+        !drawer.contains(event.target) &&
+        !hamburger.contains(event.target)) {
+      drawer.classList.remove("open");
+      overlay.classList.remove("active");
     }
-    // מאזין ללחיצות מחוץ לתפריט הצד
-    document.addEventListener('click', function(event) {
-      const drawer = document.getElementById("sideDrawer");
-      const hamburger = document.querySelector(".hamburger");
-      if (drawer.classList.contains("open") &&
-          !drawer.contains(event.target) &&
-          !hamburger.contains(event.target)) {
-        drawer.classList.remove("open");
-      }
-    });
+  });
+
+  // 3. סגירת ה‑drawer גם בלחיצה ישירה על ה‑overlay
+  document.getElementById("overlay").addEventListener("click", toggleDrawer);
+
     
     // פונקציות שמירה והצגה
     function openFinalSchedule() {
