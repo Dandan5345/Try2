@@ -4,22 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>זמן זהב - בניית לוז חופשה</title>
-
+  
+  <!-- קישור ל-manifest -->
   <link rel="manifest" href="manifest.json">
+  <!-- קישור ל-favicon -->
   <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
+  
+  <!-- Font Awesome לסמלים -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
+        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" 
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+  <!-- ספריות וסקריפטים -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
+  
+  <!-- קובץ הגדרות Firebase -->
   <script src="firebase-config.js"></script>
 
+  <!-- רישום Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
@@ -33,7 +39,7 @@
       });
     }
   </script>
-
+  
   <style>
     /* ===== RESET וכללי בסיס ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -46,12 +52,11 @@
       text-align: center;
       background: url("https://i.imgur.com/vPycdhd.jpeg") no-repeat center center fixed;
       background-size: cover;
-      color: #333333; /* צבע טקסט בסיסי */
     }
 
-    /* ===== עיצוב האדיר (Header) ותפריט הצד (שינויים מינימליים לפי הבקשה) ===== */
+    /* ===== עיצוב האדיר (Header) ותפריט הצד ===== */
     .topbar {
-      background-color: #2C3E50; /* רקע אפור-כחול כהה */
+      background-color: #0A2342;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -62,11 +67,11 @@
       width: 100%;
       z-index: 1000;
       transition: transform 0.3s;
-      border-bottom: 2px solid #34495E; /* גבול תחתון מעט בהיר יותר */
+      border-bottom: 2px solid #2A558C;
     }
     .hamburger-menu {
       font-size: 24px;
-      color: #ecf0f1; /* צבע אייקון בהיר */
+      color: #ecf0f1;
       cursor: pointer;
       padding: 5px 10px;
       border-radius: 5px;
@@ -81,34 +86,34 @@
       left: 50%;
       transform: translateX(-50%);
       font-size: 28px;
-      color: #ecf0f1; /* צבע שם אתר בהיר */
+      color: #ecf0f1;
       cursor: pointer;
       font-weight: bold;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
     }
     .auth-button {
-      background-color: #F1C40F; /* רקע זהב */
-      color: #333333; /* טקסט כהה לניגודיות */
+      background-color: #007bff;
       padding: 10px 15px;
       border-radius: 8px;
       transition: background-color 0.3s, box-shadow 0.3s;
       font-weight: bold;
+      color: #FFFFFF;
       border: none;
       cursor: pointer;
       text-decoration: none;
     }
     .auth-button:hover {
-      background-color: #f39c12; /* זהב כהה יותר ב-hover */
+      background-color: #0056b3;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     /* תפריט צד */
     .side-menu {
       position: fixed;
       top: 0;
-      right: -280px; /* נשאר מוסתר מימין */
+      right: -280px;
       width: 280px;
       height: 100%;
-      background-color: #2C3E50; /* רקע אפור-כחול כהה */
+      background-color: #0A2342;
       z-index: 1001;
       padding-top: 80px;
       transition: right 0.3s ease;
@@ -120,9 +125,9 @@
     .close-menu {
       position: absolute;
       top: 20px;
-      left: 20px; /* שינוי קטן: ממוקם בצד שמאל של התפריט */
+      left: 20px;
       font-size: 24px;
-      color: #ecf0f1; /* צבע אייקון בהיר */
+      color: #ecf0f1;
       cursor: pointer;
     }
     .side-menu-links {
@@ -132,10 +137,10 @@
     }
     .side-menu-links a {
       padding: 15px;
-      color: #ecf0f1; /* צבע קישורים בהיר */
+      color: #ecf0f1;
       text-decoration: none;
       font-size: 18px;
-      border-bottom: 1px solid rgba(236, 240, 241, 0.1); /* קו הפרדה עדין */
+      border-bottom: 1px solid rgba(236, 240, 241, 0.2);
       transition: background-color 0.3s;
       text-align: right;
     }
@@ -143,7 +148,7 @@
       border-bottom: none;
     }
     .side-menu-links a:hover {
-      background-color: rgba(255, 255, 255, 0.05); /* אפקט hover עדין */
+      background-color: rgba(255, 255, 255, 0.1);
     }
     .overlay {
       position: fixed;
@@ -151,7 +156,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.6); /* כיסוי מעט כהה יותר */
+      background-color: rgba(0, 0, 0, 0.5);
       z-index: 1000;
       display: none;
     }
@@ -159,7 +164,7 @@
       display: block;
     }
 
-    /* ===== עיצוב חיפוש טיסה (נשאר כמעט זהה) ===== */
+    /* ===== עיצוב חיפוש טיסה ===== */
     .flight-search-wrapper {
       position: relative;
       display: flex;
@@ -167,475 +172,238 @@
     }
     .flight-search-wrapper input {
       width: 100%;
-      padding-left: 2.5rem; /* ריווח משמאל עבור האייקון */
+      padding-left: 2.5rem; /* שינוי: ריווח משמאל עבור האייקון */
     }
     .flight-search-wrapper .search-icon {
       position: absolute;
-      left: 10px; /* מיקום משמאל */
+      left: 10px; /* שינוי: מיקום משמאל */
       top: 50%;
       transform: translateY(-50%);
       font-size: 1.2rem;
       cursor: pointer;
-      color: #7f8c8d; /* צבע אפור לאייקון */
     }
 
-    /* ===== שאר הסגנונות עם העיצוב החדש ===== */
-    main { padding: 20px; margin-top: 20px; min-height: 70vh; text-align: center; }
-    footer {
-      text-align: center;
-      padding: 10px;
-      color: #7f8c8d; /* צבע טקסט אפור עדין */
-      font-size: 14px;
-      background-color: #ecf0f1; /* רקע אפור בהיר */
-      border-top: 1px solid #bdc3c7; /* קו הפרדה עדין */
-    }
-    .schedule-item {
-      position: relative;
-      background-color: #FFFFFF; /* רקע לבן אטום */
-      padding: 20px; /* ריווח פנימי גדול יותר */
-      margin: 15px auto; /* מרווח גדול יותר בין פריטים */
-      border-radius: 12px; /* פינות מעוגלות */
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* צל עמוק יותר */
-      cursor: pointer;
-      text-align: center;
-      max-width: 450px; /* רוחב מקסימלי מעט גדול יותר */
-      transition: transform 0.2s, box-shadow 0.2s;
-      overflow: hidden;
-    }
-    .schedule-item:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* צל מודגש ב-hover */
-    }
-    .schedule-item h3 {
-      margin-bottom: 8px; /* מרווח גדול יותר מתחת לכותרת */
-      color: #2C3E50; /* צבע כותרת אפור-כחול */
-      position: relative;
-      z-index: 1;
-      font-size: 1.15em; /* גודל גופן מעט גדול יותר */
-    }
-    .schedule-item p {
-      position: relative;
-      z-index: 1;
-      color: #333333; /* צבע טקסט רגיל */
-      font-size: 0.95em;
-      margin-bottom: 5px; /* מרווח קטן בין פסקאות */
-    }
-    .schedule-item p small { /* עיצוב טקסט קטן (כמו בכתובות) */
-        color: #7f8c8d;
-        font-size: 0.9em;
-    }
-     .schedule-item p:last-child {
-        margin-bottom: 0;
-    }
-    .emoji-background {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 120px; /* אמוג'י גדול יותר */
-      opacity: 0.08; /* שקיפות נמוכה יותר */
-      pointer-events: none;
-      z-index: 0;
-    }
-    .btn {
-      display: inline-block;
-      padding: 12px 24px; /* ריווח פנימי גדול יותר */
-      background-color: #1ABC9C; /* צבע טורקיז ראשי */
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      border-radius: 8px; /* פינות מעוגלות */
-      transition: background-color 0.3s, box-shadow 0.3s;
-      font-weight: bold;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .btn:hover {
-      background-color: #16A085; /* טורקיז כהה יותר */
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-    /* עיצוב ספציפי לכפתור + */
-    .action-buttons .btn {
-        font-size: 24px; /* גודל פלוס גדול */
-        padding: 10px 20px; /* ריווח מתאים */
-        line-height: 1; /* יישור הפלוס */
-    }
-    /* עיצוב כפתור ניווט קטן בתוך פריט */
-    .nav-button {
-      position: absolute;
-      left: 10px; /* מיקום מעודכן */
-      bottom: 10px; /* מיקום מעודכן */
-      font-size: 12px;
-      padding: 5px 10px; /* ריווח מעודכן */
-      background-color: #3498DB; /* צבע כחול לניווט */
-    }
-     .nav-button:hover {
-        background-color: #2980B9; /* כחול כהה יותר */
-     }
-    /* עיצוב כפתורי מחיקה ועריכה קטנים */
-    .item-action-icon {
-        position: absolute;
-        top: 10px;
-        font-size: 18px;
-        cursor: pointer;
-        color: #7f8c8d;
-        transition: color 0.2s;
-        padding: 5px;
-        z-index: 2;
-    }
-    .item-action-icon:hover {
-        color: #e74c3c; /* אדום למחיקה ב-hover */
-    }
-    .delete-icon { right: 10px; }
-    .edit-icon { right: 40px; } /* אם נוסיף כפתור עריכה */
+    /* ===== שאר הסגנונות מהקוד המקורי ===== */
 
-    /* עיצוב תפריט תבניות (נשאר כמעט זהה) */
-    #templateDropdown {
-      position: absolute;
-      bottom: 100%;
-      right: 0;
-      background: #f8f9fa; /* רקע אפור בהיר מאוד */
-      border: 1px solid #dee2e6; /* גבול אפור בהיר */
-      border-radius: 8px;
-      display: none;
-      z-index: 1500;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* צל מודגש */
-      min-width: 220px; /* רוחב מינימלי מעט גדול יותר */
-      padding: 5px;
-    }
-    #templateDropdown button {
-      background: none;
-      border: none;
-      width: 100%;
-      padding: 12px 15px; /* ריווח פנימי גדול יותר */
-      text-align: right;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      font-weight: normal;
-      color: #34495E; /* צבע טקסט אפרפר-כחול */
-      border-radius: 6px;
-      margin-bottom: 3px; /* מרווח קטן בין כפתורים */
-    }
-    #templateDropdown button:first-child { /* עיצוב כפתור "צור תבנית קבועה" */
-      background-color: #e9ecef; /* רקע אפרפר */
-      font-weight: bold;
-      color: #495057; /* צבע טקסט מעט כהה יותר */
-      margin-bottom: 5px;
-    }
-    #templateDropdown button:hover {
-      background-color: #dde1e6; /* רקע מעט כהה יותר ב-hover */
-    }
+  /* ===== Vacation Theme Styles – Final with Modal Scroll ===== */
 
-    /* --- עיצוב מודלים (חלונות קופצים) --- */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.6); /* רקע שחור שקוף */
-      padding-top: 5%; /* מרווח מהחלק העליון */
-    }
-    .modal-content {
-      background-color: #fff;
-      margin: 5% auto; /* מרכוז אנכי ואופקי משופר */
-      padding: 25px 30px; /* ריווח פנימי נדיב */
-      border-radius: 10px; /* פינות מעוגלות יותר */
-      width: 90%;
-      max-width: 550px; /* רוחב מקסימלי מעט גדול יותר */
-      position: relative;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2); /* צל בולט */
-      text-align: right; /* יישור טקסט לימין במודל */
-    }
-     /* סגנון ספציפי למודל "אלגנטי" (עם כותרת וכפתורים מותאמים) */
-    .modal-elegant {
-        border-top: 5px solid #1ABC9C; /* פס טורקיז עליון */
-    }
-    .modal-elegant h2 {
-      color: #2C3E50; /* צבע כותרת אפור-כחול */
-      text-align: center; /* מרכוז כותרת */
-      margin-bottom: 25px; /* מרווח מתחת לכותרת */
-      font-size: 1.6em; /* גודל גופן גדול יותר */
-    }
-    .modal-elegant .btn { /* התאמת כפתורים במודל אלגנטי */
-        margin-top: 10px; /* מרווח מעל הכפתורים */
-    }
-    .close {
-      color: #aaa;
-      position: absolute;
-      left: 15px;
-      top: 10px;
-      font-size: 32px; /* אייקון סגירה גדול יותר */
-      font-weight: bold;
-      cursor: pointer;
-      line-height: 1; /* יישור */
-    }
-    .close:hover, .close:focus {
-      color: #333; /* צבע כהה ב-hover */
-      text-decoration: none;
-    }
+  /* –– Reset ובסיס –– */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    direction: rtl;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #76e2e0 0%, #c3f0f2 100%);
+    color: #2C3E50;
+    padding-top: 70px;
+    padding-bottom: 40px;
+    text-align: center;
+  }
 
-    /* --- עיצוב שדות טופס --- */
-    .form-group {
-      margin-bottom: 20px; /* מרווח גדול יותר בין שדות */
-      text-align: right; /* יישור תוכן השדה לימין */
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 8px; /* מרווח מתחת לתווית */
-      font-weight: bold;
-      color: #555; /* צבע אפרפר לתוויות */
-    }
-     .form-group label small { /* עיצוב ההסבר הקטן ליד התווית */
-        font-weight: normal;
-        color: #7f8c8d;
-        font-size: 0.9em;
-        display: block; /* שירד שורה */
-        margin-top: 2px;
-     }
-    .form-group input[type="text"],
-    .form-group input[type="time"],
-    .form-group input[type="date"],
-    .form-group input[type="number"],
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 12px; /* ריווח פנימי אחיד */
-      border: 1px solid #BDC3C7; /* גבול אפור */
-      border-radius: 6px; /* פינות מעוגלות */
-      font-size: 16px;
-      color: #333; /* צבע טקסט קלט */
-      background-color: #fdfdfd; /* רקע כמעט לבן */
-      transition: border-color 0.2s, box-shadow 0.2s;
-      text-align: right; /* יישור הטקסט בתוך השדה */
-    }
-     /* שינוי צבע רקע לשדות תאריך ושעה כדי שייראו קליקביליים */
-     .form-group input[type="time"],
-     .form-group input[type="date"] {
-         background-color: #f8f9fa;
-         cursor: pointer;
-     }
+  /* –– כותרת ראשית –– */
+  main#content h2 {
+    font-size: 2.8rem;
+    color: #05445E;
+    margin-bottom: 1.5rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+  }
 
-    .form-group select {
-        appearance: none; /* הסתרת עיצוב ברירת מחדל של הדפדפן */
-        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); /* הוספת חץ מותאם אישית */
-        background-repeat: no-repeat;
-        background-position: left 1rem center; /* מיקום החץ בצד שמאל */
-        background-size: 0.65em auto;
-        padding-left: 2.5rem; /* ריווח טקסט משמאל לחץ */
-        cursor: pointer;
-    }
-    .form-group textarea {
-      resize: vertical; /* אפשרות שינוי גודל רק אנכית */
-    }
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: #1ABC9C; /* צבע גבול טורקיז במיקוד */
-      box-shadow: 0 0 0 3px rgba(26, 188, 156, 0.15); /* צל עדין במיקוד */
-    }
+  /* –– כפתורים –– */
+  .btn {
+    display: inline-block;
+    padding: 14px 28px;
+    margin: 8px;
+    background: #189AB4;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+  }
+  .btn:hover {
+    background: #75E6DA;
+    transform: translateY(-3px);
+  }
 
-    /* --- עיצוב רשימת לוזים שמורים --- */
-    .saved-schedule-item {
-      background-color: #fff;
-      margin: 10px auto;
-      padding: 15px 20px; /* ריווח פנימי */
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      cursor: pointer;
-      text-align: right; /* יישור טקסט לימין */
-      font-weight: bold;
-      color: #2C3E50; /* צבע טקסט */
-      max-width: 400px;
-      transition: background-color 0.2s, transform 0.2s;
-      position: relative; /* נדרש למיקום הפח */
-      padding-left: 40px; /* מקום לפח */
-    }
-    .saved-schedule-item:hover {
-        background-color: #f8f9fa; /* רקע בהיר ב-hover */
-        transform: translateY(-2px); /* אפקט הרמה קל */
-    }
-    .saved-schedule-item span.delete-saved { /* עיצוב כפתור הפח */
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 1.1em;
-      color: #e74c3c; /* צבע אדום */
-      opacity: 0.7;
-       transition: opacity 0.2s;
-    }
-     .saved-schedule-item span.delete-saved:hover {
-        opacity: 1;
-     }
+  /* –– כרטיסי לוז –– */
+  .schedule-item {
+    position: relative;
+    background: rgba(255,255,255,0.95);
+    border: 2px solid #75E6DA;
+    border-radius: 24px;
+    padding: 18px;
+    margin: 12px auto;
+    max-width: 360px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    transition: all 0.25s ease-in-out;
+  }
+  .schedule-item:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  }
+  .schedule-item h3 {
+    font-size: 1.3rem;
+    color: #05445E;
+    margin-bottom: 8px;
+  }
+  .schedule-item p {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #2C3E50;
+  }
+  .emoji-background {
+    font-size: 140px;
+    opacity: 0.06;
+  }
 
-    /* --- קבוצת כפתורים --- */
-    .button-group {
-      margin-top: 30px; /* מרווח גדול יותר מעל הקבוצה */
-      display: flex;
-      justify-content: center;
-      gap: 15px; /* מרווח גדול יותר בין כפתורים */
-      flex-wrap: wrap;
-    }
-     /* עיצוב כפתור משני (למשל, עריכה, סיום) */
-    .button-group .btn-secondary {
-        background-color: #95A5A6; /* אפור */
-        color: #fff;
-    }
-    .button-group .btn-secondary:hover {
-        background-color: #7F8C8D; /* אפור כהה יותר */
-    }
-    /* עיצוב כפתור העתקה */
-    .button-group .btn-copy {
-        background-color: #3498DB; /* כחול */
-    }
-    .button-group .btn-copy:hover {
-        background-color: #2980B9; /* כחול כהה יותר */
-    }
-     /* עיצוב כפתור צילום מסך */
-    .button-group .btn-screenshot {
-        background-color: #2ECC71; /* ירוק */
-    }
-    .button-group .btn-screenshot:hover {
-        background-color: #27AE60; /* ירוק כהה יותר */
-    }
+  /* –– טפסים ושדות קלט –– */
+  input, select, textarea {
+    width: calc(100% - 28px);
+    padding: 12px 14px;
+    margin: 8px 0;
+    font-size: 1rem;
+    border: 2px solid #75E6DA;
+    border-radius: 12px;
+    background: #fff;
+    color: #2C3E50;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #189AB4;
+  }
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6' fill='%2375E6DA'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 12px center;
+    padding-left: 2.5rem;
+    padding-right: 0.75rem;
+  }
+  ::placeholder {
+    color: rgba(44,62,80,0.4);
+    font-style: italic;
+  }
 
-    /* --- Loader --- */
-    .loader-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(44, 62, 80, 0.85); /* רקע כהה ושקוף */
-      color: #fff;
-      display: flex;
-      flex-direction: column; /* סידור אנכי */
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      z-index: 3000;
-      display: none; /* מוסתר כברירת מחדל */
-    }
-     /* אנימציית טעינה פשוטה */
-     .loader-spinner {
-        border: 4px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        border-top-color: #fff;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        margin-bottom: 15px; /* מרווח מתחת לספינר */
-     }
-     @keyframes spin {
-        to { transform: rotate(360deg); }
-     }
+  /* –– תוויות (Labels) –– */
+  label {
+    font-weight: 600;
+    color: #05445E;
+    margin-bottom: 4px;
+    display: inline-block;
+  }
 
-    /* --- עיצוב רספונסיבי --- */
-    @media (max-width: 768px) {
-      main#content {
-        margin: 10px; /* מרווח קטן יותר בנייד */
-        padding: 15px;
-      }
-      .site-name { font-size: 22px; } /* גודל טקסט מוקטן */
-       .topbar { padding: 8px 15px; }
-      main#content h2 { font-size: 1.8em; }
-      .btn { font-size: 0.95em; padding: 10px 18px; } /* כפתורים קטנים יותר */
-       .action-buttons .btn {
-          font-size: 20px;
-          padding: 8px 16px;
-      }
-      .modal-content { width: 95%; padding: 20px; margin: 10% auto; }
-      .modal-elegant h2 { font-size: 1.4em; margin-bottom: 20px; }
-      .schedule-item { padding: 15px; max-width: 95%; }
-      .schedule-item h3 { font-size: 1.1em; }
-      .form-group { margin-bottom: 15px; }
-      .form-group input[type="text"],
-      .form-group input[type="time"],
-      .form-group input[type="date"],
-      .form-group input[type="number"],
-      .form-group select,
-      .form-group textarea { padding: 10px; font-size: 15px; }
-      .side-menu { width: 250px; right: -250px; } /* תפריט צד צר יותר */
-      .side-menu-links a { font-size: 17px; padding: 12px 15px; }
-    }
-     /* --- עיצוב ספציפי לתוצאות חיפוש טיסה --- */
-     #flightResultContent .flight-card {
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 15px;
-        background-color: #f9f9f9;
-     }
-      #flightResultContent .flight-card h2 {
-         margin-bottom: 10px;
-         color: #2C3E50;
-         font-size: 1.3em;
-      }
-      #flightResultContent .flight-card p {
-         margin-bottom: 5px;
-         color: #333;
-      }
-      #flightResultContent .flight-card .time-label {
-         font-weight: bold;
-         color: #555;
-      }
-     /* כפתור העתקה במודל תוצאות טיסה */
-     #flightResultModal .btn {
-        background-color: #2ECC71; /* ירוק */
-     }
-     #flightResultModal .btn:hover {
-        background-color: #27AE60; /* ירוק כהה יותר */
-     }
+  /* –– מודלים (Popups) –– */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(5,68,94,0.6);
+    overflow-y: auto;              /* מאפשר גלילה בתוך המסגרת */
+    z-index: 2000;
+  }
+  .modal-content {
+    position: relative;
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 520px;
+    margin: 8% auto;
+    max-height: 85vh;               /* גובה מקסימלי 85% מהמסך */
+    overflow-y: auto;               /* גלילה אם התוכן גבוה */
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    text-align: right;
+  }
+  .modal-content h2 {
+    font-size: 1.8rem;
+    color: #05445E;
+    margin-bottom: 1rem;
+  }
+  .close {
+    font-size: 1.8rem;
+    color: #189AB4;
+    transition: color 0.2s;
+  }
+  .close:hover {
+    color: #05445E;
+  }
 
-     /* --- עיצוב פרטי פריט במודל --- */
-     #itemDetailContent h3 {
-        color: #2C3E50;
-        margin-bottom: 15px;
-     }
-      #itemDetailContent p {
-         margin-bottom: 8px;
-         line-height: 1.7;
-      }
-      #itemDetailModal .button-group .btn { /* התאמת כפתורים במודל פרטים */
-        font-size: 0.9em;
-        padding: 8px 16px;
-      }
-      #editItemBtn { background-color: #F39C12; } /* צהוב לעריכה */
-      #editItemBtn:hover { background-color: #E67E22; }
-      #navigateItemBtn { background-color: #3498DB; } /* כחול לניווט */
-      #navigateItemBtn:hover { background-color: #2980B9; }
+  /* –– Loader Overlay –– */
+  .loader-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5,68,94,0.7);
+    color: #fff;
+    font-size: 1.4rem;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+  }
 
-  </style>
+  /* –– אייקון חיפוש טיסה –– */
+  .flight-search-wrapper {
+    position: relative;
+  }
+  .flight-search-wrapper input {
+    padding-left: 3rem;
+  }
+  .flight-search-wrapper .search-icon {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    font-size: 1.4rem;
+    cursor: pointer;
+  }
+
+  /* –– רספונסיביות –– */
+  @media (max-width: 768px) {
+    main#content h2 { font-size: 2.2rem; }
+    .btn { padding: 12px 20px; font-size: 1rem; }
+    .schedule-item { padding: 15px; margin: 10px; }
+    input, select, textarea { font-size: 0.95rem; padding: 10px 12px; }
+    .modal-content { padding: 24px; margin: 12% auto; }
+  }
+</style>
 </head>
 <body>
-  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+  <!-- כיסוי כהה לתפריט הצד -->
+  <div class="overlay" id="overlay"></div>
 
+  <!-- האדר העליון (Header) עם התפריט החדש -->
   <nav class="topbar">
     <div class="hamburger-menu" onclick="toggleMenu()">
       <i class="fas fa-bars"></i>
     </div>
     <div class="site-name" onclick="goHome()">זמן זהב</div>
-    <a href="#" id="authLink" class="auth-button">התחברות</a> </nav>
+    <a href="auth.html" id="authLink" class="auth-button">התחברות</a>
+  </nav>
 
-  <div class="side-menu" id="sideMenu">
-    <div class="close-menu" onclick="toggleMenu()">
-      <i class="fas fa-times"></i>
-    </div>
-    <div class="side-menu-links">
-      <a href="choose-schedule.html"><i class="fas fa-calendar-plus fa-fw"></i> לו״ז חדש</a>
-      <a href="my-schedules.html"><i class="fas fa-folder-open fa-fw"></i> הלוזי״ם שלי</a>
-      <a href="tips.html"><i class="fas fa-lightbulb fa-fw"></i> טיפים לניהול זמנים</a>
-      <a href="how-to-use.html"><i class="fas fa-info-circle fa-fw"></i> עזרה והסבר</a>
-       <a href="#" id="logoutLink" style="display: none;" onclick="logoutUser(event)"><i class="fas fa-sign-out-alt fa-fw"></i> התנתקות</a>
-    </div>
+<!-- === תפריט צד === -->
+<div class="side-menu" id="sideMenu">
+  <div class="close-menu" onclick="toggleMenu()">
+    <i class="fas fa-times"></i>
   </div>
 
+  <div class="side-menu-links">
+    <a href="choose-schedule.html"><i class="fas fa-calendar-plus"></i> לו״ז חדש</a>
+    <a href="my-schedules.html"><i class="fas fa-folder-open"></i> הלוזי״ם שלי</a>
+    <a href="mesimot.html"><i class="fas fa-list-check"></i> לוח משימות</a> <!-- החדש -->
+    <a href="tips.html"><i class="fas fa-lightbulb"></i> טיפים לניהול זמנים</a>
+    <a href="how-to-use.html"><i class="fas fa-info-circle"></i> עזרה והסבר</a>
+  </div>
+</div>
+
+  <!-- (הסרת האייקון של סימן השאלה) -->
+
+  <!-- תוכן העמוד -->
   <main id="content">
     <h2>בניית לוז חופשה חדש</h2>
     <p>להוספת חלק ללוז, לחץ על הכפתור +</p>
@@ -644,360 +412,1134 @@
     </div>
     <div id="scheduleContainer"></div>
     <div class="button-group">
-      <button class="btn" onclick="openFinalSchedule()"><i class="fas fa-save fa-fw"></i> שמור וסיים לו״ז</button>
+      <button class="btn" onclick="openFinalSchedule()">שמור וסיים לו״ז</button>
     </div>
   </main>
 
-  <footer>©️doronnakache - עיצוב ושיפור על ידי Gemini</footer>
+  <footer>©️doronnakache</footer>
 
+  <!-- מודל הזנת שם לוז -->
   <div id="scheduleNameModal" class="modal">
     <div class="modal-content modal-elegant">
-      <span class="close" onclick="closeScheduleNameModal()">×</span>
+      <span class="close" onclick="closeScheduleNameModal()">&times;</span>
       <h2>הזן שם ללו״ז שלך</h2>
       <div class="form-group">
-        <label for="scheduleNameInput">שם הלו״ז:</label>
-        <input type="text" id="scheduleNameInput" placeholder="למשל: חופשה משפחתית בצפון 🏖️">
+        <label>שם הלו״ז:</label>
+        <input type="text" id="scheduleNameInput" placeholder="למשל: לוז חופשה - סוף שבוע">
       </div>
-      <button class="btn" onclick="saveScheduleName()"><i class="fas fa-check fa-fw"></i> המשך ושמירה</button>
+      <button class="btn" onclick="saveScheduleName()">המשך ושמירה</button>
     </div>
   </div>
 
+  <!-- מודל הוספת חלק ללוז -->
   <div id="addItemModal" class="modal">
     <div class="modal-content modal-elegant">
-      <span class="close" onclick="closeAddItemModal()">×</span>
+      <span class="close" onclick="closeAddItemModal()">&times;</span>
       <h2 id="addItemModalTitle">הוספת חלק ללו״ז</h2>
       <div class="form-group">
-        <label for="modalDate">בחר תאריך:</label>
+        <label>בחר תאריך:</label>
         <input type="date" id="modalDate">
       </div>
+      <!-- שדות זמן כללים -->
       <div class="form-group">
-        <label id="startTimeLabel" for="modalStartTime">שעת התחלה:</label>
+        <label id="startTimeLabel">שעת התחלה:</label>
         <input type="time" id="modalStartTime" onchange="setDefaultEndTime()">
       </div>
       <div class="form-group">
-        <label id="endTimeLabel" for="modalEndTime">שעת סיום:</label>
+        <label id="endTimeLabel">שעת סיום:</label>
         <input type="time" id="modalEndTime">
       </div>
-      <div id="timeNote" style="font-size: 0.9rem; color: #7f8c8d; display: none; margin-bottom: 15px; text-align: center;"></div>
-
-      <div class="form-group">
-         <label for="modalSubject">נושא:</label>
-         <div style="display: flex; align-items: center; gap: 10px;">
-           <select id="modalSubject" onchange="subjectChangeHandler()" style="flex-grow: 1;"></select>
-           <div style="position: relative; display: inline-block;">
-             <button id="subjectsToggleBtn" onclick="togglePermanentSubjectsList(event)" title="ניהול נושאים קבועים" style="background: none; border: 1px solid #ccc; border-radius: 50%; width: 35px; height: 35px; font-size: 20px; cursor: pointer; color: #555; line-height: 30px;">⋮</button>
-             <div id="permanentSubjectsList" style="display: none; position: absolute; left: 0; top: 40px; background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 10px; z-index: 2001; box-shadow: 0 2px 8px rgba(0,0,0,0.15); min-width: 250px;">
-                <button class="btn btn-secondary" onclick="openAddSubjectModal()" style="width: 100%; margin-top: 10px; font-size: 0.9em; padding: 8px 12px;"><i class="fas fa-plus fa-fw"></i> הוסף נושא חדש</button>
-             </div>
-           </div>
-         </div>
-       </div>
-
-
-      <div id="extraQuestions" style="display: none; border-top: 1px dashed #ccc; padding-top: 15px; margin-top: 15px;">
+      <div id="timeNote" style="font-size: 0.9rem; color: #555; display: none;"></div>
+      <div class="form-group" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+        <label>נושא:</label>
+        <select id="modalSubject" onchange="subjectChangeHandler()"></select>
+        <div style="position: relative; display: inline-block;">
+          <button id="subjectsToggleBtn" onclick="togglePermanentSubjectsList()" style="background: none; border: none; font-size: 24px; cursor: pointer;">⋮</button>
+          <div id="permanentSubjectsList" style="display: none; position: absolute; right: 0; top: 30px; background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 5px; z-index: 2000;"></div>
+        </div>
+      </div>
+      <!-- שדות נוספים עבור נושאים שונים -->
+      <div id="extraQuestions" style="display: none;">
         <div class="form-group">
-          <label for="fromAddress">מאיפה (כתובת התחלה): <small>הזן את הכתובת או המקום שממנו יוצאים</small></label>
-          <input type="text" id="fromAddress" placeholder="לדוגמה: רחוב הירקון 1, תל אביב">
+          <label>מאיפה (כתובת התחלה): <small>הזן את הכתובת או המקום שממנו יוצאים</small></label>
+          <input type="text" id="fromAddress" placeholder="לדוגמה: רחוב המלך, תל אביב">
         </div>
         <div class="form-group">
-          <label for="toAddress">ולאן (כתובת יעד): <small>לדוגמה: קניון רמת אביב, תל אביב</small></label>
-          <input type="text" id="toAddress" placeholder="לדוגמה: שוק מחנה יהודה, ירושלים">
+          <label>ולאן (כתובת יעד): <small>לדוגמה: קניון רמת אביב, תל אביב</small></label>
+          <input type="text" id="toAddress" placeholder="לדוגמה: קניון רמת אביב, תל אביב">
         </div>
         <div class="form-group" id="travelModeGroup" style="display: none;">
-          <label for="travelModeSelect">איך נוסעים?</label>
+          <label>איך נוסעים?</label>
           <select id="travelModeSelect">
-            <option value="car">רכב פרטי 🚙</option>
-            <option value="transit">תחב״צ 🚋🚆</option>
             <option value="taxi">מונית 🚖</option>
-            <option value="walk">הליכה (מצב נסיעה)</option> </select>
+            <option value="transit">תחב״צ 🚋🚆</option>
+            <option value="car">רכב פרטי 🚙</option>
+          </select>
         </div>
-        <button class="btn btn-secondary" id="checkRouteBtn" onclick="checkRoute()" style="font-size: 0.9em; padding: 8px 15px;"><i class="fab fa-google fa-fw"></i> בדוק מסלול בגוגל מפות</button>
+        <button class="btn" id="checkRouteBtn" onclick="checkRoute()">בדוק מסלול בגוגל מפס</button>
       </div>
-
-      <div id="locationField" style="display:none; border-top: 1px dashed #ccc; padding-top: 15px; margin-top: 15px;" class="form-group">
-        <label for="locationInput">מיקום: <small>הזן את שם המקום או הכתובת</small></label>
-        <input type="text" id="locationInput" placeholder="לדוגמה: מוזיאון ישראל, ירושלים / חוף פלמחים">
-        <button class="btn btn-secondary" onclick="showLocationRoute()" style="font-size: 0.9em; padding: 8px 15px; margin-top: 10px;"><i class="fab fa-google fa-fw"></i> הצג מסלול בגוגל מפות</button>
+      <!-- עבור ביקור/סיור -->
+      <div id="locationField" style="display:none;" class="form-group">
+        <label style="color: lightgray;">מיקום: <small>כתוב את מיקום המקום שאתה מבקר</small></label>
+        <input type="text" id="locationInput" placeholder="לדוגמה: תל אביב">
       </div>
-
-      <div id="foodExtraOptions" style="display:none; border-top: 1px dashed #ccc; padding-top: 15px; margin-top: 15px;">
+      <!-- עבור נושא "אוכל" -->
+      <div id="foodExtraOptions" style="display:none;">
         <div class="form-group">
-          <label for="foodTypeSelect">בחר סוג אוכל:</label>
+          <label>בחר סוג אוכל:</label>
           <select id="foodTypeSelect" onchange="foodTypeChangeHandler()">
             <option value="">-- בחר --</option>
-            <option value="מסעדה">מסעדה 👨‍🍳</option>
-            <option value="בית קפה">בית קפה ☕</option>
-            <option value="במלון/במקום הלינה">במלון/במקום הלינה 🏨</option>
-            <option value="פיקניק/הכנה עצמית">פיקניק/הכנה עצמית 🧺</option>
-            <option value="קנייה בסופר/מכולת">קנייה בסופר/מכולת 🛒</option>
-            <option value="אוכל מהיר/דוכן">אוכל מהיר/דוכן 🥙</option>
+            <option value="מסעדה">מסעדה👨‍🍳</option>
+            <option value="במלון">במלון🏨</option>
+            <option value="הכנה עצמית/קנייה בסופר">הכנה עצמית/קנייה בסופר🛒</option>
+            <option value="אוכל מהיר">אוכל מהיר 🥙</option>
           </select>
         </div>
         <div id="foodLocationDiv" class="form-group" style="display:none;">
-          <label for="foodLocationInput">מיקום (אם רלוונטי):</label>
-          <input type="text" id="foodLocationInput" placeholder="הזן את שם המסעדה / כתובת">
-          <button class="btn btn-secondary" onclick="showFoodRoute()" style="font-size: 0.9em; padding: 8px 15px; margin-top: 10px;"><i class="fab fa-google fa-fw"></i> הצג מסלול בגוגל מפות</button>
+          <label>מיקום:</label>
+          <input type="text" id="foodLocationInput" placeholder="הזן את מיקום המקום">
+          <button class="btn" onclick="showFoodRoute()">ראה מסלולים בגוגל מפס</button>
         </div>
       </div>
-
-      <div id="flightExtraOptions" style="display:none; border-top: 1px dashed #ccc; padding-top: 15px; margin-top: 15px;">
+      <!-- עבור נושא "טיסה" -->
+      <div id="flightExtraOptions" style="display:none;">
         <div class="form-group flight-search-wrapper">
-           <label for="flightNumberInput">מספר טיסה (אופציונלי):</label>
-           <div style="display: flex; align-items: center;">
-              <input type="text" id="flightNumberInput" placeholder="למשל: LY2523" style="flex-grow: 1; margin-left: 0; margin-right: 10px; padding-left: 10px;">
-              <span class="search-icon" onclick="searchFlight()" title="חפש פרטי טיסה" style="position: static; transform: none; font-size: 1.5em; color: #1ABC9C;">🔍</span>
-           </div>
+          <label>מספר טיסה:</label>
+          <input type="text" id="flightNumberInput" placeholder="למשל: LY2523">
+          <span class="search-icon" onclick="searchFlight()">🔍</span>
         </div>
         <div class="form-group">
-          <label for="airlineInput">חברת תעופה:</label>
+          <label>חברת טיסה:</label>
           <input type="text" id="airlineInput" placeholder="לדוגמה: אל על">
         </div>
         <div class="form-group">
-          <label for="departureAirportInput">משדה תעופה:</label>
-          <input type="text" id="departureAirportInput" placeholder="לדוגמה: נתב״ג (TLV)">
+          <label>משדה תעופה:</label>
+          <input type="text" id="departureAirportInput" placeholder="לדוגמה: Prague Ruzyně">
         </div>
         <div class="form-group">
-          <label for="arrivalAirportInput">לשדה תעופה:</label>
-          <input type="text" id="arrivalAirportInput" placeholder="לדוגמה: שארל דה גול (CDG)">
+          <label>לשדה תעופה:</label>
+          <input type="text" id="arrivalAirportInput" placeholder="לדוגמה: Tel Aviv Yafo Ben Gurion">
         </div>
       </div>
-
-      <div class="form-group" id="descriptionGroup" style="display: none;">
-        <label for="modalDescription">תיאור נוסף / הערות:</label>
-        <textarea id="modalDescription" rows="3" placeholder="פרטים נוספים על הפעילות, מקום, ציוד נדרש, אנשי קשר וכו'"></textarea>
+      <div class="form-group" id="descriptionGroup">
+        <label>תיאור:</label>
+        <textarea id="modalDescription" rows="3" placeholder="תאר מה מתוכנן (פעילות, מקום, הערות)"></textarea>
       </div>
-
-      <button class="btn" id="addItemBtn" onclick="saveItem()" style="display: none; width: 100%;"><i class="fas fa-check fa-fw"></i> הוסף / שמור שינויים</button>
+      <button class="btn" id="addItemBtn" onclick="saveItem()">סיום והוסף</button>
     </div>
   </div>
 
+  <!-- מודל תוצאות טיסה -->
   <div id="flightResultModal" class="modal">
     <div class="modal-content modal-elegant">
-      <span class="close" onclick="closeFlightResultModal()">×</span>
+      <span class="close" onclick="closeFlightResultModal()">&times;</span>
       <h2>תוצאות חיפוש טיסה</h2>
       <div id="flightResultContent">
-        </div>
-      <button class="btn" onclick="copyFlightToForm()" id="copyFlightBtn" style="display: none;"><i class="fas fa-copy fa-fw"></i> העתק פרטים לטופס</button>
+        <!-- כאן יוצגו פרטי הטיסה -->
+      </div>
+      <button class="btn" onclick="copyFlightToForm()">העתקה ללוז (מומלץ לבדוק שהפרטים נכונים)</button>
     </div>
   </div>
 
+  <!-- מודל תצוגת לוז סופי -->
   <div id="finalScheduleModal" class="modal">
     <div class="modal-content" id="finalScheduleContent">
-      <span class="close" onclick="closeFinalScheduleModal()">×</span>
-      <h2 id="finalScheduleTitle" style="text-align: center; color: #2C3E50;"></h2>
-      <div id="finalScheduleDisplay" style="margin-top: 20px; max-height: 60vh; overflow-y: auto; padding: 0 10px;">
-          </div>
+      <span class="close" onclick="closeFinalScheduleModal()">&times;</span>
+      <h2 id="finalScheduleTitle"></h2>
+      <div id="finalScheduleDisplay"></div>
       <div class="button-group">
-        <button class="btn btn-screenshot" onclick="captureScreenshotFromElement('finalScheduleDisplay', scheduleName)"><i class="fas fa-camera fa-fw"></i> צילום מסך</button>
-        <button class="btn btn-copy" onclick="copyScheduleToClipboard()"><i class="fas fa-copy fa-fw"></i> העתק כטקסט</button>
-        <button class="btn btn-secondary" onclick="closeFinalScheduleModal()"><i class="fas fa-times fa-fw"></i> סגור</button>
+        <button class="btn" onclick="captureScreenshotFromElement('finalScheduleDisplay', scheduleName)">צילום מסך של הלו״ז</button>
+        <button class="btn" onclick="copyScheduleToClipboard()">העתקת הלו״ז להודעה</button>
+        <button class="btn" onclick="window.location.href='עריכה.html'">ערוך לוז</button>
+        <button class="btn" onclick="closeFinalScheduleModal()">סיום</button>
       </div>
     </div>
   </div>
 
+  <!-- מודל יצירת לוז קבוע -->
+  <div id="constantTemplateModal" class="modal">
+    <div class="modal-content modal-elegant">
+      <span class="close" onclick="closeConstantTemplateModal()">&times;</span>
+      <h2>צור לוז קבוע</h2>
+      <div class="form-group">
+        <label>נושא:</label>
+        <select id="templateSubjectSelect">
+          <option value="הליכה">🚶 הליכה</option>
+          <option value="נסיעה">🚗 נסיעה</option>
+          <option value="ביקור/סיור">🏛️ ביקור/סיור</option>
+          <option value="טיסה">✈️ טיסה</option>
+          <option value="אוכל">🍽️ אוכל</option>
+          <option value="שינה">😴 שינה</option>
+          <option value="לקום">⏰ לקום</option>
+          <option value="אחר">❓ אחר</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>משך (בדקות):</label>
+        <input type="number" id="templateDurationInput" value="90" min="1">
+      </div>
+      <div class="form-group">
+        <label>תיאור:</label>
+        <textarea id="templateDescriptionInput" rows="2" placeholder="תאר את תבנית הלוז"></textarea>
+      </div>
+      <button class="btn" onclick="saveConstantTemplate()">שמור תבנית</button>
+    </div>
+  </div>
+
+  <!-- מודל הוספת נושא -->
   <div id="addSubjectModal" class="modal">
     <div class="modal-content modal-elegant">
-      <span class="close" onclick="closeAddSubjectModal()">×</span>
-      <h2>הוספת נושא חדש</h2>
+      <span class="close" onclick="closeAddSubjectModal()">&times;</span>
+      <h2>הוספת נושא</h2>
       <div class="form-group">
-        <label for="newSubjectNameInput">שם הנושא (מומלץ להוסיף אמוג'י רלוונטי):</label>
-        <input type="text" id="newSubjectNameInput" placeholder="למשל: סיור יקבים 🍇">
+        <label>בחר שם לנושא (מומלץ להוסיף סמיילי):</label>
+        <input type="text" id="newSubjectNameInput" placeholder="למשל: טיול משפחתי 🚶‍♂️">
       </div>
-      <div class="form-group" style="text-align: center;">
-        <p style="margin-bottom: 15px; font-size: 0.9em; color: #555;">האם להוסיף את הנושא רק ללו"ז הנוכחי או לשמור אותו לשימוש קבוע בכל הלו"זים?</p>
-        <button class="btn" onclick="addSubjectOneTime()"><i class="fas fa-plus fa-fw"></i> הוספה חד פעמית</button>
-        <button class="btn btn-secondary" onclick="addSubjectPermanent()" style="margin-right: 10px;"><i class="fas fa-save fa-fw"></i> הוספה קבועה</button>
+      <div class="form-group" style="display: flex; justify-content: space-around;">
+        <button class="btn" onclick="addSubjectOneTime()">הוספה חד פעמית</button>
+        <button class="btn" onclick="addSubjectPermanent()">הוספה קבועה</button>
       </div>
     </div>
   </div>
 
+  <!-- מודל פרטי פריט -->
   <div id="itemDetailModal" class="modal">
     <div class="modal-content modal-elegant">
-       <span class="close" onclick="closeItemDetailModal()">×</span>
-       <div id="itemDetailContent" style="text-align: right; margin-bottom: 20px;">
-          </div>
-       <div class="button-group">
-          <button class="btn" id="editItemBtn" onclick="editScheduleItemFromDetail()"><i class="fas fa-edit fa-fw"></i> ערוך פריט</button>
-          <button class="btn" id="navigateItemBtn" style="display: none;" onclick="navigateItemFromDetail()"><i class="fas fa-directions fa-fw"></i> נווט</button>
-          <button class="btn btn-secondary" onclick="closeItemDetailModal()"><i class="fas fa-times fa-fw"></i> סגור</button>
-       </div>
+      <span class="close" onclick="closeItemDetailModal()">&times;</span>
+      <div id="itemDetailContent"></div>
+      <div class="button-group">
+        <button class="btn" id="editItemBtn">עריכה</button>
+        <button class="btn" id="navigateItemBtn">נווט</button>
+      </div>
     </div>
   </div>
 
-
-  <div class="loader-overlay" id="loader">
-      <div class="loader-spinner"></div>
-      <span id="loaderText">מחפש פרטי טיסה... ✈️</span>
-  </div>
+  <!-- כיסוי Loader -->
+  <div class="loader-overlay" id="loader">מחפש פרטי טיסה...✈️</div>
 
   <script>
-    // הגדרת subjectEmojis (כולל החדשים)
+    // הגדרת subjectEmojis
     const subjectEmojis = {
       "הליכה": "🚶",
-      "נסיעה": "🚗", // כולל גם 🚙, 🚋, 🚆, 🚖 בהתאם ל-travelMode
+      "נסיעה": "🚗",
       "ביקור/סיור": "🏛️",
       "טיסה": "✈️",
-      "אוכל": "🍽️", // כולל גם ☕, 🧺, 🛒, 🥙
+      "אוכל": "🍽️",
       "שינה": "😴",
-      "לקום": "⏰",
-      "ים": "🏖️",
-      "קניות": "🛍️",
-      "בילוי לילי": "🌃",
-      "ספורט/כושר": "🏋️",
-      "מנוחה/זמן חופשי": "🧘",
-      "פגישה": "🤝",
-      "אחר": "❓" // נושא ברירת מחדל
+      "לקום": "⏰"
     };
 
     let scheduleItems = [];
     let scheduleName = null;
-    let savedSchedules = []; // ייטען מ-Firestore
-    let editingIndex = -1; // אינדקס הפריט הנערך כרגע (-1 אם מוסיפים חדש)
-    let permanentSubjects = JSON.parse(localStorage.getItem('permanentSubjects')) || []; // נושאים קבועים מהאחסון המקומי
-    let customSubjects = []; // נושאים חד-פעמיים ללו"ז הנוכחי
-    let currentFlightData = null; // לאחסון נתוני טיסה מהחיפוש האחרון
+    let savedSchedules = [];
+    let editingIndex = -1;
+    let constantTemplates = [];
+    let selectedTemplate = null;
+    let permanentSubjects = [];
+    let customSubjects = [];
 
-    // אתחול Firebase (ודא ש-firebase-config.js קיים ומכיל את ההגדרות שלך)
-    const firebaseApp = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-    firebase.analytics();
+    let editingSavedScheduleIndex = -1;
+    let originalScheduleItems = [];
+    let originalScheduleName = "";
 
-    // ----- ניהול משתמש והתחברות -----
-    auth.onAuthStateChanged((user) => {
-        const authLink = document.getElementById("authLink");
-        const logoutLink = document.getElementById("logoutLink");
-        if (user) {
-            console.log("User logged in:", user.uid);
-            updateUserGreeting(user);
-            loadUserData(user.uid); // טעינת נתונים אחרי התחברות
-            authLink.style.display = 'none'; // הסתר כפתור התחברות
-            logoutLink.style.display = 'block'; // הצג קישור התנתקות
-        } else {
-            console.log("User logged out");
-            authLink.innerText = "התחברות";
-            authLink.style.display = 'block'; // הצג כפתור התחברות
-            logoutLink.style.display = 'none'; // הסתר קישור התנתקות
-            authLink.onclick = login; // שיוך פונקציית התחברות
-            savedSchedules = []; // איפוס לוזים שמורים
-            permanentSubjects = []; // איפוס נושאים קבועים (או טעינה מ-localStorage אם רוצים לשמור אותם גם ללא התחברות)
-            renderScheduleItems(); // רענון תצוגה אם נדרש
-            updateSubjectDropdownOptions();
-        }
-    });
+    function translateTravelMode(mode) {
+      if(mode === "taxi") return "מונית 🚖";
+      if(mode === "transit") return "תחב״צ 🚋🚆";
+      if(mode === "car") return "רכב פרטי 🚙";
+      return mode;
+    }
 
     function login() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider)
-            .then((result) => {
-                console.log("Login successful:", result.user.displayName);
-                // onAuthStateChanged יטפל בעדכון הממשק וטעינת הנתונים
-            })
-            .catch((error) => {
-                console.error("Login failed:", error);
-                alert("שגיאה בהתחברות: " + error.message);
-            });
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then((result) => { updateUserGreeting(result.user); })
+        .catch((error) => { alert("שגיאה בהתחברות: " + error.message); });
     }
-
-     function logoutUser(event) {
-         event.preventDefault();
-         if (confirm("האם אתה בטוח שברצונך להתנתק?")) {
-             auth.signOut().then(() => {
-                 // onAuthStateChanged יטפל בעדכון הממשק
-                 scheduleItems = []; // איפוס לו"ז נוכחי
-                 scheduleName = null;
-                 goHome(); // חזרה לעמוד הראשי או לעמוד הנחיתה
-             }).catch((error) => {
-                 console.error("Logout failed:", error);
-                 alert("שגיאה בהתנתקות: " + error.message);
-             });
-         }
-     }
-
 
     function updateUserGreeting(user) {
-        const sideMenuLinks = document.querySelector('.side-menu-links');
-        let greetingElement = document.getElementById('userGreeting');
-        if (!greetingElement) {
-            greetingElement = document.createElement('div');
-            greetingElement.id = 'userGreeting';
-            greetingElement.style.color = '#ecf0f1';
-            greetingElement.style.padding = '15px 20px';
-            greetingElement.style.textAlign = 'center';
-            greetingElement.style.borderBottom = '1px solid rgba(236, 240, 241, 0.1)';
-            sideMenuLinks.insertBefore(greetingElement, sideMenuLinks.firstChild);
+      let currentHour = new Date().getHours();
+      let greeting = "בוקר טוב";
+      if (currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
+      else if (currentHour >= 18) { greeting = "ערב טוב"; }
+      const authLink = document.getElementById("authLink");
+      let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
+      authLink.innerText = greeting + " " + firstName + "!";
+      authLink.onclick = function(event) {
+        event.preventDefault();
+        if (confirm("להתנתק?")) {
+          firebase.auth().signOut().then(() => {
+            authLink.innerText = "התחברות";
+            authLink.onclick = null;
+          });
         }
-
-        let currentHour = new Date().getHours();
-        let greeting = "ברוך הבא, ";
-        if (currentHour < 12) { greeting = "בוקר טוב, "; }
-        else if (currentHour < 18) { greeting = "צהריים טובים, "; }
-        else { greeting = "ערב טוב, "; }
-
-        let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email.split("@")[0];
-        // ניקוי שם פרטי אם הוא מכיל תווים לא רצויים
-        firstName = firstName.replace(/[^א-תA-Za-z]/g, '');
-
-        greetingElement.innerHTML = `<i class="fas fa-user-circle fa-fw"></i> ${greeting}${firstName}!`;
+      };
     }
 
-
-    // ----- טעינת ושמירת נתונים (Firestore & LocalStorage) -----
-
-    function loadUserData(userId) {
-        const docRef = db.collection("userData").doc(userId);
-        docRef.get().then((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                savedSchedules = data.schedules || [];
-                permanentSubjects = data.permanentSubjects || JSON.parse(localStorage.getItem('permanentSubjects')) || []; // עדיפות ל-Firestore
-                console.log("User data loaded from Firestore.");
-            } else {
-                // אם אין נתונים ב-Firestore, נסה לטעון מ-LocalStorage (למקרה של שימוש קודם ללא התחברות)
-                permanentSubjects = JSON.parse(localStorage.getItem('permanentSubjects')) || [];
-                console.log("No Firestore data found, loaded permanent subjects from LocalStorage.");
-                // ניתן לשקול ליצור מסמך ראשוני למשתמש חדש כאן
-            }
-            // עדכון ממשק אחרי טעינת נתונים
-             if (document.getElementById("content").querySelector('h2').innerText.includes("הלוזים שלי")) {
-                 displayMySchedules(); // רענן את תצוגת "הלוזים שלי" אם נמצאים בה
-             }
-             updateSubjectDropdownOptions();
-        }).catch((error) => {
-            console.error("Error loading user data: ", error);
-            // טעינה מ-LocalStorage כגיבוי
-            permanentSubjects = JSON.parse(localStorage.getItem('permanentSubjects')) || [];
-             updateSubjectDropdownOptions();
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) { 
+        updateUserGreeting(user);
+        db.collection("schedules").doc(user.uid).get().then((doc) => {
+          if (doc.exists) {
+            savedSchedules = doc.data().schedules || [];
+          }
         });
-    }
-
-    function saveUserData() {
-        const user = auth.currentUser;
-        if (user) {
-            const userId = user.uid;
-            const dataToSave = {
-                schedules: savedSchedules,
-                permanentSubjects: permanentSubjects
-            };
-            db.collection("userData").doc(userId).set(dataToSave, { merge: true })
-                .then(() => {
-                    console.log("User data saved successfully to Firestore.");
-                })
-                .catch((error) => {
-                    console.error("Error saving user data to Firestore: ", error);
-                });
-        } else {
-            // שמירה ל-LocalStorage אם המשתמש לא מחובר (רק לנושאים קבועים)
-            localStorage.setItem('permanentSubjects', JSON.stringify(permanentSubjects));
-            console.log("User not logged in, saved permanent subjects to LocalStorage.");
-            // אזהרה: לו"זים לא יישמרו ללא התחברות.
-        }
-    }
-
-    // ----- ניווט ופעולות בסיסיות -----
+      }
+      else { document.getElementById("authLink").innerText = "התחברות"; }
+    });
 
     function goHome() { window.location.href = "index.html"; }
 
+    function openAddItemModal() {
+      if (!scheduleName) {
+        document.getElementById("scheduleNameModal").style.display = "block";
+      } else {
+        editingIndex = -1;
+        document.getElementById("addItemModalTitle").innerText = "הוספת חלק ללו״ז";
+        document.getElementById("addItemBtn").innerText = "סיום והוסף";
+        if (scheduleItems.length > 0) {
+          let lastItem = scheduleItems[scheduleItems.length - 1];
+          let nextStart = addOneMinute(lastItem.endTime);
+          document.getElementById("modalStartTime").value = nextStart;
+        } else {
+          document.getElementById("modalStartTime").value = "";
+        }
+        setDefaultEndTime();
+        if (selectedTemplate) {
+          document.getElementById("modalSubject").value = selectedTemplate.subject;
+          if(selectedTemplate.description) {
+            document.getElementById("modalDescription").value = selectedTemplate.description;
+          }
+        }
+        updateSubjectDropdownOptions();
+        updatePermanentSubjectsList();
+        subjectChangeHandler();
+        document.getElementById("addItemModal").style.display = "block";
+      }
+    }
+    window.openAddItemModal = openAddItemModal;
+
+    function loadNewScheduleBuilder() {
+      scheduleItems = [];
+      scheduleName = null;
+      editingIndex = -1;
+      selectedTemplate = null;
+      document.getElementById("content").innerHTML = `
+        <h2>בניית לוז חופשה חדש</h2>
+        <p>להוספת חלק חדש, לחץ על הכפתור +</p>
+        <div class="action-buttons">
+          <button class="btn" onclick="openAddItemModal()">+</button>
+        </div>
+        <div id="scheduleContainer"></div>
+        <div class="button-group">
+          <button class="btn" onclick="openFinalSchedule()">שמור וסיים לו״ז</button>
+        </div>
+      `;
+    }
+
+    function loadMySchedules(event) {
+      event.preventDefault();
+      let html = `<h2>הלוזים שלי</h2>`;
+      if (savedSchedules.length === 0) { html += `<p>אין לוזים שמורים.</p>`; }
+      else {
+        html += `<ul style="list-style: none; padding:0;">`;
+        savedSchedules.forEach((sch, idx) => {
+          html += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${idx})">
+                     <span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteSavedSchedule(${idx})">🗑️</span>
+                     ${sch.name}
+                   </li>`;
+        });
+        html += `</ul>`;
+      }
+      document.getElementById("content").innerHTML = html;
+    }
+
+    function deleteSavedSchedule(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את הלו״ז הזה?")) {
+        savedSchedules.splice(index, 1);
+        saveSchedulesToFirestore();
+        loadMySchedules();
+        alert("הלו״ז נמחק.");
+      }
+    }
+
+    function viewSavedSchedule(idx) {
+      const sch = savedSchedules[idx];
+      let finalHtml = "";
+      const groups = groupItemsByDate(sch.scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        finalHtml += `<h3>${formatDateHeader(date)}</h3>`;
+        groups[date].forEach(item => {
+          let displaySubject = getDisplaySubject(item);
+          let bgEmoji = getBackgroundEmoji(item);
+          let extraLine = getExtraLine(item);
+          let addressLine = "";
+          if(item.fromAddress && item.toAddress && (item.subject === "נסיעה" || item.subject === "הליכה")) {
+            addressLine = `<p>${item.fromAddress} ⬅️ ${item.toAddress}</p>`;
+          }
+          finalHtml += `<div class="schedule-item" onclick="showItemDetail(${scheduleItems.indexOf(item)})" data-date="${item.date}" data-subject="${item.subject}">
+                          <div class="emoji-background">${bgEmoji}</div>
+                          <h3>${item.startTime} - ${item.endTime} : ${displaySubject}</h3>
+                          ${extraLine}
+                          ${addressLine}
+                          <p>${item.description}</p>
+                        </div>`;
+        });
+      });
+      document.getElementById("finalScheduleModal").style.display = "block";
+      document.getElementById("finalScheduleTitle").innerText = scheduleName;
+      document.getElementById("finalScheduleDisplay").innerHTML = finalHtml;
+    }
+
+    function saveSchedulesToFirestore() {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        db.collection("schedules").doc(user.uid).set({ schedules: savedSchedules }, { merge: true })
+        .then(() => { console.log("Schedules saved successfully"); })
+        .catch((error) => { console.error("Error saving schedules: ", error); });
+      }
+    }
+
+    function addOneMinute(timeStr) {
+      let [h, m] = timeStr.split(":").map(Number);
+      m++;
+      if (m >= 60) { m = 0; h = (h + 1) % 24; }
+      return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+    }
+
+    function getDisplaySubject(item) {
+      if(item.subject === "נסיעה") {
+        return "נסיעה " + translateTravelMode(item.travelMode);
+      }
+      return item.subject;
+    }
+
+    function getBackgroundEmoji(item) {
+      if(item.subject === "נסיעה") {
+        let translated = translateTravelMode(item.travelMode);
+        let parts = translated.split(" ");
+        return parts[parts.length-1];
+      }
+      if(item.subject === "ביקור/סיור") {
+        return "🏛️";
+      }
+      let lastChar = item.subject.slice(-1);
+      if (lastChar.codePointAt(0) > 10000) { return lastChar; }
+      return subjectEmojis[item.subject] || "";
+    }
+
+    function getExtraLine(item) {
+      let line = "";
+      if(item.subject === "נסיעה") {
+        line = `<p>נסיעה מ- ${item.fromAddress} ל- ${item.toAddress}<br>איך נוסעים: ${translateTravelMode(item.travelMode) || ""}</p>`;
+      } else if(item.subject === "הליכה") {
+        line = `<p>הליכה מ- ${item.fromAddress} ל- ${item.toAddress}</p>`;
+      } else if(item.subject === "ביקור/סיור" && item.location) {
+        line = `<p>מיקום: ${item.location}</p>`;
+      } else if(item.subject === "אוכל") {
+        if(item.foodType) {
+          line += `<p>סוג אוכל: ${item.foodType}</p>`;
+        }
+        if(item.foodLocation) {
+          line += `<p>מיקום: ${item.foodLocation}</p>`;
+        }
+      } else if(item.subject === "טיסה") {
+        line = `<p>טיסת ${item.airline || ""}<br>טיסה מספר: ${item.flightNumber || ""}<br>*• ${item.departureAirport || ""} ⬅️ ${item.arrivalAirport || ""}*</p>`;
+      }
+      return line;
+    }
+
+    function renderScheduleItems() {
+      const container = document.getElementById("scheduleContainer");
+      container.innerHTML = "";
+      const groups = groupItemsByDate(scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        container.innerHTML += `<h3>${formatDateHeader(date)}</h3>`;
+        groups[date].forEach((item, idx) => {
+          let displaySubject = getDisplaySubject(item);
+          let bgEmoji = getBackgroundEmoji(item);
+          let extraLine = getExtraLine(item);
+          let addressLine = "";
+          if (item.fromAddress && item.toAddress && (item.subject === "נסיעה" || item.subject === "הליכה")) {
+            addressLine = `<p>${item.fromAddress} ⬅️ ${item.toAddress}</p>`;
+          }
+          let navButton = "";
+          if(item.subject === "נסיעה" || item.subject === "הליכה") {
+            if(item.fromAddress && item.toAddress) {
+              navButton = `<button class="btn nav-button" onclick="event.stopPropagation(); navigateItem(${scheduleItems.indexOf(item)})">נווט</button>`;
+            }
+          } else if(item.subject === "ביקור/סיור" && item.location) {
+            navButton = `<button class="btn nav-button" onclick="event.stopPropagation(); navigateItem(${scheduleItems.indexOf(item)})">נווט</button>`;
+          } else if(item.subject === "אוכל" && (item.foodType === "מסעדה" || item.foodType === "אוכל מהיר") && item.foodLocation) {
+            navButton = `<button class="btn nav-button" onclick="event.stopPropagation(); navigateItem(${scheduleItems.indexOf(item)})">נווט</button>`;
+          }
+          container.innerHTML += `
+            <div class="schedule-item" onclick="showItemDetail(${scheduleItems.indexOf(item)})" data-date="${item.date}" data-subject="${item.subject}">
+              ${navButton}
+              <div class="emoji-background">${bgEmoji}</div>
+              <span style="position: absolute; top: 5px; right: 5px; cursor: pointer;" onclick="event.stopPropagation(); deleteScheduleItem(${scheduleItems.indexOf(item)})">🗑️</span>
+              <h3>${item.startTime} - ${item.endTime} : ${displaySubject}</h3>
+              ${extraLine}
+              ${addressLine}
+              <p>${item.description}</p>
+            </div>
+          `;
+        });
+      });
+    }
+
+    function deleteScheduleItem(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את החלק הזה מהלו״ז?")) {
+        scheduleItems.splice(index, 1);
+        renderScheduleItems();
+        saveSchedulesToFirestore();
+        alert("החלק נמחק מהלו״ז.");
+      }
+    }
+
+    function checkRoute() {
+      const from = document.getElementById("fromAddress").value;
+      const to = document.getElementById("toAddress").value;
+      if(!from || !to) {
+        alert("אנא מלא את כתובת ההתחלה והיעד.");
+        return;
+      }
+      let url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(from) +
+                "&destination=" + encodeURIComponent(to);
+      if(document.getElementById("modalSubject").value === "נסיעה") {
+        const mode = document.getElementById("travelModeSelect").value;
+        let travelModeParam = "";
+        if(mode === "taxi" || mode === "car") {
+          travelModeParam = "&travelmode=driving";
+        } else if(mode === "transit") {
+          travelModeParam = "&travelmode=transit";
+        }
+        url += travelModeParam;
+      }
+      window.open(url, "_blank");
+    }
+
+    function navigateItem(index) {
+      const item = scheduleItems[index];
+      if(item.subject === "נסיעה" || item.subject === "הליכה") {
+        let useCurrent = confirm("לחץ OK לניווט מהמיקום הנוכחי, Cancel לניווט מכתובת 'מאיפה'.");
+        let travelModeParam = "";
+        if(item.subject === "נסיעה") {
+          const mode = item.travelMode;
+          if(mode === "taxi" || mode === "car") {
+            travelModeParam = "&travelmode=driving";
+          } else if(mode === "transit") {
+            travelModeParam = "&travelmode=transit";
+          }
+        } else {
+          travelModeParam = "&travelmode=walking";
+        }
+        if(useCurrent) {
+          if(navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+              const origin = position.coords.latitude + "," + position.coords.longitude;
+              const destination = item.toAddress;
+              const url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) +
+                          "&destination=" + encodeURIComponent(destination) + travelModeParam;
+              window.open(url, "_blank");
+            });
+          } else {
+            alert("גאולוקציה לא נתמכת בדפדפן זה.");
+          }
+        } else {
+          if(item.fromAddress) {
+            const origin = item.fromAddress;
+            const destination = item.toAddress;
+            const url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) +
+                        "&destination=" + encodeURIComponent(destination) + travelModeParam;
+            window.open(url, "_blank");
+          } else {
+            alert("אין כתובת 'מאיפה' רשומה.");
+          }
+        }
+      }
+      else if(item.subject === "ביקור/סיור" && item.location) {
+        if(navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            const origin = position.coords.latitude + "," + position.coords.longitude;
+            const destination = item.location;
+            const url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) +
+                        "&destination=" + encodeURIComponent(destination);
+            window.open(url, "_blank");
+          });
+        } else {
+          alert("גאולוקציה לא נתמכת בדפדפן זה.");
+        }
+      }
+      else if(item.subject === "אוכל" && (item.foodType === "מסעדה" || item.foodType === "אוכל מהיר") && item.foodLocation) {
+        if(navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            const origin = position.coords.latitude + "," + position.coords.longitude;
+            const destination = item.foodLocation;
+            const url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) +
+                        "&destination=" + encodeURIComponent(destination);
+            window.open(url, "_blank");
+          });
+        } else {
+          alert("גאולוקציה לא נתמכת בדפדפן זה.");
+        }
+      }
+    }
+
+    function showItemDetail(index) {
+      editingIndex = index;
+      const item = scheduleItems[index];
+      document.getElementById("modalDate").value = item.date;
+      document.getElementById("modalStartTime").value = item.startTime;
+      document.getElementById("modalEndTime").value = item.endTime;
+      document.getElementById("modalSubject").value = item.subject;
+      document.getElementById("modalDescription").value = item.description;
+      if(item.subject === "הליכה" || item.subject === "נסיעה") {
+        document.getElementById("fromAddress").value = item.fromAddress || "";
+        document.getElementById("toAddress").value = item.toAddress || "";
+        if(item.subject === "נסיעה") {
+          document.getElementById("travelModeSelect").value = item.travelMode || "";
+        }
+      }
+      if(item.subject === "ביקור/סיור") {
+        document.getElementById("locationInput").value = item.location || "";
+      }
+      if(item.subject === "אוכל") {
+        if(item.foodType) {
+          document.getElementById("foodTypeSelect").value = item.foodType;
+        }
+        if(item.foodLocation) {
+          document.getElementById("foodLocationInput").value = item.foodLocation;
+          document.getElementById("foodLocationDiv").style.display = "block";
+        } else {
+          document.getElementById("foodLocationDiv").style.display = "none";
+        }
+      }
+      if(item.subject === "טיסה") {
+        document.getElementById("flightNumberInput").value = item.flightNumber || "";
+        document.getElementById("airlineInput").value = item.airline || "";
+        document.getElementById("departureAirportInput").value = item.departureAirport || "";
+        document.getElementById("arrivalAirportInput").value = item.arrivalAirport || "";
+      }
+      document.getElementById("addItemModalTitle").innerText = "עריכת חלק בלו״ז";
+      document.getElementById("addItemBtn").innerText = "שמור שינויים";
+      document.getElementById("addItemModal").style.display = "block";
+    }
+
+    function openFinalSchedule() {
+      if (!scheduleName) { alert("עליך להזין שם ללו״ז ולבנות לפחות חלק אחד."); return; }
+      if (scheduleItems.length === 0) { alert("עליך להוסיף לפחות חלק אחד ללו״ז."); return; }
+      const newSchedule = { name: scheduleName, scheduleItems: JSON.parse(JSON.stringify(scheduleItems)) };
+      savedSchedules.push(newSchedule);
+      saveSchedulesToFirestore();
+      let finalHtml = "";
+      const groups = groupItemsByDate(scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        finalHtml += `<h3>${formatDateHeader(date)}</h3>`;
+        groups[date].forEach(item => {
+          let displaySubject = getDisplaySubject(item);
+          let bgEmoji = getBackgroundEmoji(item);
+          let extraLine = getExtraLine(item);
+          let addressLine = "";
+          if(item.fromAddress && item.toAddress && (item.subject === "נסיעה" || item.subject === "הליכה")) {
+            addressLine = `<p>${item.fromAddress} ⬅️ ${item.toAddress}</p>`;
+          }
+          finalHtml += `<div class="schedule-item" onclick="showItemDetail(${scheduleItems.indexOf(item)})" data-date="${item.date}" data-subject="${item.subject}">
+                          <div class="emoji-background">${bgEmoji}</div>
+                          <h3>${item.startTime} - ${item.endTime} : ${displaySubject}</h3>
+                          ${extraLine}
+                          ${addressLine}
+                          <p>${item.description}</p>
+                        </div>`;
+        });
+      });
+      document.getElementById("finalScheduleModal").style.display = "block";
+      document.getElementById("finalScheduleTitle").innerText = scheduleName;
+      document.getElementById("finalScheduleDisplay").innerHTML = finalHtml;
+    }
+
+    function closeFinalScheduleModal() {
+      document.getElementById("finalScheduleModal").style.display = "none";
+      goHome();
+    }
+
+    function captureScreenshotFromElement(elementId, name) {
+      const elem = document.getElementById(elementId);
+      html2canvas(elem).then(canvas => {
+        canvas.toBlob(function(blob) {
+          const link = document.createElement("a");
+          link.download = name + ".png";
+          link.href = URL.createObjectURL(blob);
+          link.click();
+        });
+      });
+    }
+
+    function copyScheduleToClipboardFromSchedule(idx) {
+      const sch = savedSchedules[idx];
+      let text = sch.name + "\n\n";
+      const groups = groupItemsByDate(sch.scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
+        groups[date].forEach(item => {
+          if(item.subject === "טיסה") {
+            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
+            text += `טיסת ${item.airline}\n`;
+            text += `טיסה מספר: ${item.flightNumber}\n`;
+            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
+            text += `המראה: ${item.startTime}\n`;
+            text += `נחיתה: ${item.endTime}\n`;
+            text += `~ ${item.description}\n\n`;
+          } else {
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
+            if(item.fromAddress && item.toAddress) {
+              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
+            } else if(item.location) {
+              text += `• ${item.location}\n`;
+            }
+            text += `~ ${item.description}\n\n`;
+          }
+        });
+      });
+      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
+      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
+    }
+
+    function copyScheduleToClipboard() {
+      let text = scheduleName + "\n\n";
+      const groups = groupItemsByDate(scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
+        groups[date].forEach(item => {
+          if(item.subject === "טיסה") {
+            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
+            text += `טיסת ${item.airline}\n`;
+            text += `טיסה מספר: ${item.flightNumber}\n`;
+            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
+            text += `המראה: ${item.startTime}\n`;
+            text += `נחיתה: ${item.endTime}\n`;
+            text += `~ ${item.description}\n\n`;
+          } else {
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
+            if(item.fromAddress && item.toAddress) {
+              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
+            } else if(item.location) {
+              text += `• ${item.location}\n`;
+            }
+            text += `~ ${item.description}\n\n`;
+          }
+        });
+      });
+      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
+      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
+    }
+
+    function updateSubjectDropdownOptions() {
+      const subjectDropdown = document.getElementById("modalSubject");
+      subjectDropdown.innerHTML = `<option value="">בחר</option>
+        <option value="הליכה">🚶 הליכה</option>
+        <option value="נסיעה">🚗 נסיעה</option>
+        <option value="ביקור/סיור">🏛️ ביקור/סיור</option>
+        <option value="טיסה">✈️ טיסה</option>
+        <option value="אוכל">🍽️ אוכל</option>
+        <option value="שינה">😴 שינה</option>
+        <option value="לקום">⏰ לקום</option>
+        <option value="addSubject">🖋️ הוספת נושא</option>`;
+      customSubjects.forEach(subject => {
+         const option = document.createElement("option");
+         option.value = subject;
+         option.text = subject;
+         subjectDropdown.add(option);
+      });
+      permanentSubjects.forEach(subject => {
+         const option = document.createElement("option");
+         option.value = subject;
+         option.text = subject;
+         subjectDropdown.add(option);
+      });
+    }
+
+    function openAddSubjectModal() {
+      document.getElementById("addItemModal").style.display = "none";
+      document.getElementById("addSubjectModal").style.display = "block";
+    }
+    function closeAddSubjectModal() {
+      document.getElementById("addSubjectModal").style.display = "none";
+      document.getElementById("addItemModal").style.display = "block";
+    }
+    function addSubjectOneTime() {
+      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
+      customSubjects.push(newSubjectName);
+      updateSubjectDropdownOptions();
+      document.getElementById("modalSubject").value = newSubjectName;
+      document.getElementById("newSubjectNameInput").value = "";
+      closeAddSubjectModal();
+    }
+    function addSubjectPermanent() {
+      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
+      if (permanentSubjects.includes(newSubjectName)) { alert("נושא זה כבר קיים ברשימת הנושאים הקבועים."); return; }
+      permanentSubjects.push(newSubjectName);
+      updateSubjectDropdownOptions();
+      document.getElementById("modalSubject").value = newSubjectName;
+      document.getElementById("newSubjectNameInput").value = "";
+      closeAddSubjectModal();
+      alert("הנושא '" + newSubjectName + "' נוסף לנושאים הקבועים!");
+    }
+    function updatePermanentSubjectsList() {
+      const container = document.getElementById("permanentSubjectsList");
+      container.innerHTML = "";
+      permanentSubjects.forEach(subject => {
+        const span = document.createElement("span");
+        span.style.display = "block";
+        span.style.margin = "5px 0";
+        span.style.padding = "5px 10px";
+        span.style.backgroundColor = "#f0f0f0";
+        span.style.borderRadius = "5px";
+        span.innerText = subject + " ";
+        const trash = document.createElement("span");
+        trash.style.cursor = "pointer";
+        trash.innerText = "🗑️";
+        trash.onclick = function() {
+          if (confirm("האם אתה בטוח שברצונך למחוק את הנושא '" + subject + "'?")) {
+            const index = permanentSubjects.indexOf(subject);
+            if (index > -1) {
+              permanentSubjects.splice(index, 1);
+              updatePermanentSubjectsList();
+              updateSubjectDropdownOptions();
+              alert("הנושא נמחק.");
+            }
+          }
+        };
+        span.appendChild(trash);
+        container.appendChild(span);
+      });
+    }
+    function subjectChangeHandler() {
+      const subj = document.getElementById("modalSubject").value;
+      if(subj === "") {
+        document.getElementById("descriptionGroup").style.display = "none";
+        document.getElementById("addItemBtn").style.display = "none";
+      } else {
+        document.getElementById("descriptionGroup").style.display = "block";
+        document.getElementById("addItemBtn").style.display = "inline-block";
+      }
+      if(subj === "טיסה") {
+        document.getElementById("startTimeLabel").innerText = "שעת המראה:";
+        document.getElementById("endTimeLabel").innerText = "שעת נחיתה:";
+        document.getElementById("flightExtraOptions").style.display = "block";
+        document.getElementById("extraQuestions").style.display = "none";
+        document.getElementById("locationField").style.display = "none";
+        document.getElementById("foodExtraOptions").style.display = "none";
+        document.getElementById("timeNote").style.display = "block";
+      } else {
+        document.getElementById("startTimeLabel").innerText = "שעת התחלה:";
+        document.getElementById("endTimeLabel").innerText = "שעת סיום:";
+        document.getElementById("timeNote").style.display = "none";
+        if(subj === "אוכל") {
+          document.getElementById("foodExtraOptions").style.display = "block";
+          document.getElementById("extraQuestions").style.display = "none";
+          document.getElementById("locationField").style.display = "none";
+          document.getElementById("flightExtraOptions").style.display = "none";
+        } else {
+          document.getElementById("foodExtraOptions").style.display = "none";
+          document.getElementById("flightExtraOptions").style.display = "none";
+          if(subj === "הליכה" || subj === "נסיעה") {
+            document.getElementById("extraQuestions").style.display = "block";
+            document.getElementById("locationField").style.display = "none";
+          } else if(subj === "ביקור/סיור") {
+            document.getElementById("extraQuestions").style.display = "none";
+            document.getElementById("locationField").style.display = "block";
+          } else {
+            document.getElementById("extraQuestions").style.display = "none";
+            document.getElementById("locationField").style.display = "none";
+          }
+        }
+      }
+      if(subj === "נסיעה") {
+        document.getElementById("travelModeGroup").style.display = "block";
+      } else {
+        document.getElementById("travelModeGroup").style.display = "none";
+      }
+      if(subj === "addSubject") {
+        openAddSubjectModal();
+      }
+    }
+    function foodTypeChangeHandler() {
+      const foodType = document.getElementById("foodTypeSelect").value;
+      if(foodType === "מסעדה" || foodType === "אוכל מהיר") {
+        document.getElementById("foodLocationDiv").style.display = "block";
+      } else {
+        document.getElementById("foodLocationDiv").style.display = "none";
+      }
+    }
+    function showFoodRoute() {
+      const location = document.getElementById("foodLocationInput").value.trim();
+      if(location === "") {
+        alert("אנא הזן את מיקום המקום כדי לבדוק מסלול בגוגל מפס.");
+        return;
+      }
+      const url = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(location);
+      window.open(url, "_blank");
+    }
+    function updateExtraFields() {}
+    function togglePermanentSubjectsList() {
+      const container = document.getElementById("permanentSubjectsList");
+      if (container.style.display === "none" || container.style.display === "") {
+        container.style.display = "block";
+        updatePermanentSubjectsList();
+      } else { container.style.display = "none"; }
+    }
+    function toggleTemplateDropdown() {
+      const dropdown = document.getElementById("templateDropdown");
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      updateTemplateList();
+    }
+    function updateTemplateList() {
+      const listDiv = document.getElementById("templateList");
+      listDiv.innerHTML = "";
+      constantTemplates.forEach((template, idx) => {
+        const btn = document.createElement("button");
+        btn.innerHTML = `<span style="float: left; cursor: pointer;" onclick="event.stopPropagation(); deleteConstantTemplate(${idx})">🗑️</span>${template.subject} (${template.duration} דק)`;
+        btn.onclick = function() {
+          selectedTemplate = template;
+          openAddItemModal();
+          document.getElementById("modalSubject").value = template.subject;
+          if (template.description) { document.getElementById("modalDescription").value = template.description; }
+        };
+        listDiv.appendChild(btn);
+      });
+    }
+    function deleteConstantTemplate(index) {
+      if (confirm("האם אתה בטוח שברצונך למחוק את התבנית הקבועה הזו?")) {
+        constantTemplates.splice(index, 1);
+        updateTemplateList();
+        alert("התבנית הקבועה נמחקה.");
+      }
+    }
+    function openConstantTemplateModal() {
+      document.getElementById("constantTemplateModal").style.display = "block";
+      document.getElementById("templateDropdown").style.display = "none";
+    }
+    function closeConstantTemplateModal() { document.getElementById("constantTemplateModal").style.display = "none"; }
+    function saveConstantTemplate() {
+      const subject = document.getElementById("templateSubjectSelect").value;
+      const duration = parseInt(document.getElementById("templateDurationInput").value);
+      const description = document.getElementById("templateDescriptionInput").value.trim();
+      if (!subject || isNaN(duration) || duration < 1) { alert("אנא הזן נושא ומשך תקין (בדקות)."); return; }
+      constantTemplates.push({ subject, duration, description });
+      closeConstantTemplateModal();
+      updateTemplateList();
+      alert("תבנית לוז קבוע נשמרה!");
+    }
+    window.addEventListener("scroll", function() {
+      const nav = document.querySelector(".topbar");
+      nav.style.transform = (window.scrollY > 50) ? "translateY(-100%)" : "translateY(0)";
+    });
+    function goHome() { window.location.href = "index.html"; }
+
+    function groupItemsByDate(items) {
+      return items.reduce((groups, item) => {
+        if (!groups[item.date]) { groups[item.date] = []; }
+        groups[item.date].push(item);
+        return groups;
+      }, {});
+    }
+
+    function formatDateHeader(dateStr) {
+      const options = { day: '2-digit', month: '2-digit', year: 'numeric', weekday: 'long' };
+      const dateObj = new Date(dateStr);
+      return dateObj.toLocaleDateString('he-IL', options);
+    }
+
+    function saveScheduleName() {
+      const nameInput = document.getElementById("scheduleNameInput").value.trim();
+      if (nameInput === "") { alert("אנא הזן שם ללו״ז."); return; }
+      if (savedSchedules.some(sch => sch.name === nameInput)) { alert("לוז עם שם זה כבר קיים. אנא בחר שם אחר."); return; }
+      scheduleName = nameInput + "<!--(חופשה)-->";
+      document.getElementById("scheduleNameModal").style.display = "none";
+      document.getElementById("content").innerHTML = `
+        <h2>${scheduleName}</h2>
+        <p>להוספת חלק חדש, לחץ על הכפתור +</p>
+        <div class="action-buttons">
+          <button class="btn" onclick="openAddItemModal()">+</button>
+        </div>
+        <div id="scheduleContainer"></div>
+        <div class="button-group">
+          <button class="btn" onclick="openFinalSchedule()">שמור וסיים לו״ז</button>
+        </div>
+      `;
+      openAddItemModal();
+    }
+
+    function closeScheduleNameModal() {
+      document.getElementById("scheduleNameModal").style.display = "none";
+    }
+
+    function closeAddItemModal() {
+      document.getElementById("addItemModal").style.display = "none";
+    }
+
+    function setDefaultEndTime() {
+      const startTime = document.getElementById("modalStartTime").value;
+      if (startTime) {
+        let endTime;
+        if (selectedTemplate) {
+          let [h, m] = startTime.split(":").map(Number);
+          let total = h * 60 + m + selectedTemplate.duration;
+          total = total % (24 * 60);
+          let newH = Math.floor(total / 60);
+          let newM = total % 60;
+          endTime = (newH < 10 ? "0" + newH : newH) + ":" + (newM < 10 ? "0" + newM : newM);
+        } else {
+          let [h, m] = startTime.split(":").map(Number);
+          h = (h + 1) % 24;
+          endTime = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+        }
+        document.getElementById("modalEndTime").value = endTime;
+      }
+    }
+
+    function saveItem() {
+      let dateValue = document.getElementById("modalDate").value;
+      let startTime = document.getElementById("modalStartTime").value;
+      let endTime = document.getElementById("modalEndTime").value;
+      const subject = document.getElementById("modalSubject").value;
+      const description = document.getElementById("modalDescription").value;
+      if (!dateValue) { alert("אנא בחר תאריך."); return; }
+      if (!startTime || !endTime) { alert("אנא בחר שעת התחלה ושעת סיום."); return; }
+      if (startTime > endTime) { let temp = startTime; startTime = endTime; endTime = temp; }
+      
+      const newItem = { date: dateValue, startTime, endTime, subject, description };
+      if (subject === "הליכה" || subject === "נסיעה") {
+        newItem.fromAddress = document.getElementById("fromAddress").value;
+        newItem.toAddress = document.getElementById("toAddress").value;
+        if (subject === "נסיעה") {
+          newItem.travelMode = document.getElementById("travelModeSelect").value;
+        }
+      }
+      if(subject === "ביקור/סיור") {
+        newItem.location = document.getElementById("locationInput").value;
+      }
+      if(subject === "אוכל") {
+        newItem.foodType = document.getElementById("foodTypeSelect").value;
+        if(newItem.foodType === "מסעדה" || newItem.foodType === "אוכל מהיר") {
+          newItem.foodLocation = document.getElementById("foodLocationInput").value;
+        }
+      }
+      if(subject === "טיסה") {
+        newItem.flightNumber = document.getElementById("flightNumberInput").value;
+        newItem.airline = document.getElementById("airlineInput").value;
+        newItem.departureAirport = document.getElementById("departureAirportInput").value;
+        newItem.arrivalAirport = document.getElementById("arrivalAirportInput").value;
+        newItem.departureTime = document.getElementById("modalStartTime").value;
+        newItem.arrivalTime = document.getElementById("modalEndTime").value;
+      }
+      if (editingIndex === -1) { scheduleItems.push(newItem); }
+      else { scheduleItems[editingIndex] = newItem; }
+      scheduleItems.sort((a, b) => {
+        if(a.date === b.date) { return a.startTime.localeCompare(b.startTime); }
+        return a.date.localeCompare(b.date);
+      });
+      renderScheduleItems();
+      closeAddItemModal();
+      saveSchedulesToFirestore();
+    }
+
+    function searchFlight() {
+      const flightNumber = document.getElementById("flightNumberInput").value.trim();
+      const flightDate = document.getElementById("modalDate").value;
+      if (!flightNumber || !flightDate) {
+        alert("אנא הזן מספר טיסה ותאריך (מתאריך הלוז).");
+        return;
+      }
+      document.getElementById("loader").style.display = "flex";
+      
+      const apiKey = "33d4ecb375mshcf029fba766af44p17668djsnaef3c36cb209";
+      const host = "aerodatabox.p.rapidapi.com";
+      const apiUrl = "https://aerodatabox.p.rapidapi.com/flights/number/" + flightNumber +
+                     "?withLeg=true&withCancelled=true&withCodeshares=true&departure_date=" + flightDate;
+      
+      fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-host": host,
+          "x-rapidapi-key": apiKey
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("שגיאה בבקשה: " + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        let html = "";
+        if (data && data.length > 0) {
+          data.forEach(flight => {
+            const airlineName = flight.airline && flight.airline.name ? flight.airline.name : "לא זמין";
+            const depAirport = flight.departure && flight.departure.airport && flight.departure.airport.name ? flight.departure.airport.name : "לא זמין";
+            const arrAirport = flight.arrival && flight.arrival.airport && flight.arrival.airport.name ? flight.arrival.airport.name : "לא זמין";
+            const depTimeFull = flight.departure && flight.departure.scheduledTime ? flight.departure.scheduledTime.local : "לא זמין";
+            const arrTimeFull = flight.arrival && flight.arrival.scheduledTime ? flight.arrival.scheduledTime.local : "לא זמין";
+            const depTimeLocal = depTimeFull.match(/\d{2}:\d{2}/)[0];
+            const arrTimeLocal = arrTimeFull.match(/\d{2}:\d{2}/)[0];
+            
+            html += '<div class="flight-card">';
+            html += '<h2>טיסת ' + airlineName + '</h2>';
+            html += '<p><span class="time-label">משדה תעופה:</span> ' + depAirport + '</p>';
+            html += '<p><span class="time-label">לשדה תעופה:</span> ' + arrAirport + '</p>';
+            html += '<p><span class="time-label">יציאה:</span> ' + depTimeFull + '</p>';
+            html += '<p><span class="time-label">הגעה:</span> ' + arrTimeFull + '</p>';
+            html += '</div>';
+            window.flightData = {
+              flightNumber: flightNumber,
+              airline: airlineName,
+              departureAirport: depAirport,
+              arrivalAirport: arrAirport,
+              departureTime: depTimeLocal,
+              arrivalTime: arrTimeLocal
+            };
+          });
+        } else {
+          html = "<p>לא נמצא מספר טיסה. אנא רשום שנית או רשום ידנית.</p>";
+          window.flightData = null;
+        }
+        document.getElementById("flightResultContent").innerHTML = html;
+        document.getElementById("flightResultModal").style.display = "block";
+      })
+      .catch(error => {
+        document.getElementById("flightResultContent").innerText = "שגיאה: " + error.message;
+      })
+      .finally(() => {
+        document.getElementById("loader").style.display = "none";
+      });
+    }
+    function closeFlightResultModal() {
+      document.getElementById("flightResultModal").style.display = "none";
+    }
+    function copyFlightToForm() {
+      if(window.flightData) {
+        document.getElementById("flightNumberInput").value = window.flightData.flightNumber;
+        document.getElementById("airlineInput").value = window.flightData.airline;
+        document.getElementById("departureAirportInput").value = window.flightData.departureAirport;
+        document.getElementById("arrivalAirportInput").value = window.flightData.arrivalAirport;
+        document.getElementById("modalStartTime").value = window.flightData.departureTime;
+        document.getElementById("modalEndTime").value = window.flightData.arrivalTime;
+        document.getElementById("timeNote").innerText = `(המראה: ${window.flightData.departureTime} (${window.flightData.departureAirport}), נחיתה: ${window.flightData.arrivalTime} (${window.flightData.arrivalAirport}))`;
+        closeFlightResultModal();
+        alert("פרטי הטיסה הועתקו לטופס.");
+      } else {
+        alert("אין נתוני טיסה להעתקה.");
+      }
+    }
+
+    // פונקציה לתפעול תפריט הצד – toggleMenu
     function toggleMenu() {
       const sideMenu = document.getElementById("sideMenu");
       const overlay = document.getElementById("overlay");
@@ -1005,1265 +1547,66 @@
       overlay.classList.toggle("active");
     }
 
-    // ----- פתיחה וסגירה של מודלים -----
-
-    function openAddItemModal() {
-      if (!scheduleName && scheduleItems.length === 0) { // רק אם מתחילים לוז חדש לגמרי
-        document.getElementById("scheduleNameModal").style.display = "block";
-        document.getElementById("scheduleNameInput").focus();
-      } else {
-        editingIndex = -1; // ודא שמצב עריכה כבוי
-        document.getElementById("addItemModalTitle").innerText = "הוספת חלק חדש ללו״ז";
-        document.getElementById("addItemBtn").innerHTML = '<i class="fas fa-plus fa-fw"></i> הוסף ללו"ז';
-        resetAddItemModal(); // איפוס כל השדות
-
-        // קבע תאריך ברירת מחדל להיום או לתאריך האחרון בלו"ז
-         const defaultDate = scheduleItems.length > 0 ? scheduleItems[scheduleItems.length - 1].date : new Date().toISOString().split('T')[0];
-         document.getElementById("modalDate").value = defaultDate;
-
-
-        // קבע שעת התחלה ברירת מחדל (דקה אחרי הפריט האחרון באותו תאריך, או 09:00)
-        const itemsOnDate = scheduleItems.filter(item => item.date === defaultDate);
-        if (itemsOnDate.length > 0) {
-            let lastItem = itemsOnDate[itemsOnDate.length - 1];
-            let nextStart = addMinutesToTime(lastItem.endTime, 1); // דקה אחרי הסיום
-            document.getElementById("modalStartTime").value = nextStart;
-        } else {
-            document.getElementById("modalStartTime").value = "09:00"; // ברירת מחדל לשעה 9 בבוקר
-        }
-        setDefaultEndTime(); // חשב שעת סיום ברירת מחדל
-
-        updateSubjectDropdownOptions(); // עדכן רשימת נושאים
-        subjectChangeHandler(); // עדכן שדות לפי הנושא (שיהיה ריק בהתחלה)
-        document.getElementById("addItemModal").style.display = "block";
-         // הסתר שדות נוספים ושדה תיאור עד לבחירת נושא
-         document.getElementById("extraQuestions").style.display = "none";
-         document.getElementById("locationField").style.display = "none";
-         document.getElementById("foodExtraOptions").style.display = "none";
-         document.getElementById("flightExtraOptions").style.display = "none";
-         document.getElementById("descriptionGroup").style.display = "none";
-         document.getElementById("addItemBtn").style.display = "none"; // הסתר כפתור שמירה עד לבחירת נושא
-      }
-    }
-    window.openAddItemModal = openAddItemModal; // חשיפת הפונקציה ל-HTML
-
-     function resetAddItemModal() {
-        document.getElementById("modalDate").value = "";
-        document.getElementById("modalStartTime").value = "";
-        document.getElementById("modalEndTime").value = "";
-        document.getElementById("modalSubject").value = ""; // איפוס בחירת נושא
-        document.getElementById("modalDescription").value = "";
-
-        // איפוס שדות ספציפיים
-        document.getElementById("fromAddress").value = "";
-        document.getElementById("toAddress").value = "";
-        document.getElementById("travelModeSelect").value = "car";
-        document.getElementById("locationInput").value = "";
-        document.getElementById("foodTypeSelect").value = "";
-        document.getElementById("foodLocationInput").value = "";
-        document.getElementById("flightNumberInput").value = "";
-        document.getElementById("airlineInput").value = "";
-        document.getElementById("departureAirportInput").value = "";
-        document.getElementById("arrivalAirportInput").value = "";
-
-        // הסתרת כל השדות הנוספים
-         document.getElementById("extraQuestions").style.display = "none";
-         document.getElementById("locationField").style.display = "none";
-         document.getElementById("foodExtraOptions").style.display = "none";
-         document.getElementById("flightExtraOptions").style.display = "none";
-         document.getElementById("foodLocationDiv").style.display = "none"; // ספציפי לאוכל
-         document.getElementById("descriptionGroup").style.display = "none";
-         document.getElementById("addItemBtn").style.display = "none"; // הסתר גם את כפתור השמירה
-    }
-
-
-    function closeAddItemModal() {
-      document.getElementById("addItemModal").style.display = "none";
-      document.getElementById("permanentSubjectsList").style.display = "none"; // סגור גם את רשימת הנושאים אם פתוחה
-    }
-
-    function openScheduleNameModal() {
-        document.getElementById("scheduleNameModal").style.display = "block";
-        document.getElementById("scheduleNameInput").focus();
-    }
-
-    function closeScheduleNameModal() {
-        document.getElementById("scheduleNameModal").style.display = "none";
-    }
-
-     function openFinalSchedule() {
-        if (!scheduleName) {
-            alert("אנא הזן שם ללו״ז.");
-            openScheduleNameModal(); // פתח מודל שם אם אין
-            return;
-        }
-        if (scheduleItems.length === 0) {
-            alert("הלו״ז ריק! עליך להוסיף לפחות חלק אחד.");
-            return;
-        }
-
-        // שמירת הלו"ז הנוכחי לרשימת הלו"זים השמורים
-        const existingScheduleIndex = savedSchedules.findIndex(sch => sch.id === scheduleName); // הנחה שלכל לוז יש ID ייחודי שהוא שמו
-         const newSchedule = {
-             id: scheduleName, // שימוש בשם כ-ID זמני או קבוע
-             name: scheduleName.replace("", ""), // נקה את התגית מהשם לתצוגה
-             scheduleItems: JSON.parse(JSON.stringify(scheduleItems)) // העתק עמוק
-         };
-
-        if (existingScheduleIndex > -1) {
-            // אם הלו"ז קיים, עדכן אותו (למקרה שערכנו לו"ז קיים)
-             if (confirm(`לו"ז בשם "${newSchedule.name}" כבר קיים. האם לעדכן אותו?`)) {
-                 savedSchedules[existingScheduleIndex] = newSchedule;
-             } else {
-                 return; // המשתמש בחר לא לעדכן
-             }
-        } else {
-            // אם הלו"ז חדש, הוסף אותו
-             savedSchedules.push(newSchedule);
-        }
-
-        saveUserData(); // שמור את כל הנתונים המעודכנים
-
-        // הצגת הלו"ז במודל הסופי
-        displayScheduleInModal(scheduleItems, scheduleName.replace("", ""));
-    }
-
-     function displayScheduleInModal(itemsToDisplay, title) {
-         let finalHtml = "";
-         const groups = groupItemsByDate(itemsToDisplay);
-         const sortedDates = Object.keys(groups).sort((a, b) => new Date(a) - new Date(b)); // מיון תאריכים כרונולוגי
-
-         sortedDates.forEach(date => {
-             finalHtml += `<h3 style="text-align: center; margin: 15px 0 10px; color: #16A085;">${formatDateHeader(date)}</h3>`;
-             // מיון הפריטים לפי שעת התחלה
-             const sortedItems = groups[date].sort((a, b) => a.startTime.localeCompare(b.startTime));
-
-             sortedItems.forEach(item => {
-                let displaySubject = getDisplaySubject(item);
-                let bgEmoji = getBackgroundEmoji(item);
-                let extraLine = getExtraLine(item);
-                let addressLine = getAddressLine(item);
-
-                 // שימוש באותו עיצוב כמו schedule-item אבל ללא אינטראקציות עריכה/מחיקה
-                finalHtml += `<div class="schedule-item" data-date="${item.date}" data-subject="${item.subject}" style="cursor: default; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px;">
-                                  <div class="emoji-background">${bgEmoji}</div>
-                                  <h3>${item.startTime} - ${item.endTime} : ${displaySubject}</h3>
-                                  ${extraLine}
-                                  ${addressLine}
-                                  ${item.description ? `<p style="font-size: 0.9em; color: #555;">${item.description.replace(/\n/g, '<br>')}</p>` : ''}
-                                </div>`;
-             });
-         });
-
-         document.getElementById("finalScheduleTitle").innerText = title;
-         document.getElementById("finalScheduleDisplay").innerHTML = finalHtml;
-         document.getElementById("finalScheduleModal").style.display = "block";
-     }
-
-    function closeFinalScheduleModal() {
-        document.getElementById("finalScheduleModal").style.display = "none";
-        // אופציונלי: איפוס או ניווט לעמוד אחר אחרי שמירה וסיום
-        // scheduleItems = [];
-        // scheduleName = null;
-        // document.getElementById("scheduleContainer").innerHTML = "";
-        // document.querySelector('#content h2').innerText = "בניית לוז חופשה חדש";
-        // goHome();
-    }
-
-    function openAddSubjectModal() {
-      // document.getElementById("addItemModal").style.display = "none"; // אל תסגור את המודל הראשי
-      document.getElementById("addSubjectModal").style.display = "block";
-       document.getElementById("permanentSubjectsList").style.display = "none"; // סגור את רשימת הנושאים
-       document.getElementById("newSubjectNameInput").value = ""; // נקה שדה קלט
-       document.getElementById("newSubjectNameInput").focus();
-    }
-    function closeAddSubjectModal() {
-      document.getElementById("addSubjectModal").style.display = "none";
-      // document.getElementById("addItemModal").style.display = "block"; // ודא שהמודל הראשי נשאר פתוח
-    }
-
-     function openItemDetailModal(item) {
-         const detailContent = document.getElementById("itemDetailContent");
-         const navigateBtn = document.getElementById("navigateItemBtn");
-         let html = `<h3>${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}</h3>`;
-         html += getExtraLine(item, true); // הפק פרטים מלאים
-         html += getAddressLine(item);
-         if (item.description) {
-             html += `<p><strong>תיאור:</strong><br>${item.description.replace(/\n/g, '<br>')}</p>`;
-         }
-
-         detailContent.innerHTML = html;
-
-         // בדוק אם יש מיקום לניווט
-         const hasLocation = (item.subject === "נסיעה" || item.subject === "הליכה" || item.subject === "ים" || item.subject === "קניות" || item.subject === "בילוי לילי" || item.subject === "ספורט/כושר" || item.subject === "פגישה" || item.subject === "ביקור/סיור" || (item.subject === "אוכל" && (item.foodType === "מסעדה" || item.foodType === "בית קפה" || item.foodType === "אוכל מהיר/דוכן") && item.foodLocation));
-
-         if (hasLocation && (item.toAddress || item.location || item.foodLocation)) {
-             navigateBtn.style.display = "inline-block";
-             // שמירת האינדקס הנוכחי עבור הניווט
-             navigateBtn.setAttribute('data-item-index', editingIndex);
-         } else {
-             navigateBtn.style.display = "none";
-         }
-
-         // שמירת האינדקס הנוכחי עבור העריכה
-         document.getElementById('editItemBtn').setAttribute('data-item-index', editingIndex);
-
-         document.getElementById("itemDetailModal").style.display = "block";
-     }
-
-     function closeItemDetailModal() {
-         document.getElementById("itemDetailModal").style.display = "none";
-     }
-
-    // ----- ניהול שם לו"ז -----
-
-    function saveScheduleName() {
-      const nameInput = document.getElementById("scheduleNameInput").value.trim();
-      if (nameInput === "") { alert("אנא הזן שם ללו״ז."); return; }
-
-      // בדוק אם שם הלו"ז כבר קיים ברשימת הלו"זים השמורים
-       const potentialDuplicate = savedSchedules.find(sch => sch.name === nameInput);
-       if (potentialDuplicate && potentialDuplicate.id !== scheduleName) { // ודא שזה לא הלו"ז הנוכחי שאנחנו עורכים
-            alert(`לוז בשם "${nameInput}" כבר קיים. אנא בחר שם אחר.`);
-            return;
-       }
-
-      scheduleName = nameInput + ""; // הוספת תגית זיהוי פנימית
-      closeScheduleNameModal();
-
-      // עדכן את הכותרת בעמוד הראשי אם היא קיימת
-      const mainTitle = document.querySelector('#content h2');
-      if(mainTitle) {
-          mainTitle.innerText = nameInput; // הצג שם נקי
-      }
-
-      // אם הלו"ז היה ריק, פתח את מודל הוספת הפריט הראשון
-      if (scheduleItems.length === 0) {
-          openAddItemModal();
-      }
-    }
-
-    // ----- ניהול פריטי לו"ז (הוספה, עריכה, מחיקה) -----
-
-    function saveItem() {
-        let dateValue = document.getElementById("modalDate").value;
-        let startTime = document.getElementById("modalStartTime").value;
-        let endTime = document.getElementById("modalEndTime").value;
-        const subject = document.getElementById("modalSubject").value;
-        const description = document.getElementById("modalDescription").value.trim();
-
-        // --- ולידציות ---
-        if (!dateValue) { alert("אנא בחר תאריך."); return; }
-        if (!startTime || !endTime) { alert("אנא בחר שעת התחלה ושעת סיום."); return; }
-         if (!subject) { alert("אנא בחר נושא."); return; }
-
-        // ודא ששעת הסיום לא לפני שעת ההתחלה (באותו יום)
-        if (endTime < startTime) {
-             alert("שעת הסיום אינה יכולה להיות לפני שעת ההתחלה.");
-             return;
-             // אם רוצים לאפשר מעבר יום, נדרשת לוגיקה נוספת עם תאריך סיום
-        }
-         // בדיקת חפיפה עם פריטים אחרים (אופציונלי - יכול להיות מורכב)
-         // checkForOverlap(dateValue, startTime, endTime, editingIndex);
-
-
-        const newItem = {
-            id: editingIndex === -1 ? Date.now().toString() : scheduleItems[editingIndex].id, // ID ייחודי
-            date: dateValue,
-            startTime,
-            endTime,
-            subject,
-            description
-        };
-
-        // הוספת שדות ספציפיים לפי נושא
-        if (subject === "הליכה" || subject === "נסיעה") {
-            newItem.fromAddress = document.getElementById("fromAddress").value.trim();
-            newItem.toAddress = document.getElementById("toAddress").value.trim();
-            if (subject === "נסיעה") {
-                newItem.travelMode = document.getElementById("travelModeSelect").value;
+    function copyScheduleToClipboardFromSchedule(idx) {
+      const sch = savedSchedules[idx];
+      let text = sch.name + "\n\n";
+      const groups = groupItemsByDate(sch.scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
+        groups[date].forEach(item => {
+          if(item.subject === "טיסה") {
+            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
+            text += `טיסת ${item.airline}\n`;
+            text += `טיסה מספר: ${item.flightNumber}\n`;
+            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
+            text += `המראה: ${item.startTime}\n`;
+            text += `נחיתה: ${item.endTime}\n`;
+            text += `~ ${item.description}\n\n`;
+          } else {
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
+            if(item.fromAddress && item.toAddress) {
+              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
+            } else if(item.location) {
+              text += `• ${item.location}\n`;
             }
-            // ולידציה בסיסית לשדות כתובת
-            if (!newItem.fromAddress || !newItem.toAddress) {
-                alert("אנא מלא את כתובות ההתחלה והיעד עבור נסיעה/הליכה.");
-                return;
-            }
-        } else if (subject === "ביקור/סיור" || subject === "ים" || subject === "קניות" || subject === "בילוי לילי" || subject === "ספורט/כושר" || subject === "פגישה") {
-            newItem.location = document.getElementById("locationInput").value.trim();
-             // ולידציה בסיסית לשדה מיקום
-             if (!newItem.location) {
-                 alert(`אנא מלא את המיקום עבור "${subject}".`);
-                 return;
-             }
-        } else if (subject === "אוכל") {
-            newItem.foodType = document.getElementById("foodTypeSelect").value;
-            if (newItem.foodType === "מסעדה" || newItem.foodType === "בית קפה" || newItem.foodType === "אוכל מהיר/דוכן") {
-                newItem.foodLocation = document.getElementById("foodLocationInput").value.trim();
-                // ולידציה אם נבחר סוג שמצריך מיקום
-                 if (!newItem.foodLocation) {
-                     alert(`אנא מלא את מיקום המקום עבור "${newItem.foodType}".`);
-                     return;
-                 }
-            }
-        } else if (subject === "טיסה") {
-            newItem.flightNumber = document.getElementById("flightNumberInput").value.trim().toUpperCase();
-            newItem.airline = document.getElementById("airlineInput").value.trim();
-            newItem.departureAirport = document.getElementById("departureAirportInput").value.trim();
-            newItem.arrivalAirport = document.getElementById("arrivalAirportInput").value.trim();
-            // שמירת שעות המראה/נחיתה גם בשדות ייעודיים (בנוסף ל-startTime/endTime)
-            newItem.departureTime = startTime;
-            newItem.arrivalTime = endTime;
-
-             // ולידציה בסיסית לשדות טיסה (לפחות חברה ושדות תעופה)
-             if (!newItem.airline || !newItem.departureAirport || !newItem.arrivalAirport) {
-                 alert("אנא מלא לפחות את חברת התעופה ושדות ההמראה והנחיתה.");
-                 return;
-             }
-        }
-
-        if (editingIndex === -1) {
-            // הוספת פריט חדש
-            scheduleItems.push(newItem);
-        } else {
-            // עדכון פריט קיים
-            scheduleItems[editingIndex] = newItem;
-        }
-
-        // מיון הרשימה לפי תאריך ושעת התחלה
-        scheduleItems.sort((a, b) => {
-            if (a.date === b.date) {
-                return a.startTime.localeCompare(b.startTime);
-            }
-            return a.date.localeCompare(b.date);
-        });
-
-        renderScheduleItems(); // רענון התצוגה
-        closeAddItemModal(); // סגירת המודל
-        // אין צורך לשמור כאן, השמירה מתבצעת בלחיצה על "שמור וסיים לו"ז"
-        // saveUserData(); // או לשמור אחרי כל שינוי
-    }
-
-    function editScheduleItem(index) {
-        editingIndex = index;
-        const item = scheduleItems[index];
-
-        // פתח מודל עריכה
-        document.getElementById("addItemModalTitle").innerText = "עריכת חלק בלו״ז";
-        document.getElementById("addItemBtn").innerHTML = '<i class="fas fa-save fa-fw"></i> שמור שינויים';
-        resetAddItemModal(); // איפוס שדות לפני מילוי
-
-        // מלא את השדות בערכים של הפריט הנבחר
-        document.getElementById("modalDate").value = item.date;
-        document.getElementById("modalStartTime").value = item.startTime;
-        document.getElementById("modalEndTime").value = item.endTime;
-        document.getElementById("modalDescription").value = item.description || "";
-
-        // ודא שהנושא קיים ברשימה הנפתחת (כולל נושאים מותאמים/קבועים)
-        updateSubjectDropdownOptions(); // עדכן קודם
-        const subjectExists = [...document.getElementById("modalSubject").options].some(option => option.value === item.subject);
-        if (!subjectExists && !["הליכה", "נסיעה", "ביקור/סיור", "טיסה", "אוכל", "שינה", "לקום", "ים", "קניות", "בילוי לילי", "ספורט/כושר", "מנוחה/זמן חופשי", "פגישה", "אחר"].includes(item.subject)) {
-            // אם הנושא לא קיים ואינו מהנושאים הבסיסיים, הוסף אותו זמנית לרשימה
-             addTemporaryCustomSubject(item.subject);
-        }
-        document.getElementById("modalSubject").value = item.subject;
-
-
-        // מלא שדות ספציפיים לנושא
-        if (item.subject === "הליכה" || item.subject === "נסיעה") {
-            document.getElementById("fromAddress").value = item.fromAddress || "";
-            document.getElementById("toAddress").value = item.toAddress || "";
-            if (item.subject === "נסיעה") {
-                document.getElementById("travelModeSelect").value = item.travelMode || "car";
-            }
-        } else if (item.subject === "ביקור/סיור" || item.subject === "ים" || item.subject === "קניות" || item.subject === "בילוי לילי" || item.subject === "ספורט/כושר" || item.subject === "פגישה") {
-            document.getElementById("locationInput").value = item.location || "";
-        } else if (item.subject === "אוכל") {
-            document.getElementById("foodTypeSelect").value = item.foodType || "";
-            if (item.foodType === "מסעדה" || item.foodType === "בית קפה" || item.foodType === "אוכל מהיר/דוכן") {
-                document.getElementById("foodLocationInput").value = item.foodLocation || "";
-            }
-        } else if (item.subject === "טיסה") {
-            document.getElementById("flightNumberInput").value = item.flightNumber || "";
-            document.getElementById("airlineInput").value = item.airline || "";
-            document.getElementById("departureAirportInput").value = item.departureAirport || "";
-            document.getElementById("arrivalAirportInput").value = item.arrivalAirport || "";
-            // שעת המראה ונחיתה כבר מוגדרות ב-startTime/endTime
-        }
-
-        subjectChangeHandler(); // עדכן את תצוגת השדות לפי הנושא הנטען
-        document.getElementById("addItemModal").style.display = "block"; // פתח את המודל
-    }
-
-     function deleteScheduleItem(index, event) {
-         event.stopPropagation(); // מנע פתיחת מודל פרטים בלחיצה על הפח
-         const itemToDelete = scheduleItems[index];
-         if (confirm(`האם אתה בטוח שברצונך למחוק את הפריט:\n"${itemToDelete.startTime} - ${itemToDelete.subject}"?`)) {
-             scheduleItems.splice(index, 1); // הסר מהמערך
-             renderScheduleItems(); // רענן את התצוגה
-             // אין צורך לשמור כאן, השמירה בסוף
-             // saveUserData();
-             console.log("Item deleted.");
-         }
-     }
-
-     function showItemDetail(index) {
-         editingIndex = index; // שמור את האינדקס למקרה שנרצה לערוך/לנווט
-         const item = scheduleItems[index];
-         openItemDetailModal(item);
-     }
-
-     function editScheduleItemFromDetail() {
-        const indexToEdit = parseInt(document.getElementById('editItemBtn').getAttribute('data-item-index'));
-        if (indexToEdit >= 0 && indexToEdit < scheduleItems.length) {
-            closeItemDetailModal(); // סגור מודל פרטים
-            editScheduleItem(indexToEdit); // פתח מודל עריכה עם הנתונים
-        }
-     }
-
-     function navigateItemFromDetail() {
-        const indexToNavigate = parseInt(document.getElementById('navigateItemBtn').getAttribute('data-item-index'));
-         if (indexToNavigate >= 0 && indexToNavigate < scheduleItems.length) {
-             navigateItem(indexToNavigate);
-         }
-     }
-
-
-    // ----- ניהול נושאים (קבועים, חד פעמיים) -----
-
-    function updateSubjectDropdownOptions() {
-        const subjectDropdown = document.getElementById("modalSubject");
-        const currentSubjectValue = subjectDropdown.value; // שמור את הערך הנוכחי
-
-        subjectDropdown.innerHTML = `<option value="" disabled selected>-- בחר נושא --</option>
-          <option value="הליכה">🚶 הליכה</option>
-          <option value="נסיעה">🚗 נסיעה</option>
-          <option value="ביקור/סיור">🏛️ ביקור/סיור</option>
-          <option value="ים">🏖️ ים</option>
-          <option value="קניות">🛍️ קניות</option>
-          <option value="אוכל">🍽️ אוכל</option>
-          <option value="בילוי לילי">🌃 בילוי לילי</option>
-          <option value="ספורט/כושר">🏋️ ספורט/כושר</option>
-          <option value="פגישה">🤝 פגישה</option>
-          <option value="טיסה">✈️ טיסה</option>
-          <option value="שינה">😴 שינה</option>
-          <option value="לקום">⏰ לקום</option>
-          <option value="מנוחה/זמן חופשי">🧘 מנוחה/זמן חופשי</option>
-          <option value="אחר">❓ אחר</option>
-          <optgroup label="נושאים שמורים">`; // קבוצה לנושאים קבועים
-
-        // הוספת נושאים קבועים
-        permanentSubjects.forEach(subject => {
-           const option = document.createElement("option");
-           option.value = subject;
-           option.text = subject; // הנושא אמור כבר לכלול אמוג'י אם המשתמש הוסיף
-           subjectDropdown.add(option);
-        });
-        subjectDropdown.innerHTML += `</optgroup><optgroup label="נושאים מותאמים אישית">`; // קבוצה לנושאים חד פעמיים
-
-        // הוספת נושאים חד-פעמיים (שלא נמצאים בקבועים)
-        customSubjects.forEach(subject => {
-           if (!permanentSubjects.includes(subject)) {
-              const option = document.createElement("option");
-              option.value = subject;
-              option.text = subject;
-              subjectDropdown.add(option);
-           }
-        });
-         subjectDropdown.innerHTML += `</optgroup>`;
-
-         // שחזר את הערך שנבחר קודם, אם עדיין קיים
-         if ([...subjectDropdown.options].some(opt => opt.value === currentSubjectValue)) {
-            subjectDropdown.value = currentSubjectValue;
-         } else if (editingIndex === -1) { // אם מוסיפים חדש, אפס את הבחירה
-             subjectDropdown.value = "";
-         }
-         // אם עורכים פריט והנושא שלו לא ברשימה, הוא יתווסף זמנית ב-editScheduleItem
-    }
-
-
-    function subjectChangeHandler() {
-        const subj = document.getElementById("modalSubject").value;
-        const extraQuestionsDiv = document.getElementById("extraQuestions");
-        const locationFieldDiv = document.getElementById("locationField");
-        const foodOptionsDiv = document.getElementById("foodExtraOptions");
-        const flightOptionsDiv = document.getElementById("flightExtraOptions");
-        const travelModeGroup = document.getElementById("travelModeGroup");
-        const descriptionGroup = document.getElementById("descriptionGroup");
-        const saveBtn = document.getElementById("addItemBtn");
-
-        // הסתר את כל השדות הנוספים כברירת מחדל
-        extraQuestionsDiv.style.display = "none";
-        locationFieldDiv.style.display = "none";
-        foodOptionsDiv.style.display = "none";
-        flightOptionsDiv.style.display = "none";
-        travelModeGroup.style.display = "none"; // חלק מ-extraQuestions
-
-        // הצג תיאור וכפתור שמירה אם נבחר נושא
-        if (subj) {
-             descriptionGroup.style.display = "block";
-             saveBtn.style.display = "block";
-        } else {
-             descriptionGroup.style.display = "none";
-             saveBtn.style.display = "none";
-             return; // אין נושא, אין מה להציג
-        }
-
-        // הצג שדות רלוונטיים לפי הנושא
-        if (subj === "הליכה" || subj === "נסיעה") {
-            extraQuestionsDiv.style.display = "block";
-            if (subj === "נסיעה") {
-                travelModeGroup.style.display = "block";
-            }
-        } else if (subj === "ביקור/סיור" || subj === "ים" || subj === "קניות" || subj === "בילוי לילי" || subj === "ספורט/כושר" || subj === "פגישה") {
-            locationFieldDiv.style.display = "block";
-        } else if (subj === "אוכל") {
-            foodOptionsDiv.style.display = "block";
-            foodTypeChangeHandler(); // עדכן אם צריך להציג מיקום אוכל
-        } else if (subj === "טיסה") {
-            flightOptionsDiv.style.display = "block";
-             document.getElementById("startTimeLabel").innerText = "שעת המראה:";
-             document.getElementById("endTimeLabel").innerText = "שעת נחיתה:";
-             document.getElementById("timeNote").innerText = "(זמנים מקומיים של שדות התעופה)";
-             document.getElementById("timeNote").style.display = "block";
-        } else {
-            // עבור שינה, לקום, מנוחה, אחר - אין שדות נוספים
-             document.getElementById("startTimeLabel").innerText = "שעת התחלה:";
-             document.getElementById("endTimeLabel").innerText = "שעת סיום:";
-             document.getElementById("timeNote").style.display = "none";
-        }
-         // אם הנושא הוא נושא מותאם אישית שלא מוגדר למעלה, אפשר להחליט אם להציג שדה כללי כמו מיקום או כלום
-         // כרגע, נושאים מותאמים לא מציגים שדות נוספים מעבר לתיאור.
-    }
-
-     function foodTypeChangeHandler() {
-        const foodType = document.getElementById("foodTypeSelect").value;
-        const foodLocationDiv = document.getElementById("foodLocationDiv");
-        // הצג שדה מיקום עבור מסעדה, בית קפה, אוכל מהיר/דוכן
-        if (foodType === "מסעדה" || foodType === "בית קפה" || foodType === "אוכל מהיר/דוכן") {
-            foodLocationDiv.style.display = "block";
-        } else {
-            foodLocationDiv.style.display = "none";
-            document.getElementById("foodLocationInput").value = ""; // נקה מיקום אם לא רלוונטי
-        }
-    }
-
-     function addSubjectOneTime() {
-         const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
-         if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
-         if (!customSubjects.includes(newSubjectName) && !permanentSubjects.includes(newSubjectName) && ![...document.getElementById("modalSubject").options].some(opt => opt.value === newSubjectName && opt.parentElement.tagName !== 'OPTGROUP')) {
-            // הוסף רק אם הוא לא קיים כבר כנושא בסיסי, קבוע או חד-פעמי אחר
-            customSubjects.push(newSubjectName);
-         }
-         updateSubjectDropdownOptions();
-         document.getElementById("modalSubject").value = newSubjectName; // בחר את הנושא החדש
-         subjectChangeHandler(); // עדכן שדות
-         closeAddSubjectModal(); // סגור מודל הוספה
-     }
-
-     function addSubjectPermanent() {
-         const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
-         if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
-         if (permanentSubjects.includes(newSubjectName)) {
-              alert("נושא זה כבר קיים ברשימת הנושאים הקבועים.");
-               // בחר את הנושא הקיים וסגור
-               document.getElementById("modalSubject").value = newSubjectName;
-               subjectChangeHandler();
-               closeAddSubjectModal();
-              return;
+            text += `~ ${item.description}\n\n`;
           }
-         permanentSubjects.push(newSubjectName);
-         localStorage.setItem('permanentSubjects', JSON.stringify(permanentSubjects)); // שמור ל-LocalStorage (וגם ל-Firestore אם מחובר)
-         saveUserData(); // שמור את השינוי גם ב-Firestore
-         updateSubjectDropdownOptions();
-         document.getElementById("modalSubject").value = newSubjectName; // בחר את הנושא החדש
-         subjectChangeHandler(); // עדכן שדות
-         closeAddSubjectModal(); // סגור מודל הוספה
-         updatePermanentSubjectsListDisplay(); // עדכן את רשימת הנושאים הקבועים אם מוצגת
-         alert("הנושא '" + newSubjectName + "' נוסף לנושאים הקבועים!");
-     }
-
-     function addTemporaryCustomSubject(subjectName) {
-        // פונקציה להוספת נושא שלא קיים ברשימה באופן זמני (לצורך עריכה)
-        if (!customSubjects.includes(subjectName) && !permanentSubjects.includes(subjectName)) {
-            customSubjects.push(subjectName);
-            updateSubjectDropdownOptions(); // עדכן את הרשימה הנפתחת
-        }
-    }
-
-
-     function togglePermanentSubjectsList(event) {
-         event.stopPropagation(); // מנע סגירה מיידית אם לחצנו על הכפתור
-         const container = document.getElementById("permanentSubjectsList");
-         const isDisplayed = container.style.display === "block";
-         if (!isDisplayed) {
-             updatePermanentSubjectsListDisplay(); // טען את הרשימה
-             container.style.display = "block";
-             // הוסף event listener לסגירה בלחיצה מחוץ לרשימה
-             document.addEventListener('click', closePermanentSubjectsListOnClickOutside, true);
-         } else {
-             container.style.display = "none";
-             document.removeEventListener('click', closePermanentSubjectsListOnClickOutside, true);
-         }
-     }
-
-     function closePermanentSubjectsListOnClickOutside(event) {
-        const container = document.getElementById("permanentSubjectsList");
-        const toggleBtn = document.getElementById("subjectsToggleBtn");
-         // בדוק אם הלחיצה היתה מחוץ לרשימה ומחוץ לכפתור הפתיחה
-        if (container && !container.contains(event.target) && !toggleBtn.contains(event.target)) {
-            container.style.display = 'none';
-            document.removeEventListener('click', closePermanentSubjectsListOnClickOutside, true);
-        }
-    }
-
-
-     function updatePermanentSubjectsListDisplay() {
-         const container = document.getElementById("permanentSubjectsList");
-         container.innerHTML = ""; // נקה תוכן קודם
-
-         if (permanentSubjects.length === 0) {
-             container.innerHTML = '<p style="text-align: center; color: #777; font-size: 0.9em;">אין נושאים קבועים שמורים.</p>';
-         } else {
-              const list = document.createElement('ul');
-              list.style.listStyle = 'none';
-              list.style.padding = '0';
-              list.style.margin = '0';
-              permanentSubjects.forEach((subject, index) => {
-                 const listItem = document.createElement('li');
-                 listItem.style.display = 'flex';
-                 listItem.style.justifyContent = 'space-between';
-                 listItem.style.alignItems = 'center';
-                 listItem.style.padding = '8px 5px';
-                 listItem.style.borderBottom = '1px solid #eee';
-                 listItem.style.fontSize = '0.95em';
-
-                 const subjectText = document.createElement('span');
-                 subjectText.innerText = subject;
-                 subjectText.style.flexGrow = '1';
-                 subjectText.style.marginRight = '10px'; // מרווח מהפח
-                 subjectText.style.cursor = 'pointer'; // אפשר ללחוץ לבחירה
-                 subjectText.title = 'לחץ לבחירת הנושא';
-                 subjectText.onclick = () => {
-                     document.getElementById("modalSubject").value = subject;
-                     subjectChangeHandler();
-                     document.getElementById("permanentSubjectsList").style.display = 'none'; // סגור רשימה
-                     document.removeEventListener('click', closePermanentSubjectsListOnClickOutside, true);
-                 };
-
-                 const deleteBtn = document.createElement('span');
-                 deleteBtn.innerHTML = '🗑️';
-                 deleteBtn.style.cursor = 'pointer';
-                 deleteBtn.style.color = '#e74c3c';
-                 deleteBtn.style.opacity = '0.7';
-                 deleteBtn.title = 'מחק נושא קבוע';
-                 deleteBtn.onmouseover = () => deleteBtn.style.opacity = '1';
-                 deleteBtn.onmouseout = () => deleteBtn.style.opacity = '0.7';
-                 deleteBtn.onclick = (e) => {
-                     e.stopPropagation(); // מנע בחירת הנושא בלחיצה על הפח
-                     deletePermanentSubject(index);
-                 };
-
-                 listItem.appendChild(subjectText);
-                 listItem.appendChild(deleteBtn);
-                 list.appendChild(listItem);
-             });
-              container.appendChild(list);
-         }
-          // הוספת כפתור "הוסף חדש" לתחתית הרשימה
-          const addButton = document.createElement('button');
-          addButton.className = 'btn btn-secondary'; // או סגנון אחר
-          addButton.innerHTML = '<i class="fas fa-plus fa-fw"></i> הוסף נושא חדש';
-          addButton.style.width = '100%';
-          addButton.style.marginTop = '15px';
-          addButton.style.fontSize = '0.9em';
-          addButton.style.padding = '8px 12px';
-          addButton.onclick = openAddSubjectModal;
-          container.appendChild(addButton);
-     }
-
-     function deletePermanentSubject(index) {
-         const subjectToDelete = permanentSubjects[index];
-         if (confirm(`האם אתה בטוח שברצונך למחוק את הנושא הקבוע "${subjectToDelete}"?`)) {
-             permanentSubjects.splice(index, 1);
-             localStorage.setItem('permanentSubjects', JSON.stringify(permanentSubjects)); // עדכן אחסון מקומי
-             saveUserData(); // עדכן Firestore
-             updatePermanentSubjectsListDisplay(); // עדכן את הרשימה המוצגת
-             updateSubjectDropdownOptions(); // עדכן את הרשימה הנפתחת הראשית
-             alert(`הנושא "${subjectToDelete}" נמחק מהנושאים הקבועים.`);
-         }
-     }
-
-
-    // ----- חיפוש וטיפול בפרטי טיסה -----
-
-    function searchFlight() {
-        const flightNumber = document.getElementById("flightNumberInput").value.trim().toUpperCase();
-        const flightDate = document.getElementById("modalDate").value; // השתמש בתאריך מהטופס
-
-        if (!flightNumber || !flightDate) {
-            alert("אנא הזן מספר טיסה ותאריך.");
-            return;
-        }
-
-        const loader = document.getElementById("loader");
-        const loaderText = document.getElementById("loaderText");
-        loaderText.innerText = `מחפש פרטי טיסה ${flightNumber}... ✈️`;
-        loader.style.display = "flex";
-
-        // --- שימוש ב-API (דוגמה עם RapidAPI AeroDataBox) ---
-        // !!! החלף עם המפתח וה-Host שלך !!!
-         const apiKey = "33d4ecb375mshcf029fba766af44p17668djsnaef3c36cb209"; // המפתח מהקוד המקורי
-         const host = "aerodatabox.p.rapidapi.com"; // ה-Host מהקוד המקורי
-
-         // בניית ה-URL עם מספר הטיסה והתאריך
-         const apiUrl = `https://aerodatabox.p.rapidapi.com/flights/number/${flightNumber}/${flightDate}?withLeg=true&withCancelled=true&withCodeshares=true`;
-
-        fetch(apiUrl, {
-            method: "GET",
-            headers: {
-                "x-rapidapi-host": host,
-                "x-rapidapi-key": apiKey,
-                "Accept": "application/json"
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                 // נסה לקרוא את גוף התשובה גם במקרה של שגיאה
-                 return response.json().then(errData => {
-                     throw new Error(`שגיאה ${response.status}: ${errData.message || response.statusText}`);
-                 }).catch(() => {
-                     // אם אין גוף JSON או שהוא לא תקין
-                     throw new Error(`שגיאה ${response.status}: ${response.statusText}`);
-                 });
-            }
-            return response.json();
-        })
-        .then(data => {
-            loader.style.display = "none";
-            processFlightResults(data, flightNumber);
-        })
-        .catch(error => {
-            loader.style.display = "none";
-            console.error("Flight search error:", error);
-            document.getElementById("flightResultContent").innerHTML = `<p style="color: red;">שגיאה בחיפוש הטיסה: ${error.message}. אנא בדוק את מספר הטיסה והתאריך או הזן ידנית.</p>`;
-            document.getElementById("flightResultModal").style.display = "block";
-            document.getElementById("copyFlightBtn").style.display = 'none'; // הסתר כפתור העתקה בשגיאה
-            currentFlightData = null;
         });
+      });
+      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
+      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
     }
-
-    function processFlightResults(data, searchedFlightNumber) {
-         let html = "";
-         currentFlightData = null; // אפס נתונים קודמים
-         const copyBtn = document.getElementById("copyFlightBtn");
-
-         if (data && data.length > 0) {
-             // נניח שהתוצאה הראשונה היא הרלוונטית ביותר או היחידה
-             const flight = data[0]; // קח את הטיסה הראשונה ברשימה
-
-             // חילוץ נתונים בצורה בטוחה יותר
-             const airlineName = flight.airline?.name || "לא זמין";
-             const depAirport = flight.departure?.airport?.name || "לא זמין";
-             const arrAirport = flight.arrival?.airport?.name || "לא זמין";
-             const depIata = flight.departure?.airport?.iata || "";
-             const arrIata = flight.arrival?.airport?.iata || "";
-             const depTerminal = flight.departure?.terminal ? `טרמינל ${flight.departure.terminal}` : "";
-             const arrTerminal = flight.arrival?.terminal ? `טרמינל ${flight.arrival.terminal}` : "";
-             const depTimeScheduledLocal = flight.departure?.scheduledTime?.local?.replace(/:\d{2}[+-]\d{2}:\d{2}$/, '') || "לא זמין"; // הסר שניות ו-timezone
-             const arrTimeScheduledLocal = flight.arrival?.scheduledTime?.local?.replace(/:\d{2}[+-]\d{2}:\d{2}$/, '') || "לא זמין";
-             const depTimeActualLocal = flight.departure?.actualTime?.local?.replace(/:\d{2}[+-]\d{2}:\d{2}$/, '') || ""; // זמן ממשי אם קיים
-             const arrTimeActualLocal = flight.arrival?.actualTime?.local?.replace(/:\d{2}[+-]\d{2}:\d{2}$/, '') || "";
-             const status = flight.status || "לא זמין";
-
-             // בנה את ה-HTML לתצוגה
-             html += '<div class="flight-card">';
-             html += `<h2>טיסת ${airlineName} (${searchedFlightNumber})</h2>`;
-             html += `<p><span class="time-label">סטטוס:</span> ${status}</p>`;
-             html += `<p><span class="time-label">מ:</span> ${depAirport} (${depIata}) ${depTerminal}</p>`;
-             html += `<p><span class="time-label">אל:</span> ${arrAirport} (${arrIata}) ${arrTerminal}</p>`;
-             html += `<p><span class="time-label">המראה מתוכננת:</span> ${depTimeScheduledLocal}`;
-             if (depTimeActualLocal && depTimeActualLocal !== depTimeScheduledLocal) {
-                 html += ` (בפועל: ${depTimeActualLocal})`;
-             }
-             html += `</p>`;
-             html += `<p><span class="time-label">נחיתה מתוכננת:</span> ${arrTimeScheduledLocal}`;
-             if (arrTimeActualLocal && arrTimeActualLocal !== arrTimeScheduledLocal) {
-                 html += ` (בפועל: ${arrTimeActualLocal})`;
-             }
-              html += `</p>`;
-             html += '</div>';
-
-             // שמור את הנתונים הרלוונטיים להעתקה
-             currentFlightData = {
-                 flightNumber: searchedFlightNumber, // השתמש במספר שהוזן
-                 airline: airlineName,
-                 departureAirport: `${depAirport} (${depIata})`,
-                 arrivalAirport: `${arrAirport} (${arrIata})`,
-                 // השתמש בזמן המתוכנן כברירת מחדל, הסר שניות
-                 departureTime: depTimeScheduledLocal.substring(0, 16).replace('T', ' '), // פורמט HH:MM
-                 arrivalTime: arrTimeScheduledLocal.substring(0, 16).replace('T', ' '), // פורמט HH:MM
-                 // חלץ רק את שעת ההמראה/נחיתה לשימוש בשדות זמן
-                 departureTimeOnly: depTimeScheduledLocal.match(/\d{2}:\d{2}$/)[0],
-                 arrivalTimeOnly: arrTimeScheduledLocal.match(/\d{2}:\d{2}$/)[0]
-             };
-             copyBtn.style.display = 'inline-block'; // הצג כפתור העתקה
-
-         } else {
-             html = `<p>לא נמצאו פרטים עבור טיסה ${searchedFlightNumber} בתאריך المحدد. אנא בדוק שוב או הזן ידנית.</p>`;
-             copyBtn.style.display = 'none'; // הסתר כפתור העתקה
-             currentFlightData = null;
-         }
-
-         document.getElementById("flightResultContent").innerHTML = html;
-         document.getElementById("flightResultModal").style.display = "block";
-     }
-
-
-    function closeFlightResultModal() {
-        document.getElementById("flightResultModal").style.display = "none";
-    }
-
-    function copyFlightToForm() {
-        if (currentFlightData) {
-            document.getElementById("flightNumberInput").value = currentFlightData.flightNumber;
-            document.getElementById("airlineInput").value = currentFlightData.airline;
-            document.getElementById("departureAirportInput").value = currentFlightData.departureAirport;
-            document.getElementById("arrivalAirportInput").value = currentFlightData.arrivalAirport;
-             // עדכן את שדות הזמן הראשיים עם שעות ההמראה/נחיתה שמצאנו
-             document.getElementById("modalStartTime").value = currentFlightData.departureTimeOnly;
-             document.getElementById("modalEndTime").value = currentFlightData.arrivalTimeOnly;
-
-             // עדכן את ההערה עם הזמנים המלאים יותר
-             document.getElementById("timeNote").innerText = `(המראה: ${currentFlightData.departureTime}, נחיתה: ${currentFlightData.arrivalTime})`;
-             document.getElementById("timeNote").style.display = "block";
-
-            closeFlightResultModal();
-            alert("פרטי הטיסה הועתקו לטופס.");
-        } else {
-            alert("אין נתוני טיסה להעתקה.");
-        }
-    }
-
-    // ----- פונקציות עזר (תאריכים, שעות, תצוגה) -----
-
-    function addMinutesToTime(timeStr, minutesToAdd) {
-        if (!timeStr) return ""; // החזר ריק אם אין זמן התחלה
-        let [h, m] = timeStr.split(":").map(Number);
-        let totalMinutes = h * 60 + m + minutesToAdd;
-        totalMinutes = totalMinutes % (24 * 60); // ודא שלא עוברים את חצות
-        let newH = Math.floor(totalMinutes / 60);
-        let newM = totalMinutes % 60;
-        return (newH < 10 ? "0" + newH : newH) + ":" + (newM < 10 ? "0" + newM : newM);
-    }
-
-    function setDefaultEndTime() {
-        const startTime = document.getElementById("modalStartTime").value;
-        if (startTime) {
-             // ברירת מחדל: שעה אחת אחרי ההתחלה
-             const endTime = addMinutesToTime(startTime, 60);
-             document.getElementById("modalEndTime").value = endTime;
-        }
-    }
-
-     function getDisplaySubject(item) {
-         if (item.subject === "נסיעה" && item.travelMode) {
-             return "נסיעה " + translateTravelMode(item.travelMode);
-         }
-         if (item.subject === "אוכל" && item.foodType) {
-              // מצא את האמוג'י המתאים לסוג האוכל אם קיים באפשרויות
-             const foodSelect = document.getElementById("foodTypeSelect");
-             const selectedOption = [...foodSelect.options].find(opt => opt.value === item.foodType);
-             const emoji = selectedOption ? selectedOption.text.split(' ').pop() : subjectEmojis["אוכל"]; // קח אמוג'י מהאופציה או ברירת מחדל
-             return `${item.foodType} ${emoji}`;
-         }
-          // החזר את הנושא המקורי עם האמוג'י שלו אם קיים
-         const defaultEmoji = subjectEmojis[item.subject] || '';
-         // בדוק אם הנושא כבר מכיל אמוג'י (למקרה של נושאים מותאמים)
-         const lastChar = item.subject.slice(-1);
-         const containsEmoji = lastChar.codePointAt(0) > 10000; // בדיקה פשוטה לאמוג'י
-         return containsEmoji ? item.subject : `${item.subject} ${defaultEmoji}`;
-     }
-
-     function translateTravelMode(mode) {
-         switch (mode) {
-             case "car": return "ברכב פרטי 🚙";
-             case "transit": return "בתחב״צ 🚋🚆";
-             case "taxi": return "במונית 🚖";
-             case "walk": return "בהליכה 🚶"; // אם נבחרה הליכה דרך מצב נסיעה
-             default: return ""; // החזר ריק אם אין מצב נסיעה מוגדר
-         }
-     }
-
-
-    function getBackgroundEmoji(item) {
-        if (item.subject === "נסיעה" && item.travelMode) {
-             let translated = translateTravelMode(item.travelMode);
-             let parts = translated.split(" ");
-             return parts[parts.length - 1] || subjectEmojis["נסיעה"]; // החזר אמוג'י רכב אם אין משהו אחר
-        }
-        if (item.subject === "אוכל" && item.foodType) {
-              const foodSelect = document.getElementById("foodTypeSelect");
-              const selectedOption = [...foodSelect.options].find(opt => opt.value === item.foodType);
-              return selectedOption ? selectedOption.text.split(' ').pop() : subjectEmojis["אוכל"];
-        }
-         // בדוק אם הנושא עצמו מכיל אמוג'י בסופו
-         const lastChar = item.subject.slice(-1);
-         if (lastChar.codePointAt(0) > 10000) { return lastChar; }
-         // אחרת, החזר מהמפה
-         return subjectEmojis[item.subject] || subjectEmojis["אחר"]; // החזר סימן שאלה אם לא נמצא
-    }
-
-    function getAddressLine(item) {
-        if ((item.subject === "נסיעה" || item.subject === "הליכה") && item.fromAddress && item.toAddress) {
-            return `<p style="font-size: 0.9em; color: #555;"><i class="fas fa-map-marker-alt fa-fw"></i> ${item.fromAddress} <i class="fas fa-long-arrow-alt-left fa-fw"></i> ${item.toAddress}</p>`;
-        }
-        return "";
-    }
-
-    function getExtraLine(item, fullDetails = false) {
-        let lines = [];
-        if (item.subject === "נסיעה" && item.travelMode && !fullDetails) { // בתצוגה רגילה, הכתובות בשורה נפרדת
-            // lines.push(`אופן נסיעה: ${translateTravelMode(item.travelMode)}`); // מוצג כבר בכותרת
-        } else if (item.subject === "נסיעה" && fullDetails) { // בתצוגת פרטים מלאה
-             lines.push(`<strong>מאיפה:</strong> ${item.fromAddress || 'לא צוין'}`);
-             lines.push(`<strong>לאן:</strong> ${item.toAddress || 'לא צוין'}`);
-             lines.push(`<strong>אופן נסיעה:</strong> ${translateTravelMode(item.travelMode) || 'לא צוין'}`);
-        } else if (item.subject === "הליכה" && fullDetails) {
-             lines.push(`<strong>מאיפה:</strong> ${item.fromAddress || 'לא צוין'}`);
-             lines.push(`<strong>לאן:</strong> ${item.toAddress || 'לא צוין'}`);
-        } else if ((item.subject === "ביקור/סיור" || item.subject === "ים" || item.subject === "קניות" || item.subject === "בילוי לילי" || item.subject === "ספורט/כושר" || item.subject === "פגישה") && item.location) {
-            lines.push(`<p><i class="fas fa-map-pin fa-fw"></i> <strong>מיקום:</strong> ${item.location}</p>`);
-        } else if (item.subject === "אוכל") {
-            if (item.foodType) {
-                 // השורה הזו מיותרת כי סוג האוכל מופיע בכותרת
-                 // lines.push(`<strong>סוג:</strong> ${item.foodType}`);
-            }
-            if (item.foodLocation) {
-                lines.push(`<p><i class="fas fa-map-pin fa-fw"></i> <strong>מיקום:</strong> ${item.foodLocation}</p>`);
-            } else if (item.foodType === "פיקניק/הכנה עצמית" || item.foodType === "קנייה בסופר/מכולת" || item.foodType === "במלון/במקום הלינה") {
-                // אין צורך להציג מיקום או שורה נוספת
-            }
-        } else if (item.subject === "טיסה") {
-             lines.push(`<p><i class="fas fa-plane-departure fa-fw"></i> <strong>טיסה:</strong> ${item.airline || ''} ${item.flightNumber || ''}</p>`);
-             lines.push(`<p style="font-weight: bold; font-size: 0.95em;"> ${item.departureAirport || ''} <i class="fas fa-long-arrow-alt-right fa-fw"></i> ${item.arrivalAirport || ''}</p>`);
-             if (fullDetails) { // הוסף זמנים מלאים רק בתצוגת פרטים
-                 lines.push(`<p><small>המראה: ${item.departureTime} | נחיתה: ${item.arrivalTime}</small></p>`);
-             }
-        }
-        return lines.join(fullDetails ? "<br>" : ""); // הצג כפסקאות נפרדות בתצוגה רגילה, או שורות בתצוגת פרטים
-    }
-
-
-    function groupItemsByDate(items) {
-        return items.reduce((groups, item) => {
-            const date = item.date; // התאריך כבר בפורמט YYYY-MM-DD
-            if (!groups[date]) {
-                groups[date] = [];
-            }
-            groups[date].push(item);
-            return groups;
-        }, {});
-    }
-
-    function formatDateHeader(dateStr) {
-        if (!dateStr) return "";
-        try {
-            // המרת התאריך לפורמט שמזוהה על ידי Date (לוודא שהוא YYYY-MM-DD)
-            const dateObj = new Date(dateStr + 'T00:00:00'); // הוסף שעה כדי למנוע בעיות timezone
-             if (isNaN(dateObj)) { // בדוק אם התאריך תקין
-                 console.warn("Invalid date string for formatting:", dateStr);
-                 return dateStr; // החזר את המחרוזת המקורית אם לא תקין
-             }
-            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-            return dateObj.toLocaleDateString('he-IL', options);
-        } catch (e) {
-            console.error("Error formatting date:", dateStr, e);
-            return dateStr; // החזר מחרוזת מקורית במקרה של שגיאה
-        }
-    }
-
-
-    // ----- רינדור תצוגת הלו"ז -----
-
-    function renderScheduleItems() {
-        const container = document.getElementById("scheduleContainer");
-        if (!container) return; // ודא שהאלמנט קיים
-        container.innerHTML = ""; // נקה תצוגה קודמת
-
-        if (scheduleItems.length === 0 && scheduleName) {
-            container.innerHTML = '<p style="color: #777; margin-top: 20px;">הלו"ז עדיין ריק. לחץ על + כדי להוסיף את החלק הראשון.</p>';
-            return;
-        }
-
-        const groups = groupItemsByDate(scheduleItems);
-        const sortedDates = Object.keys(groups).sort((a, b) => new Date(a) - new Date(b)); // מיון תאריכים
-
-        sortedDates.forEach(date => {
-             // הוספת כותרת תאריך
-             const dateHeader = document.createElement('h3');
-             dateHeader.textContent = formatDateHeader(date);
-             dateHeader.style.textAlign = 'center';
-             dateHeader.style.margin = '25px 0 10px 0';
-             dateHeader.style.color = '#16A085'; // צבע ירקרק
-             container.appendChild(dateHeader);
-
-             // מיון פריטים לפי שעת התחלה
-             const sortedItems = groups[date].sort((a, b) => a.startTime.localeCompare(b.startTime));
-
-             sortedItems.forEach((item) => {
-                const itemIndex = scheduleItems.findIndex(i => i.id === item.id); // מצא אינדקס לפי ID ייחודי
-                let displaySubject = getDisplaySubject(item);
-                let bgEmoji = getBackgroundEmoji(item);
-                let extraLine = getExtraLine(item);
-                let addressLine = getAddressLine(item);
-
-                 // בדוק אם יש מיקום לניווט
-                 const hasLocation = (item.subject === "נסיעה" || item.subject === "הליכה" || item.subject === "ים" || item.subject === "קניות" || item.subject === "בילוי לילי" || item.subject === "ספורט/כושר" || item.subject === "פגישה" || item.subject === "ביקור/סיור" || (item.subject === "אוכל" && (item.foodType === "מסעדה" || item.foodType === "בית קפה" || item.foodType === "אוכל מהיר/דוכן") && item.foodLocation));
-                let navButtonHtml = "";
-                 if (hasLocation && (item.toAddress || item.location || item.foodLocation)) {
-                     navButtonHtml = `<button class="btn nav-button" onclick="event.stopPropagation(); navigateItem(${itemIndex})" title="נווט ליעד"><i class="fas fa-directions"></i></button>`;
-                 }
-
-                 // יצירת אלמנט ה-HTML
-                 const itemDiv = document.createElement('div');
-                 itemDiv.className = 'schedule-item';
-                 itemDiv.setAttribute('data-date', item.date);
-                 itemDiv.setAttribute('data-subject', item.subject);
-                 itemDiv.onclick = () => showItemDetail(itemIndex); // פתיחת פרטים בלחיצה
-
-                 itemDiv.innerHTML = `
-                     ${navButtonHtml}
-                     <span class="item-action-icon delete-icon" title="מחק פריט" onclick="deleteScheduleItem(${itemIndex}, event)">🗑️</span>
-                     <div class="emoji-background">${bgEmoji}</div>
-                     <h3>${item.startTime} - ${item.endTime} : ${displaySubject}</h3>
-                     ${extraLine}
-                     ${addressLine}
-                      ${item.description ? `<p style="font-size: 0.9em; color: #555; margin-top: 8px;">${item.description.replace(/\n/g, '<br>')}</p>` : ''}
-                 `;
-                 container.appendChild(itemDiv);
-             });
-        });
-    }
-
-
-    // ----- ניווט (Google Maps) -----
-
-     function checkRoute() { // פתיחת גוגל מפות לבדיקת מסלול מהמודל
-        const from = document.getElementById("fromAddress").value.trim();
-        const to = document.getElementById("toAddress").value.trim();
-        const subject = document.getElementById("modalSubject").value;
-
-        if (!from || !to) {
-            alert("אנא מלא את כתובת ההתחלה והיעד לבדיקת המסלול.");
-            return;
-        }
-
-        let travelModeParam = "";
-        if (subject === "נסיעה") {
-            const mode = document.getElementById("travelModeSelect").value;
-            if (mode === "car" || mode === "taxi") { travelModeParam = "&travelmode=driving"; }
-            else if (mode === "transit") { travelModeParam = "&travelmode=transit"; }
-            else if (mode === "walk") { travelModeParam = "&travelmode=walking"; }
-        } else if (subject === "הליכה") {
-            travelModeParam = "&travelmode=walking";
-        }
-
-        const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(from)}&destination=${encodeURIComponent(to)}${travelModeParam}`;
-        window.open(url, "_blank");
-    }
-
-    function showLocationRoute() { // פתיחת גוגל מפות למיקום מהמודל
-         const location = document.getElementById("locationInput").value.trim();
-         if (!location) {
-            alert("אנא הזן מיקום.");
-            return;
-         }
-         const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
-         window.open(url, "_blank");
-     }
-
-     function showFoodRoute() { // פתיחת גוגל מפות למקום אוכל מהמודל
-         const location = document.getElementById("foodLocationInput").value.trim();
-         if (!location) {
-            alert("אנא הזן את מיקום מקום האוכל.");
-            return;
-         }
-         const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
-         window.open(url, "_blank");
-     }
-
-
-    function navigateItem(index) { // ניווט מפריט קיים בלו"ז
-        if (index < 0 || index >= scheduleItems.length) return;
-        const item = scheduleItems[index];
-        let destination = "";
-        let travelMode = "";
-
-        // קבע יעד ואופן נסיעה
-        if ((item.subject === "נסיעה" || item.subject === "הליכה") && item.toAddress) {
-            destination = item.toAddress;
-            if (item.subject === "נסיעה") {
-                 const mode = item.travelMode;
-                 if (mode === "car" || mode === "taxi") { travelMode = "driving"; }
-                 else if (mode === "transit") { travelMode = "transit"; }
-                 else if (mode === "walk") { travelMode = "walking"; }
-            } else { // הליכה
-                travelMode = "walking";
-            }
-        } else if ((item.subject === "ביקור/סיור" || item.subject === "ים" || item.subject === "קניות" || item.subject === "בילוי לילי" || item.subject === "ספורט/כושר" || item.subject === "פגישה") && item.location) {
-            destination = item.location;
-            // אפשר לקבוע travelMode=driving כברירת מחדל או לשאול את המשתמש
-            travelMode = "driving";
-        } else if (item.subject === "אוכל" && item.foodLocation) {
-             destination = item.foodLocation;
-             travelMode = "driving"; // ברירת מחדל
-        }
-
-        if (!destination) {
-            alert("לא נמצא יעד לניווט עבור פריט זה.");
-            return;
-        }
-
-        // שאל אם לנווט מהמיקום הנוכחי או מנקודת המוצא (אם רלוונטי)
-        let originParam = ""; // ניווט מהמיקום הנוכחי כברירת מחדל
-        if ((item.subject === "נסיעה" || item.subject === "הליכה") && item.fromAddress) {
-             if (!confirm("האם לנווט מהמיקום הנוכחי שלך?\n(לחץ 'ביטול' כדי לנווט מ: " + item.fromAddress + ")")) {
-                originParam = `&origin=${encodeURIComponent(item.fromAddress)}`;
-             }
-        }
-
-        const travelModeParam = travelMode ? `&travelmode=${travelMode}` : "";
-        const url = `https://www.google.com/maps/dir/?api=1${originParam}&destination=${encodeURIComponent(destination)}${travelModeParam}`;
-        window.open(url, "_blank");
-
-    }
-
-    // ----- העתקה ושיתוף -----
-
-    function captureScreenshotFromElement(elementId, name) {
-        const elem = document.getElementById(elementId);
-        if (!elem) {
-            console.error("Element not found for screenshot:", elementId);
-            alert("שגיאה בצילום המסך: האלמנט לא נמצא.");
-            return;
-        }
-         // הוספת רקע לבן זמני לאלמנט לצילום נקי יותר
-         const originalBg = elem.style.backgroundColor;
-         elem.style.backgroundColor = '#FFFFFF'; // רקע לבן
-         elem.style.padding = '20px'; // ריווח פנימי לצילום
-
-         const loader = document.getElementById("loader");
-         const loaderText = document.getElementById("loaderText");
-         loaderText.innerText = 'מכין צילום מסך... 📸';
-         loader.style.display = 'flex';
-
-        html2canvas(elem, {
-             scale: 1.5, // הגדלת הרזולוציה לחדות טובה יותר
-             useCORS: true, // נדרש אם יש תמונות חיצוניות (כמו אמוג'י או רקע)
-             backgroundColor: '#ffffff' // רקע לבן לקנבס
-        }).then(canvas => {
-             // החזרת הסגנון המקורי
-             elem.style.backgroundColor = originalBg;
-             elem.style.padding = '';
-             loader.style.display = 'none';
-
-            canvas.toBlob(function(blob) {
-                if (blob) {
-                   const link = document.createElement("a");
-                   const safeName = (name || "לוז_זמן_זהב").replace(/[^a-zA-Z0-9א-ת\s\-]/g, '_'); // נקה שם קובץ
-                   link.download = safeName + ".png";
-                   link.href = URL.createObjectURL(blob);
-                   link.click();
-                   URL.revokeObjectURL(link.href); // שחרור ה-URL
-                } else {
-                     alert("שגיאה ביצירת קובץ התמונה.");
-                }
-            }, 'image/png'); // שמירה כ-PNG
-        }).catch(err => {
-             // החזרת הסגנון המקורי גם במקרה שגיאה
-             elem.style.backgroundColor = originalBg;
-             elem.style.padding = '';
-             loader.style.display = 'none';
-             console.error("Error capturing screenshot:", err);
-             alert("שגיאה בתהליך צילום המסך: " + err.message);
-        });
-    }
-
 
     function copyScheduleToClipboard() {
-         if (!scheduleName || scheduleItems.length === 0) {
-             alert("לא ניתן להעתיק לו\"ז ריק או ללא שם.");
-             return;
-         }
-         const text = generateScheduleText(scheduleItems, scheduleName.replace("", ""));
-         navigator.clipboard.writeText(text).then(() => {
-             alert("הלו\"ז הועתק ללוח ההודעות!");
-         }).catch(err => {
-             console.error("Clipboard copy failed:", err);
-             alert("העתקה נכשלה. ייתכן שהדפדפן שלך אינו תומך בפעולה זו או שנדרשת הרשאה.");
-             // גיבוי: הצגת הטקסט למשתמש להעתקה ידנית
-             prompt("העתקה אוטומטית נכשלה. ניתן להעתיק ידנית:", text);
-         });
-     }
-
-    function generateScheduleText(items, name) {
-        let text = `*${name}*\n\n`; // שם הלו"ז מודגש
-        const groups = groupItemsByDate(items);
-        const sortedDates = Object.keys(groups).sort((a, b) => new Date(a) - new Date(b)); // מיון תאריכים
-
-        sortedDates.forEach(date => {
-            text += `*📅 ${formatDateHeader(date)}*\n--------------------\n`; // כותרת תאריך עם קו תחתון
-             const sortedItems = groups[date].sort((a, b) => a.startTime.localeCompare(b.startTime)); // מיון לפי שעה
-
-             sortedItems.forEach(item => {
-                const displaySubject = getDisplaySubject(item); // שם הנושא + אמוג'י
-                text += `*${item.startTime} - ${item.endTime} : ${displaySubject}*\n`;
-
-                 // פרטים נוספים לפי נושא
-                 if (item.subject === "טיסה") {
-                    text += ` חב': ${item.airline || ''}, מס': ${item.flightNumber || ''}\n`;
-                    text += ` *${item.departureAirport || ''}* ⬅️ *${item.arrivalAirport || ''}*\n`;
-                    // אפשר להוסיף זמנים מלאים אם רוצים:
-                    // text += ` המראה: ${item.departureTime}, נחיתה: ${item.arrivalTime}\n`;
-                 } else if ((item.subject === "נסיעה" || item.subject === "הליכה") && item.fromAddress && item.toAddress) {
-                     text += ` מ: ${item.fromAddress}\n אל: ${item.toAddress}\n`;
-                     if (item.subject === "נסיעה" && item.travelMode) {
-                         text += ` (${translateTravelMode(item.travelMode)})\n`;
-                     }
-                 } else if ((item.subject === "ביקור/סיור" || item.subject === "ים" || item.subject === "קניות" || item.subject === "בילוי לילי" || item.subject === "ספורט/כושר" || item.subject === "פגישה") && item.location) {
-                     text += ` מיקום: ${item.location}\n`;
-                 } else if (item.subject === "אוכל" && item.foodLocation) {
-                     text += ` מיקום: ${item.foodLocation}\n`;
-                 }
-
-                 // תיאור (אם קיים)
-                 if (item.description) {
-                     text += ` ~ ${item.description}\n`;
-                 }
-                 text += "\n"; // רווח בין פריטים
-            });
-            text += "\n"; // רווח בין ימים
+      let text = scheduleName + "\n\n";
+      const groups = groupItemsByDate(scheduleItems);
+      const sortedDates = Object.keys(groups).sort();
+      sortedDates.forEach(date => {
+        text += `> 📅 *${formatDateHeader(date)}*\n\n`;
+        groups[date].forEach(item => {
+          if(item.subject === "טיסה") {
+            text += `*${item.startTime}-${item.endTime} : טיסה ✈️*\n`;
+            text += `טיסת ${item.airline}\n`;
+            text += `טיסה מספר: ${item.flightNumber}\n`;
+            text += `*• ${item.departureAirport} ⬅️ ${item.arrivalAirport}*\n`;
+            text += `המראה: ${item.startTime}\n`;
+            text += `נחיתה: ${item.endTime}\n`;
+            text += `~ ${item.description}\n\n`;
+          } else {
+            text += `*${item.startTime} - ${item.endTime} : ${getDisplaySubject(item)} ${getBackgroundEmoji(item)}*\n`;
+            if(item.fromAddress && item.toAddress) {
+              text += `• ${item.fromAddress} ⬅️ ${item.toAddress}\n`;
+            } else if(item.location) {
+              text += `• ${item.location}\n`;
+            }
+            text += `~ ${item.description}\n\n`;
+          }
         });
-        return text;
+      });
+      navigator.clipboard.writeText(text).then(() => { alert("הלוז הועתק בהצלחה!"); })
+      .catch(err => { alert("התרחשה שגיאה בהעתקה."); });
     }
-
-
-    // ----- אתחול בעת טעינת הדף -----
-     document.addEventListener('DOMContentLoaded', () => {
-         console.log("DOM fully loaded and parsed");
-         // בדוק אם המשתמש כבר מחובר (ייתכן ש-onAuthStateChanged ירוץ לפני או אחרי)
-         if (auth.currentUser) {
-             loadUserData(auth.currentUser.uid);
-         } else {
-             // טען נושאים קבועים מ-LocalStorage אם לא מחובר
-             permanentSubjects = JSON.parse(localStorage.getItem('permanentSubjects')) || [];
-             updateSubjectDropdownOptions();
-         }
-         renderScheduleItems(); // נסה לרנדר (יהיה ריק אם לא נטען כלום)
-          // הוספת event listener לסגירת רשימת הנושאים בלחיצה מחוץ לה
-          // נעשה בתוך togglePermanentSubjectsList כדי להבטיח שהרשימה קיימת
-     });
-
   </script>
 </body>
 </html>
