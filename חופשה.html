@@ -103,6 +103,8 @@
       text-decoration: none;
     }
     .auth-button:hover {
+  white-space: pre-line;
+  line-height: 1.2;
       background-color: #0056b3;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
@@ -657,14 +659,16 @@
     }
 
     function updateUserGreeting(user) {
-      let currentHour = new Date().getHours();
-      let greeting = "בוקר טוב";
-      if (currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
-      else if (currentHour >= 18) { greeting = "ערב טוב"; }
-      const authLink = document.getElementById("authLink");
-      let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
-      authLink.innerText = greeting + " " + firstName + "!";
-      authLink.onclick = function(event) {
+  let currentHour = new Date().getHours();
+  let greeting = "בוקר טוב";
+  if (currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
+  else if (currentHour >= 18)     { greeting = "ערב טוב"; }
+
+  const authLink = document.getElementById("authLink");
+- authLink.innerText = greeting + " " + firstName + "!";
++ authLink.innerHTML  = greeting + "<br>" + firstName + "!";
+
+  authLink.onclick = function(event) {
         event.preventDefault();
         if (confirm("להתנתק?")) {
           firebase.auth().signOut().then(() => {
