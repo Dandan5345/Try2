@@ -40,176 +40,150 @@
     }
   </script>
   
-  <style>
-    /* ===== RESET וכללי בסיס ===== */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      line-height: 1.6;
-      direction: rtl;
-      padding-top: 70px; /* כדי לא להסתתר מתחת להאדר הקבוע */
-      padding-bottom: 40px;
-      text-align: center;
-      background: url("https://i.imgur.com/vPycdhd.jpeg") no-repeat center center fixed;
-      background-size: cover;
-    }
 
-    /* ===== עיצוב האדיר (Header) ותפריט הצד ===== */
-    .topbar {
-      background-color: #0A2342;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-      transition: transform 0.3s;
-      border-bottom: 2px solid #2A558C;
-    }
-    .hamburger-menu {
-      font-size: 24px;
-      color: #ecf0f1;
-      cursor: pointer;
-      padding: 5px 10px;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-      z-index: 1002;
-    }
-    .hamburger-menu:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-    .site-name {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 28px;
-      color: #ecf0f1;
-      cursor: pointer;
-      font-weight: bold;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-    }
-  /* ===== Auth Button Styles ===== */
-.auth-button {
-  background-color: #007bff;
-  padding: 10px 15px;
-  border-radius: 8px;
-  transition: background-color 0.3s, box-shadow 0.3s;
-  font-weight: bold;
-  color: #FFFFFF;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-
-  /* מאפשר שבירת שורה בתוך הטקסט */
-  white-space: pre-line;
-  line-height: 1.2;
-}
-
-.auth-button:hover {
-  background-color: #0056b3;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-    /* תפריט צד */
-    .side-menu {
-      position: fixed;
-      top: 0;
-      right: -280px;
-      width: 280px;
-      height: 100%;
-      background-color: #0A2342;
-      z-index: 1001;
-      padding-top: 80px;
-      transition: right 0.3s ease;
-      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-    }
-    .side-menu.active {
-      right: 0;
-    }
-    .close-menu {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 24px;
-      color: #ecf0f1;
-      cursor: pointer;
-    }
-    .side-menu-links {
-      display: flex;
-      flex-direction: column;
-      padding: 0 20px;
-    }
-    .side-menu-links a {
-      padding: 15px;
-      color: #ecf0f1;
-      text-decoration: none;
-      font-size: 18px;
-      border-bottom: 1px solid rgba(236, 240, 241, 0.2);
-      transition: background-color 0.3s;
-      text-align: right;
-    }
-    .side-menu-links a:last-child {
-      border-bottom: none;
-    }
-    .side-menu-links a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      display: none;
-    }
-    .overlay.active {
-      display: block;
-    }
-
-    /* ===== עיצוב חיפוש טיסה ===== */
-    .flight-search-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-    .flight-search-wrapper input {
-      width: 100%;
-      padding-left: 2.5rem; /* שינוי: ריווח משמאל עבור האייקון */
-    }
-    .flight-search-wrapper .search-icon {
-      position: absolute;
-      left: 10px; /* שינוי: מיקום משמאל */
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-
-    /* ===== שאר הסגנונות מהקוד המקורי ===== */
-
-  /* ===== Vacation Theme Styles – Final with Modal Scroll ===== */
-
-  /* –– Reset ובסיס –– */
+<style>
+  /* ===== RESET וכללי בסיס ===== */
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
   }
   body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
     direction: rtl;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #76e2e0 0%, #c3f0f2 100%);
-    color: #2C3E50;
-    padding-top: 70px;
+    /* הגדלנו ל־80px כדי שהעמוד יתחיל ממש מתחת ל־Header */
+    padding-top: 80px;
     padding-bottom: 40px;
     text-align: center;
+    background: url("https://i.imgur.com/vPycdhd.jpeg") no-repeat center center fixed;
+    background-size: cover;
   }
 
-  /* –– כותרת ראשית –– */
+  /* ===== Header (Topbar) ===== */
+  .topbar {
+    background-color: #0A2342;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    z-index: 1000;
+    border-bottom: 2px solid #2A558C;
+  }
+  .hamburger-menu {
+    font-size: 24px;
+    color: #ecf0f1;
+    cursor: pointer;
+  }
+  .site-name {
+    font-size: 28px;
+    color: #ecf0f1;
+    font-weight: bold;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .auth-button {
+    background-color: #007bff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: pre-line;
+    line-height: 1.2;
+  }
+  .auth-button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+
+  /* ===== Side Menu ===== */
+  .side-menu {
+    position: fixed;
+    top: 0; right: -280px;
+    width: 280px;
+    height: 100%;
+    background-color: #0A2342;
+    padding-top: 80px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    transition: right 0.3s ease;
+    z-index: 1001;
+  }
+  .side-menu.active {
+    right: 0;
+  }
+  .close-menu {
+    position: absolute;
+    top: 20px; left: 20px;
+    font-size: 24px;
+    color: #ecf0f1;
+    cursor: pointer;
+  }
+  .side-menu-links {
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px;
+  }
+  .side-menu-links a {
+    position: relative;
+    padding: 15px;
+    color: #ecf0f1;
+    text-decoration: none;
+    font-size: 18px;
+    border-bottom: 1px solid rgba(236,240,241,0.2);
+    text-align: right;
+  }
+  .side-menu-links a:last-child {
+    border-bottom: none;
+  }
+  .side-menu-links a:hover {
+    background-color: rgba(255,255,255,0.1);
+  }
+  /* הוספת אימוג׳י לפני כל לינק */
+  .side-menu-links a:nth-child(1)::before { content: "📅 "; }
+  .side-menu-links a:nth-child(2)::before { content: "📂 "; }
+  .side-menu-links a:nth-child(3)::before { content: "✅ "; }
+  .side-menu-links a:nth-child(4)::before { content: "💡 "; }
+  .side-menu-links a:nth-child(5)::before { content: "ℹ️ "; }
+
+  .overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+    display: none;
+  }
+  .overlay.active {
+    display: block;
+  }
+
+  /* ===== Flight Search Icon ===== */
+  .flight-search-wrapper {
+    position: relative;
+  }
+  .flight-search-wrapper input {
+    padding-left: 3rem;
+  }
+  .flight-search-wrapper .search-icon {
+    position: absolute;
+    top: 50%; left: 16px;
+    transform: translateY(-50%);
+    font-size: 1.4rem;
+    cursor: pointer;
+  }
+
+  /* ===== Main Content ===== */
+  main#content {
+    /* אין צורך ב־margin-top כי הוספנו padding ל־body */
+    padding: 20px;
+  }
   main#content h2 {
     font-size: 2.8rem;
     color: #05445E;
@@ -217,7 +191,7 @@
     text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
   }
 
-  /* –– כפתורים –– */
+  /* ===== Buttons ===== */
   .btn {
     display: inline-block;
     padding: 14px 28px;
@@ -236,17 +210,20 @@
     transform: translateY(-3px);
   }
 
-  /* –– כרטיסי לוז –– */
+  /* ===== כרטיסי לוז – Schedule Items ===== */
   .schedule-item {
     position: relative;
     background: rgba(255,255,255,0.95);
     border: 2px solid #75E6DA;
     border-radius: 24px;
-    padding: 18px;
+    padding: 12px 16px;          /* קטן יותר מבעבר */
     margin: 12px auto;
-    max-width: 360px;
+    max-width: 320px;            /* רוחב קבוע */
+    width: 90%;                  /* אוויריות במסכים קטנים */
+    min-height: 100px;           /* מספיק לתוכן + אימוג׳י */
     box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    transition: all 0.25s ease-in-out;
+    transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+    text-align: center;
   }
   .schedule-item:hover {
     transform: translateY(-6px);
@@ -256,18 +233,25 @@
     font-size: 1.3rem;
     color: #05445E;
     margin-bottom: 8px;
+    z-index: 1;
   }
   .schedule-item p {
     font-size: 1rem;
     line-height: 1.5;
     color: #2C3E50;
+    z-index: 1;
   }
   .emoji-background {
-    font-size: 140px;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 80px;            /* קטן יותר */
     opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
   }
 
-  /* –– טפסים ושדות קלט –– */
+  /* ===== טפסים ושדות קלט ===== */
   input, select, textarea {
     width: calc(100% - 28px);
     padding: 12px 14px;
@@ -285,7 +269,8 @@
   }
   select {
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6' fill='%2375E6DA'/%3E%3C/svg%3E");
+    background-image:
+      url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6' fill='%2375E6DA'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: left 12px center;
     padding-left: 2.5rem;
@@ -296,22 +281,14 @@
     font-style: italic;
   }
 
-  /* –– תוויות (Labels) –– */
-  label {
-    font-weight: 600;
-    color: #05445E;
-    margin-bottom: 4px;
-    display: inline-block;
-  }
-
-  /* –– מודלים (Popups) –– */
+  /* ===== Modals ===== */
   .modal {
     display: none;
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
     background: rgba(5,68,94,0.6);
-    overflow-y: auto;              /* מאפשר גלילה בתוך המסגרת */
+    overflow-y: auto;
     z-index: 2000;
   }
   .modal-content {
@@ -321,8 +298,8 @@
     padding: 30px;
     max-width: 520px;
     margin: 8% auto;
-    max-height: 85vh;               /* גובה מקסימלי 85% מהמסך */
-    overflow-y: auto;               /* גלילה אם התוכן גבוה */
+    max-height: 85vh;
+    overflow-y: auto;
     box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     text-align: right;
   }
@@ -334,13 +311,13 @@
   .close {
     font-size: 1.8rem;
     color: #189AB4;
-    transition: color 0.2s;
+    cursor: pointer;
   }
   .close:hover {
     color: #05445E;
   }
 
-  /* –– Loader Overlay –– */
+  /* ===== Loader Overlay ===== */
   .loader-overlay {
     display: none;
     position: fixed;
@@ -353,27 +330,15 @@
     z-index: 3000;
   }
 
-  /* –– אייקון חיפוש טיסה –– */
-  .flight-search-wrapper {
-    position: relative;
-  }
-  .flight-search-wrapper input {
-    padding-left: 3rem;
-  }
-  .flight-search-wrapper .search-icon {
-    position: absolute;
-    top: 50%;
-    left: 16px;
-    transform: translateY(-50%);
-    font-size: 1.4rem;
-    cursor: pointer;
-  }
-
-  /* –– רספונסיביות –– */
+  /* ===== Responsive ===== */
   @media (max-width: 768px) {
     main#content h2 { font-size: 2.2rem; }
     .btn { padding: 12px 20px; font-size: 1rem; }
-    .schedule-item { padding: 15px; margin: 10px; }
+    .schedule-item {
+      max-width: 95%;
+      padding: 10px 12px;
+      min-height: 90px;
+    }
     input, select, textarea { font-size: 0.95rem; padding: 10px 12px; }
     .modal-content { padding: 24px; margin: 12% auto; }
   }
