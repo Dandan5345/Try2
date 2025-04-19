@@ -658,18 +658,23 @@
   };
 }
 
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) { 
-        updateUserGreeting(user);
-        db.collection("schedules").doc(user.uid).get().then((doc) => {
-          if (doc.exists) {
-            savedSchedules = doc.data().schedules || [];
-          }
-        });
+    // ――――――――――― אחרי ―――――――――――
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    updateUserGreeting(user);
+    db.collection("schedules").doc(user.uid).get().then((doc) => {
+      if (doc.exists) {
+        // ←– מחליפים בשורות הבאות:
+        savedSchedules    = doc.data().schedules         || [];
+        permanentSubjects = doc.data().permanentSubjects || [];
       }
-      else { document.getElementById("authLink").innerText = "התחברות"; }
+      // ←– מוסיפים כדי ש־<select> יתעדכן עם הנושאים החדשים
+      updateSubjectDropdownOptions();
     });
-
+  } else {
+    document.getElementById("authLink").innerText = "התחברות";
+  }
+});
     function goHome() { window.location.href = "index.html"; }
 
     function openAddItemModal() {
@@ -782,7 +787,18 @@
         .catch((error) => { console.error("Error saving schedules: ", error); });
       }
     }
-
+// שמירה של הנושאים הקבועים בדוקומנט של המשתמש
+function savePermanentSubjectsToFirestore() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+  db.collection("schedules").doc(user.uid)
+    .set(
+      { permanentSubjects: permanentSubjects },
+      { merge: true }
+    )
+    .then(() => console.log("Permanent subjects saved."))
+    .catch(err => console.error("Error saving permanent subjects:", err));
+}
     function addOneMinute(timeStr) {
       let [h, m] = timeStr.split(":").map(Number);
       m++;
@@ -1163,17 +1179,25 @@
       document.getElementById("newSubjectNameInput").value = "";
       closeAddSubjectModal();
     }
-    function addSubjectPermanent() {
-      const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
-      if (newSubjectName === "") { alert("אנא הזן שם לנושא."); return; }
-      if (permanentSubjects.includes(newSubjectName)) { alert("נושא זה כבר קיים ברשימת הנושאים הקבועים."); return; }
-      permanentSubjects.push(newSubjectName);
-      updateSubjectDropdownOptions();
-      document.getElementById("modalSubject").value = newSubjectName;
-      document.getElementById("newSubjectNameInput").value = "";
-      closeAddSubjectModal();
-      alert("הנושא '" + newSubjectName + "' נוסף לנושאים הקבועים!");
-    }
+   // 3. עדכון פונקציית addSubjectPermanent:
+function addSubjectPermanent() {
+  const newSubjectName = document.getElementById("newSubjectNameInput").value.trim();
+  if (newSubjectName === "") {
+    alert("אנא הזן שם לנושא.");
+    return;
+  }
+  if (permanentSubjects.includes(newSubjectName)) {
+    alert("נושא זה כבר קיים ברשימת הנושאים הקבועים.");
+    return;
+  }
+  permanentSubjects.push(newSubjectName);
+  updateSubjectDropdownOptions();
+  document.getElementById("modalSubject").value = newSubjectName;
+  document.getElementById("newSubjectNameInput").value = "";
+  closeAddSubjectModal();
+  savePermanentSubjectsToFirestore();
+  alert("הנושא '" + newSubjectName + "' נוסף לנושאים הקבועים!");
+}
     function updatePermanentSubjectsList() {
       const container = document.getElementById("permanentSubjectsList");
       container.innerHTML = "";
