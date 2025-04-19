@@ -106,22 +106,27 @@
     }
 
     /* כפתור התחברות - עודכן */
-    .auth-button {
-      background-color: #007bff; /* כחול סטנדרטי לכפתור */
-      padding: 10px 15px;
-      border-radius: 8px;
-      transition: background-color 0.3s, box-shadow 0.3s;
-      font-weight: bold;
-      color: #FFFFFF; /* טקסט לבן */
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-    }
+    /* ===== Auth Button Styles ===== */
+.auth-button {
+  background-color: #007bff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  font-weight: bold;
+  color: #FFFFFF;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
 
-    .auth-button:hover {
-      background-color: #0056b3; /* כחול כהה יותר בהובר */
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
+  /* מאפשר שבירת שורה בתוך הטקסט */
+  white-space: pre-line;
+  line-height: 1.2;
+}
+
+.auth-button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
 
     /* תפריט צד - עודכן */
     .side-menu {
@@ -438,7 +443,7 @@
         }
         let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
         // עדכון הטקסט בכפתור - נוסף סימן קריאה
-        authLink.innerText = greeting + ", " + firstName + "!";
+        authLink.innerHTML = greeting + "<br>" + firstName + "!";
         authLink.onclick = function(e) {
           e.preventDefault();
           if (confirm("להתנתק?")) {
