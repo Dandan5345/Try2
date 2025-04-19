@@ -92,22 +92,27 @@
       background-color: rgba(255, 255, 255, 0.15);
     }
 
-    .auth-button {
-      background-color: #007bff;
-      padding: 8px 16px;
-      border-radius: 6px;
-      transition: background-color 0.3s, box-shadow 0.3s;
-      font-weight: 600;
-      color: #FFFFFF;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 0.95em;
-    }
-    .auth-button:hover {
-      background-color: #0056b3;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
+/* ===== Auth Button Styles ===== */
+.auth-button {
+  background-color: #007bff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  font-weight: bold;
+  color: #FFFFFF;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+
+  /* מאפשר שבירת שורה */
+  white-space: pre-line;
+  line-height: 1.2;
+}
+
+.auth-button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
 
     .side-menu {
       position: fixed;
@@ -556,7 +561,7 @@
         let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email.split("@")[0]; // שימוש בחלק הראשון של האימייל אם אין שם
         firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1); // אות ראשונה גדולה
 
-        authLink.innerText = `${greeting}, ${firstName}!`;
+        authLink.innerHTML = `${greeting}<br>${firstName}!`;
         authLink.title = "התנתק"; // הוספת title לכפתור
         authLink.onclick = function(e) {
           e.preventDefault();
