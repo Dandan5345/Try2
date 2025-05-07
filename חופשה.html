@@ -12,13 +12,14 @@
       --secondary: #fff0e6;
       --holiday-bg: #ffe4c4;
       --bg-event-general: #ffffff;
-      --bg-event-lodging: #e6f7ff;
-      --bg-event-flight: #cce0ff;
-      --bg-event-activity: #fff9e6;
+      --bg-event-lodging: #e6f7ff; /* Used for check-in/out rows */
+      --bg-event-flight: #cce0ff;   /* Used for flight rows */
+      --bg-event-activity: #fff9e6;/* Used for activity/tour rows */
       --text-dark: #5a4f45;
       --text-light: #ffffff;
       --day-block-bg: #ffffff;
       --day-block-shadow: rgba(0, 0, 0, 0.1);
+      --offcanvas-icon-color: var(--text-dark); /* For new offcanvas icons */
     }
     body {
       font-family: 'Rubik', sans-serif;
@@ -30,11 +31,51 @@
     .modal-backdrop, .offcanvas-backdrop {
       background-color: rgba(255, 140, 66, 0.3) !important;
     }
-    .navbar-brand { font-size: 1.5rem; font-weight: 700; color: var(--primary) !important; }
+    .navbar-brand { font-size: 1.5rem; font-weight: 700; color: var(--primary) !important; text-decoration: none;}
     .offcanvas { width: 50vw; max-width: 360px; }
-    .offcanvas-body { background: var(--secondary); padding-top: 2rem; }
-    .list-group-item { font-size: 1.1rem; transition: background .2s; }
-    .list-group-item:hover { background: rgba(255,255,255,0.5); border-radius: .5rem; }
+    /* Removed padding-top from offcanvas-body to allow new header to be at the top */
+    .offcanvas-body { background: var(--secondary); padding: 0; }
+
+    .offcanvas-user-header {
+        background-color: var(--primary);
+        color: var(--text-light);
+        padding: 1.25rem 1rem; /* A bit more padding */
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    .offcanvas-user-header h6 {
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+    .offcanvas .list-group {
+        padding-right: 1rem; /* Add padding to the sides of list-group */
+        padding-left: 1rem;
+    }
+    .offcanvas .list-group-item {
+      font-size: 1.1rem;
+      transition: background .2s;
+      background-color: transparent; /* Ensure it's transparent to show offcanvas-body bg */
+      color: var(--text-dark);
+      border: none; /* Remove default borders */
+      border-bottom: 1px solid rgba(0,0,0,0.08); /* Custom divider */
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+    }
+    .offcanvas .list-group-item:last-child {
+        border-bottom: none; /* No border for the last item */
+    }
+    .offcanvas .list-group-item .menu-icon {
+        margin-left: 0.75rem; /* RTL: icon is to the right of text, so margin-left */
+        color: var(--offcanvas-icon-color); /* Use a variable for icon color if needed */
+        width: 20px; /* Ensure icons have some width */
+        text-align: center;
+    }
+    .offcanvas .list-group-item:hover {
+      background: rgba(255,255,255,0.6); /* Make hover slightly more opaque on --secondary */
+      border-radius: .5rem;
+      color: var(--primary); /* Optional: change text color on hover */
+    }
 
     .btn-vacation {
       background: var(--primary);
@@ -81,7 +122,7 @@
     .event-row {
       display: flex; align-items: stretch;
       animation: popIn .3s ease-out both;
-      cursor: pointer; /* Add cursor pointer for edit functionality */
+      cursor: pointer;
     }
     .times-col {
       width: 5.5rem;
@@ -117,24 +158,42 @@
     .content-col[data-type="אטרקציה"],
     .content-col[data-type="סיור"]      { background: var(--bg-event-activity); }
 
-    .event-icon {
-      font-size: 1.5rem;
-      margin-right: 10px;
+    /* Background Emoji for Event Blocks */
+    .content-col::before {
+      content: attr(data-bg-emoji);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(5rem, 12vh, 7rem); /* Responsive font size for emoji */
+      line-height: 1;
+      color: var(--text-dark);
+      opacity: 0.08; /* Adjusted for subtlety */
+      z-index: 0;
+      pointer-events: none;
     }
-    .content-col[data-type="טיסה"] .event-icon-flight {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 1.8rem;
-    }
-    .event-content-wrapper {
-        display: flex;
-        align-items: center;
+    .event-content-wrapper { /* Ensure actual content is above the background emoji */
+        position: relative;
+        z-index: 1;
+        display: flex; /* Already flex, good */
+        align-items: center; /* Already there */
     }
      .event-text-details {
         flex-grow: 1;
     }
+
+    .event-icon {
+      font-size: 1.5rem;
+      margin-right: 10px; /* This will be margin-left in RTL for icon before text */
+    }
+    .content-col[data-type="טיסה"] .event-icon-flight {
+        position: absolute;
+        left: 15px; /* This is fine for RTL if icon is on the "start" side visually */
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.8rem;
+    }
+
     .event-divider {
       border: 0; border-top: 1px solid #eee;
       margin: 1rem 0;
@@ -168,7 +227,7 @@
       padding: 0;
       position: absolute;
       bottom: 8px;
-      left: 10px;
+      left: 10px; /* Default for LTR, will be right in RTL for visual "end" */
     }
     .btn-navigate:hover {
       background-color: #ff701a;
@@ -186,20 +245,34 @@
   <button class="navbar-toggler me-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <span class="navbar-brand mx-auto">זמן זהב - חופשה 😊</span>
+  <a class="navbar-brand mx-auto" href="Index.html">זמן זהב - חופשה 😊</a>
 </nav>
+
 <div class="offcanvas offcanvas-start" id="offcanvasMenu" tabindex="-1">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title">📋 תפריט</h5>
+  <div class="offcanvas-header pb-0"> {/* Removed bottom padding from header to make user-header look connected */}
+    {/* Removed <h5 class="offcanvas-title">📋 תפריט</h5> */}
     <button class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
   </div>
   <div class="offcanvas-body">
-    <div class="list-group">
-      <div class="list-group-item">🆕 בניית לו״ז חדש</div>
-      <div class="list-group-item">🗂️ הלו״זים שלי</div>
-      <div class="list-group-item">⏰ טיפים לניהול זמנים</div>
-      <div class="list-group-item">📋 לוח משימות</div>
-      <div class="list-group-item">❓ עזרה והסבר</div>
+    <div class="offcanvas-user-header">
+      <h6>בוקר טוב !Dorone</h6> {/* Placeholder name */}
+    </div>
+    <div class="list-group list-group-flush"> {/* list-group-flush removes some default borders/rounding */}
+      <a href="choose-schedule.html" class="list-group-item">
+        <span class="menu-icon">➕</span>בניית לו״ז חדש
+      </a>
+      <a href="my-schedules.html" class="list-group-item">
+        <span class="menu-icon">📁</span>הלו״זים שלי
+      </a>
+      <a href="tims.html" class="list-group-item">
+        <span class="menu-icon">💡</span>טיפים לניהול זמנים
+      </a>
+      <a href="msimot.html" class="list-group-item">
+        <span class="menu-icon">✔️</span>לוח משימות
+      </a>
+      <a href="my-schedules.html" class="list-group-item">
+        <span class="menu-icon">ℹ️</span>עזרה והסבר
+      </a>
     </div>
   </div>
 </div>
@@ -379,7 +452,8 @@
       oneTimeSubjects=[],
       defaultSubjects=['השקמה','שינה','הליכה/נסיעה','אוכל','סיור','אטרקציה'],
       emojiMap={
-        'השקמה': '⏰', 'שינה': '🛏️', 'הליכה/נסיעה': '🚶‍♂️',
+        'השקמה': '⏰', 'שינה': '🛏️', 'הליכה/נסיעה': '🚶‍♂️', // Default for travel
+        'רכב': '🚗', 'תחבורה ציבורית': '🚌', 'הליכה': '🚶‍♂️', // Specific travel modes for bg emoji
         'אוכל': '🍴', 'סיור': '🏞️', 'אטרקציה': '🎟️',
         'טיסה': '✈️', 'צ\'ק-אין': '🧳', 'צ\'ק-אאוט': '👋'
       },
@@ -432,7 +506,6 @@
     if (!scheduleEvents[date]) {
         scheduleEvents[date] = [];
     }
-    // If editing, remove old version first
     const existingEventIndex = scheduleEvents[date].findIndex(e => e.id === eventData.id);
     if (existingEventIndex > -1) {
         scheduleEvents[date].splice(existingEventIndex, 1);
@@ -453,57 +526,52 @@
   function getEventFromScheduleData(eventId) {
     for (const date in scheduleEvents) {
         const event = scheduleEvents[date].find(e => e.id === eventId);
-        if (event) return { ...event, date: date }; // Return a copy with its date
+        if (event) return { ...event, date: date };
     }
     return null;
   }
 
 
-function renderEventRow(date, eventData) { // eventData should now include an 'id'
+function renderEventRow(date, eventData) {
     let blk = document.querySelector(`[data-date="${date}"]`);
     if (!blk) {
         let wd = new Date(date).getDay();
         blk = createDayBlock(weekdayNames[wd], date);
         const container = document.getElementById('scheduleContainer');
-        const blocks = Array.from(container.children);
-        blocks.push(blk);
+        const blocks = Array.from(container.children); blocks.push(blk);
         blocks.sort((a, b) => new Date(a.dataset.date) - new Date(b.dataset.date));
         blocks.forEach(b => container.appendChild(b));
-    } else { // Ensure header is up-to-date
+    } else {
         let wd = new Date(date).getDay(),
             nh = createDayBlock(weekdayNames[wd], date).querySelector('.day-header');
         if (blk.querySelector('.day-header')) blk.querySelector('.day-header').replaceWith(nh);
         else blk.prepend(nh);
     }
 
-    // Remove existing row if editing
     const existingRow = document.getElementById(eventData.id);
     if (existingRow) {
         const prevDivider = existingRow.previousElementSibling;
         if (prevDivider && prevDivider.classList.contains('event-divider')) prevDivider.remove();
-        else { // Check if it was the first, then the next divider might need removal if this was the only one left
+        else {
             const nextDivider = existingRow.nextElementSibling;
-            if(nextDivider && nextDivider.classList.contains('event-divider') && blk.querySelectorAll('.event-row').length === 1){ // only 1 event row means this is it
+            if(nextDivider && nextDivider.classList.contains('event-divider') && blk.querySelectorAll('.event-row').length === 1){
                  nextDivider.remove();
             }
         }
         existingRow.remove();
     }
 
-
     let row = document.createElement('div');
     row.className = 'event-row';
-    row.id = eventData.id; // Assign unique ID to the row for easy access/removal
-    if (eventData.type !== "צ'ק-אין" && eventData.type !== "צ'ק-אאוט") { // Only allow click for non-lodging-meta events
+    row.id = eventData.id;
+    if (eventData.type !== "צ'ק-אין" && eventData.type !== "צ'ק-אאוט") {
         row.onclick = () => handleEventClick(eventData.id);
     } else {
         row.style.cursor = 'default';
     }
 
-
     let times = document.createElement('div');
     times.className = 'times-col';
-    // Use eventData.start/end for general events, or departTime/arriveTime for flights
     const startTime = eventData.start || eventData.departTime;
     const endTime = eventData.end || eventData.arriveTime;
     times.innerHTML = `<span>${startTime}</span><span>${endTime}</span>`;
@@ -512,12 +580,27 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
     content.className = 'content-col';
     content.setAttribute('data-type', eventData.type);
 
+    // Set background emoji attribute
+    let bgEmojiKey = eventData.type;
+    if (eventData.type === 'הליכה/נסיעה' && eventData.mode) {
+        if (eventData.mode.includes('רכב')) bgEmojiKey = 'רכב';
+        else if (eventData.mode.includes('תחבורה ציבורית')) bgEmojiKey = 'תחבורה ציבורית';
+        else if (eventData.mode.includes('הליכה')) bgEmojiKey = 'הליכה';
+    }
+    const bgEmoji = emojiMap[bgEmojiKey] || emojiMap[eventData.type] || '';
+    if (bgEmoji) {
+        content.setAttribute('data-bg-emoji', bgEmoji);
+    } else {
+        content.removeAttribute('data-bg-emoji');
+    }
+
+
     let eventHTML = '', iconHTML = '';
     const generalEmoji = emojiMap[eventData.type] || '📝';
 
     switch (eventData.type) {
         case 'טיסה':
-            iconHTML = `<div class="event-icon-flight">✈️</div>`;
+            iconHTML = `<div class="event-icon-flight">✈️</div>`; // This icon is on the left
             eventHTML = `
                 <div class="event-text-details">
                     <div><strong>טיסה מ${eventData.from} ⬅️ ${eventData.to}</strong></div>
@@ -526,6 +609,9 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
                     <div>נחיתה 🛬: ${eventData.arriveTime}</div>
                     ${eventData.description ? `<div><em>${eventData.description}</em></div>` : ''}
                 </div>`;
+            if (eventData.from) {  
+    eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.from}')" title="נווט אל ${eventData.from}">🗺️</button>`;  
+}
             break;
         case 'השקמה': case 'שינה':
             iconHTML = `<div class="event-icon">${generalEmoji}</div>`;
@@ -536,21 +622,23 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
                 </div>`;
             break;
         case 'הליכה/נסיעה':
-            let modeEmoji = emojiMap['הליכה/נסיעה'];
+            let modeDisplayEmoji = emojiMap['הליכה/נסיעה']; // Default travel icon for display
             if (eventData.mode) {
-                if (eventData.mode.includes('רכב')) modeEmoji = '🚗';
-                else if (eventData.mode.includes('תחבורה ציבורית')) modeEmoji = '🚌';
-                else if (eventData.mode.includes('הליכה')) modeEmoji = '🚶‍♂️';
+                if (eventData.mode.includes('רכב')) modeDisplayEmoji = emojiMap['רכב'] || '🚗';
+                else if (eventData.mode.includes('תחבורה ציבורית')) modeDisplayEmoji = emojiMap['תחבורה ציבורית'] || '🚌';
+                else if (eventData.mode.includes('הליכה')) modeDisplayEmoji = emojiMap['הליכה'] || '🚶‍♂️';
             }
-            iconHTML = `<div class="event-icon">${modeEmoji}</div>`;
+            iconHTML = `<div class="event-icon">${modeDisplayEmoji}</div>`;
             eventHTML = `
                 <div class="event-text-details">
                     <div><strong>${eventData.mode || 'הליכה/נסיעה'}</strong></div>
                     ${eventData.startLocation ? `<div>מ: ${eventData.startLocation}</div>` : ''}
                     <div>אל: ${eventData.endLocation}</div>
                     ${eventData.description ? `<div>${eventData.description}</div>` : ''}
-                </div>
-                <button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.endLocation}')" title="נווט אל ${eventData.endLocation}">🗺️</button>`;
+                </div>`;
+            if (eventData.endLocation) { // Navigate to destination
+                 eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.endLocation}')" title="נווט אל ${eventData.endLocation}">🗺️</button>`;
+            }
             break;
         case "צ'ק-אין": case "צ'ק-אאוט":
             iconHTML = `<div class="event-icon">${generalEmoji}</div>`;
@@ -559,6 +647,9 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
                     <div><strong>${eventData.type}: ${eventData.lodgingName}</strong></div>
                     ${eventData.location ? `<div>${eventData.location}</div>` : ''}
                 </div>`;
+            if (eventData.type === "צ'ק-אין" && eventData.location) {
+                eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.location}')" title="נווט אל ${eventData.location}">🗺️</button>`;
+            }
             break;
         default: // 'אוכל', 'סיור', 'אטרקציה', custom
             iconHTML = `<div class="event-icon">${generalEmoji}</div>`;
@@ -578,16 +669,13 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
     content.innerHTML = `<div class="event-content-wrapper">${iconHTML}${eventHTML}</div>`;
 
     const existingRowsCount = blk.querySelectorAll('.event-row').length;
-    // Add divider only if it's a new row being appended and there are already rows
-    // or if it's an update and it's not the only row.
-    if (existingRowsCount > 0 && !document.getElementById(eventData.id)) { // Appending a new row, not the first
+    if (existingRowsCount > 0 && !document.getElementById(eventData.id)) {
          let hr = document.createElement('hr'); hr.className = 'event-divider'; blk.append(hr);
     }
 
-
     row.append(times, content);
     blk.append(row);
-    sortDayEvents(date); // This will re-add dividers correctly
+    sortDayEvents(date);
 }
 
 
@@ -628,7 +716,7 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
     if (end <= start) { alert('שעת הסיום חייבת להיות אחרי שעת ההתחלה.'); return; }
 
     let eventData = {
-        id: editingEventIdValue || generateEventId(), // Use existing ID if editing, else generate new
+        id: editingEventIdValue || generateEventId(),
         type: typeValue,
         customSubjectName: (!defaultSubjects.includes(typeValue) && typeValue !== 'טיסה') ? typeValue : null,
         description: desc,
@@ -656,13 +744,12 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
         if(loc) eventData.location = loc;
     }
 
-
     addEventToScheduleData(date, eventData);
     renderEventRow(date, eventData);
 
     bootstrap.Modal.getInstance(document.getElementById('modalAddEvent')).hide();
     document.getElementById('formAddEvent').reset();
-    document.getElementById('editingEventId').value = ''; // Clear editing ID
+    document.getElementById('editingEventId').value = '';
     document.getElementById('modalAddEventTitle').textContent = '➕ הוסף אירוע ללו"ז';
     document.getElementById('dynamicFields').innerHTML = '';
     document.getElementById('eventType').value = "";
@@ -672,12 +759,14 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
   // --- MAP FUNCTIONS ---
   function openMapForInput(inputId){
     let loc=document.getElementById(inputId).value.trim();
-    if(loc) window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`,'_blank');
+    // Using Google Maps search for input fields
+    if(loc) window.open(`https://maps.google.com/?q=${encodeURIComponent(loc)}`,'_blank');
   }
   function openMapForNavigation(address){
-    if(address) window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`, '_blank');
+    // Using a more generic geo URI that might trigger an app chooser on mobile
+    if(address) window.open(`geo:0,0?q=${encodeURIComponent(address)}`, '_blank');
   }
-  function openMapDetail(){
+  function openMapDetail(){ // This is for the lodging detail modal's navigate button
     let l=lodgings.find(x=>x.id===editingLodgingId);
     if(l?.location) openMapForNavigation(l.location);
   }
@@ -710,10 +799,10 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
                 if ((event.type === "צ'ק-אין" || event.type === "צ'ק-אאוט") && event.lodgingName === lodgingToDelete.name) {
                     const rowElement = document.getElementById(event.id);
                     if (rowElement) {
-                        const prevDivider = rowElement.previousElementSibling; // Check for preceding divider
+                        const prevDivider = rowElement.previousElementSibling;
                         if (prevDivider && prevDivider.classList.contains('event-divider')) {
                             prevDivider.remove();
-                        } else { // If no preceding, check for succeeding (might be the first element)
+                        } else {
                             const nextDivider = rowElement.nextElementSibling;
                             if (nextDivider && nextDivider.classList.contains('event-divider')) {
                                 nextDivider.remove();
@@ -721,9 +810,9 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
                         }
                         rowElement.remove();
                     }
-                    return false; // Remove from data
+                    return false;
                 }
-                return true; // Keep in data
+                return true;
             });
             if (scheduleEvents[date].length === 0) delete scheduleEvents[date];
         }
@@ -832,7 +921,7 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
         const hasEventsForDate = scheduleEvents[date] && scheduleEvents[date].length > 0;
         const hasLodgingForDate = lodgings.some(l => date >= l.checkInDate && date <= l.checkOutDate);
 
-        if (!blk && (hasEventsForDate || hasLodgingForDate)) { // Create block if it should exist but doesn't
+        if (!blk && (hasEventsForDate || hasLodgingForDate)) {
             blk = createDayBlock(weekdayNames[wd], date);
             const container = document.getElementById('scheduleContainer');
             const blocks = Array.from(container.children); blocks.push(blk);
@@ -840,15 +929,15 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
             blocks.forEach(b => container.appendChild(b));
         }
         
-        if(blk) { // If block exists or was just created
+        if(blk) {
             let hdr = createDayBlock(weekdayNames[wd], date).querySelector('.day-header');
             if (blk.querySelector('.day-header')) blk.querySelector('.day-header').replaceWith(hdr);
             else blk.prepend(hdr);
 
-            if (!hasEventsForDate && !hasLodgingForDate) { // Remove block if it's now empty
+            if (!hasEventsForDate && !hasLodgingForDate) {
                 blk.remove();
             } else {
-                sortDayEvents(date); // Ensure events are sorted if block remains
+                sortDayEvents(date);
             }
         }
     });
@@ -867,9 +956,8 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
     if(!num||!date){alert('אנא מלא תאריך ומספר טיסה.');return;}
     let loader=document.getElementById('loader'); loader.style.display='flex';
 
-    const apiKey = '33d4ecb375mshcf029fba766af44p17668djsnaef3c36cb209';
+    const apiKey = '33d4ecb375mshcf029fba766af44p17668djsnaef3c36cb209'; // Replace with your actual key if needed
 
-    // Updated API endpoint structure
     fetch(`https://aerodatabox.p.rapidapi.com/flights/number/${encodeURIComponent(num)}/${encodeURIComponent(date)}`,{
       method:'GET',
       headers:{
@@ -879,7 +967,6 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
     })
     .then(r => {
         if (!r.ok) {
-            // Try to parse error message from API if available
             return r.json().then(err => {
                 let errorMsg = `שגיאה ${r.status}`;
                 if (err && err.message) errorMsg += `: ${err.message}`;
@@ -902,32 +989,26 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
   let html = '';
   if (Array.isArray(data) && data.length > 0) {
     const ft = data[0];
-    // שמות נמלי תעופה
     const depAirportName = ft.departure.airport.name || ft.departure.airport.iata || 'לא ידוע';
     const arrAirportName = ft.arrival.airport.name   || ft.arrival.airport.iata   || 'לא ידוע';
-
-    // הזמנים המלאים (ISO) מה־API
     const depTimeFull = ft.departure.scheduledTime?.local || '';
     const arrTimeFull = ft.arrival.scheduledTime?.local   || '';
-
-    // חתוך רק את השעה HH:MM
-    const departTime = depTimeFull.substr(11,5);
-    const arriveTime = arrTimeFull.substr(11,5);
+    const departTime = depTimeFull ? depTimeFull.substr(11,5) : '';
+    const arriveTime = arrTimeFull ? arrTimeFull.substr(11,5) : '';
 
     html = `
       <div class="flight-card">
         <p><strong>חברה:</strong> ${ft.airline.name || 'לא ידוע'}</p>
-        <p><strong>יציאה:</strong> ${depAirportName} — ${depTimeFull}</p>
-        <p><strong>נחיתה:</strong> ${arrAirportName} — ${arrTimeFull}</p>
+        <p><strong>יציאה:</strong> ${depAirportName} (${(ft.departure.airport.iata || '')}) — ${depTimeFull}</p>
+        <p><strong>נחיתה:</strong> ${arrAirportName} (${(ft.arrival.airport.iata || '')}) — ${arrTimeFull}</p>
       </div>`;
 
-    // שמור ב־flightDataTmp גם את השעות שעברו חיתוך
     flightDataTmp = {
       type:       'טיסה',
       number:     ft.number || flightNumberInput,
       airline:    ft.airline.name || '',
-      from:       depAirportName,
-      to:         arrAirportName,
+      from:       depAirportName, // Using full name for form field
+      to:         arrAirportName, // Using full name for form field
       departTime: departTime,
       arriveTime: arriveTime,
       description:''
@@ -986,7 +1067,6 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
     const eventData = getEventFromScheduleData(eventId);
     if (!eventData) return;
 
-    // Check-in/Check-out are not editable/deletable this way
     if (eventData.type === "צ'ק-אין" || eventData.type === "צ'ק-אאוט") return;
 
     const detailsElement = document.getElementById('eventActionDetails');
@@ -1054,11 +1134,11 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
     } else {
         document.getElementById('modalAddEventTitle').textContent = '✏️ ערוך אירוע';
         document.getElementById('editingEventId').value = eventData.id;
-        buildSubjectOptions(); // Ensure options are populated before setting value
+        buildSubjectOptions();
         document.getElementById('eventType').value = eventData.customSubjectName || eventData.type;
         document.getElementById('eventType').dispatchEvent(new Event('change'));
 
-        setTimeout(() => { // Ensure dynamic fields are ready
+        setTimeout(() => {
             document.getElementById('evDate').value = eventData.date;
             document.getElementById('evStart').value = eventData.start;
             document.getElementById('evEnd').value = eventData.end;
@@ -1079,7 +1159,7 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
             } else if (document.getElementById('eventLocation') && eventData.location) {
                  document.getElementById('eventLocation').value = eventData.location;
             }
-        }, 50); // Increased timeout slightly for safety
+        }, 50);
 
         new bootstrap.Modal(document.getElementById('modalAddEvent')).show();
     }
@@ -1099,7 +1179,7 @@ function renderEventRow(date, eventData) { // eventData should now include an 'i
         }
 
         let [h, m] = baseTime.split(':').map(Number);
-        let s = new Date(1970,0,1,h,m); // Use a fixed date for time manipulation
+        let s = new Date(1970,0,1,h,m);
         if (scheduleEvents[date] && scheduleEvents[date].length > 0) {
             s.setMinutes(s.getMinutes() + 10);
         }
