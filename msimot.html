@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>זמן זהב - בניית לוז ניהול יום</title>
+  
+  <!-- קישור ל-manifest -->
+  <link rel="manifest" href="manifest.json">
+  <!-- קישור ל-favicon -->
+  <link rel="icon" href="https://i.imgur.com/GaYFAp1.png" type="image/png">
+  
+  <!-- ספריות וסקריפטים (כולל Firebase) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  
+  <!-- קוד Firebase והגדרות האתר -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCsp7xKutteUAxmjYQsQWDlrjK7URg-MR8",
+      authDomain: "zman-zhav.firebaseapp.com",
+      projectId: "zman-zhav",
+      storageBucket: "zman-zhav.firebasestorage.app",
+      messagingSenderId: "685099855512",
+      appId: "1:685099855512:web:c3ad456591e1d92e436aed",
+      measurementId: "G-XJ3LKJSW16"
+    };
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    const db = firebase.firestore();
+  </script>
+  
+  <!-- רישום Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(function(registration) {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch(function(err) {
+            console.log('Service Worker registration failed:', err);
+          });
+      });
+    }
+  </script>
+  
+  <!-- עיצוב זהה לשאר הדפים -->
+  <style>
+    /* Reset בסיסי */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      direction: rtl;
+      padding-top: 120px;
+      padding-bottom: 40px;
+      text-align: center;
+    }
+    .topbar {
+      background-color: #34495e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      transition: transform 0.3s;
+      border-bottom: 2px solid #2c3e50;
+    }
+    .site-name {
+      font-size: 28px;
+      color: #ecf0f1;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .nav-links {
+      display: flex;
+      gap: 10px;
+    }
+    .nav-links a {
+      background-color: #2c3e50;
+      padding: 10px 15px;
+      border-radius: 8px;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      font-weight: bold;
+      color: #ecf0f1;
+      border-right: 1px solid rgba(236,240,241,0.5);
+      text-decoration: none;
+    }
+    .nav-links a:last-child { border-right: none; }
+    .nav-links a:hover {
+      background-color: #3d566e;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    main {
+      padding: 20px;
+      margin-top: 20px;
+      min-height: 70vh;
+      text-align: center;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      color: #7f8c8d;
+      font-size: 14px;
+    }
+    @media (max-width: 600px) {
+      .topbar { flex-direction: column; gap: 10px; }
+      .site-name { font-size: 24px; }
+      .nav-links a { padding: 10px; width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <!-- תפריט ראשי -->
+  <nav class="topbar">
+    <div class="site-name" onclick="goHome()">זמן זהב</div>
+    <div class="nav-links">
+      <a href="choose-schedule.html">לו״ז חדש</a>
+      <a href="my-schedules.html">הלוזי״ם שלי</a>
+      <a href="how-to-use.html">איך משתמשים</a>
+      <a href="auth.html" id="authLink">התחברות</a>
+    </div>
+  </nav>
+  
+  <!-- תוכן עמוד "לוז ניהול יום" -->
+  <main id="content">
+    <h2>בניית לוז ניהול יום</h2>
+    <p>להוספת חלק ללוז ניהול יום, לחץ על הכפתור +</p>
+    <div class="action-buttons">
+      <button class="btn" onclick="openAddItemModal()">+</button>
+      <button id="templateMenuButton" onclick="toggleTemplateDropdown()">⋮</button>
+      <div id="templateDropdown">
+        <button onclick="openConstantTemplateModal()">צור לוז קבוע</button>
+        <div id="templateList"></div>
+      </div>
+    </div>
+    <div id="scheduleContainer"></div>
+    <div class="button-group">
+      <button class="btn" onclick="openFinalSchedule()">שומר וסיים לו״ז</button>
+    </div>
+  </main>
+  
+  <footer>©️doronnakache</footer>
+  
+  <!-- סקריפטים לעדכון מצב המשתמש ואירועי גלילה -->
+  <script>
+    function goHome() {
+      window.location.href = "index.html";
+    }
+    
+    window.addEventListener("scroll", function() {
+      const nav = document.querySelector(".topbar");
+      if (window.scrollY > 50) {
+        nav.style.transform = "translateY(-100%)";
+      } else {
+        nav.style.transform = "translateY(0)";
+      }
+    });
+    
+    // פונקציית עדכון מצב המשתמש
+    function updateUserGreeting(user) {
+      let currentHour = new Date().getHours();
+      let greeting = "בוקר טוב";
+      if (currentHour >= 12 && currentHour < 18) { greeting = "צהריים טובים"; }
+      else if (currentHour >= 18) { greeting = "ערב טוב"; }
+      const authLink = document.getElementById("authLink");
+      let firstName = user.displayName ? user.displayName.split(" ")[0] : user.email;
+      authLink.innerText = greeting + " " + firstName + "!";
+      
+      authLink.onclick = function(event) {
+        event.preventDefault();
+        if (confirm("להתנתק?")) {
+          firebase.auth().signOut().then(() => {
+            authLink.innerText = "התחברות";
+            authLink.onclick = null;
+          }).catch((error) => {
+            alert("שגיאה בהתנתקות: " + error.message);
+          });
+        }
+      };
+    }
+    
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        updateUserGreeting(user);
+      } else {
+        document.getElementById("authLink").innerText = "התחברות";
+      }
+    });
+    
+    // כאן יש לשלב גם את קוד ניהול הלוזים – אותו קוד ניתן להעתיק מ-"learning-schedule.html"
+  </script>
+</body>
+</html>
