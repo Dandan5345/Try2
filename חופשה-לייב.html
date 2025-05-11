@@ -1,789 +1,516 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>זמן זהב - לו"ז חופשה</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>זמן זהב – לו"ז חופשה</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
 
-
-    <style>
-        :root {
-            --primary: #ff8c42; /* כתום ראשי */
-            --primary-dark: #e67300; /* גוון כהה יותר של הראשי ל-hover */
-            --secondary: #fffaf0; /* קרם בהיר לרקעים של קונטיינרים */
-            --holiday-bg: #fef7ef; /* רקע כללי עדין מאוד */
-            --bg-event-general: #ffffff;
-            --bg-event-lodging: #e6f7ff; /* תכלת ללינה */
-            --bg-event-flight: #d6ebff;  /* כחול בהיר יותר לטיסה */
-            --bg-event-activity: #fffacd; /* צהוב בהיר לאטרקציה */
-            --text-dark: #4a3f35;  /* חום כהה לטקסט */
-            --text-light: #ffffff;
-            --text-muted: #75665a; /* חום אפרפר לטקסט משני */
-            --border-color: #e0e0e0;   /* צבע גבול עדין */
-            --day-block-bg: #ffffff;
-            --day-block-shadow: rgba(0, 0, 0, 0.07); /* צל רך יותר */
-            --hover-lift-shadow: rgba(0, 0, 0, 0.1);
-        }
-        body {
-            font-family: 'Rubik', sans-serif;
-            background: var(--holiday-bg);
-            color: var(--text-dark);
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding: 2rem;
-        }
-        .navbar-brand-live {
-            font-size: 2.2rem; /* מעט גדול יותר */
-            font-weight: 700;
-            color: var(--primary) !important;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-            margin-bottom: 2.5rem; /* ריווח גדול יותר */
-        }
-        .schedule-title {
-            color: var(--text-dark);
-            font-weight: 700;
-            font-size: 2em; /* מעט גדול יותר */
-            margin-bottom: 2.5rem; /* ריווח נוסף */
-        }
-        .container {
-            background-color: var(--secondary); /* רקע אטום ונעים יותר */
-            border-radius: 1.25rem; /* רדיוס פינות מוגדל */
-            padding: 2.5rem 3rem; /* ריווח פנימי מוגדל */
-            box-shadow: 0 12px 35px rgba(0,0,0,0.08); /* צל מודגש יותר אך מפוזר */
-            max-width: 1100px; /* הגבלת רוחב לקריאות טובה יותר */
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .action-bar {
-            margin-bottom: 2.5rem; /* ריווח גדול יותר */
-            padding-bottom: 1.5rem; /* ריווח נוסף מתחת לכפתורים */
-            border-bottom: 1px solid var(--border-color); /* קו הפרדה עדין */
-        }
-        .action-bar .btn {
-            min-width: 150px; /* רוחב מינימלי גדול יותר */
-            font-weight: 500; /* פונט מעט מודגש לכפתורים */
-            padding: 0.7rem 1.2rem; /* ריווח פנימי בכפתורים */
-            border-radius: 0.5rem; /* פינות מעוגלות */
-            transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
-        }
-        .action-bar .btn:hover {
-            transform: translateY(-2px); /* אפקט הרמה קל */
-        }
-
-        #btnEditSchedule   { background-color: var(--primary); border-color: var(--primary); color: var(--text-light); }
-        #btnEditSchedule:hover { background-color: var(--primary-dark); border-color: var(--primary-dark); }
-
-        #btnShareSchedule  { background-color: #28a745; border-color: #28a745; color: var(--text-light); } /* ירוק */
-        #btnShareSchedule:hover { background-color: #218838; border-color: #1e7e34; }
-
-        #btnDeleteSchedule { background-color: #dc3545; border-color: #dc3545; color: var(--text-light); } /* אדום */
-        #btnDeleteSchedule:hover { background-color: #c82333; border-color: #bd2130; }
-
-        #btnActivateLive   { background-color: #ffc107; border-color: #ffc107; color: var(--text-dark); } /* צהוב */
-        #btnActivateLive:hover { background-color: #e0a800; border-color: #d39e00; }
-
-
-        .day-block {
-            background: var(--day-block-bg);
-            color: var(--text-dark);
-            border-radius: 1rem;
-            padding: 2rem 2.5rem; /* ריווח פנימי מוגדל */
-            margin-bottom: 3rem; /* ריווח אחיד וגדול יותר בין בלוקים */
-            box-shadow: 0 8px 20px var(--day-block-shadow); /* צל מעודן */
-            transition: transform .2s ease-out, box-shadow .2s ease-out;
-            border: 1px solid var(--border-color);
-        }
-        .day-block:hover {
-            transform: translateY(-5px); /* הרמה מודגשת יותר */
-            box-shadow: 0 12px 25px var(--hover-lift-shadow);
-        }
-        .day-block[data-date] { position: relative; }
-        .day-header {
-            display: flex; flex-wrap: wrap;
-            justify-content: space-between; /* יישור התאריך לשמאל ותגיות לימין */
-            align-items: center;
-            gap: 1rem;
-            font-size: 1.5rem; /* פונט כותרת יום גדול יותר */
-            font-weight: 600;
-            letter-spacing: .5px;
-            margin-bottom: 1.8rem; /* ריווח גדול יותר */
-            padding-bottom: 1.2rem;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--primary);
-        }
-        .lodging-badge {
-            background: var(--bg-event-lodging);
-            color: #004085; /* צבע טקסט כהה יותר לניגודיות טובה יותר */
-            padding: .5rem .9rem;
-            border-radius: .5rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-            font-size: .95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: transform .2s, background-color .2s, box-shadow .2s;
-            border: 1px solid #b8daff;
-        }
-        .lodging-badge:hover {
-            transform: translateY(-2px);
-            background-color: #d4eaff;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .event-row {
-            display: flex; align-items: stretch;
-            animation: popIn .35s ease-out both .1s; /* דיליי קל לאנימציה */
-            margin-top: 1.2rem;
-        }
-        .times-col {
-            width: 6.5rem;
-            font-size: 1rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin-left: 1.8rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            flex-shrink: 0; /* מניעת התכווצות עמודת השעות */
-        }
-        .times-col span:first-child { margin-bottom: 0.4rem; }
-
-        .content-col {
-            position: relative; flex: 1;
-            padding: 1.3rem 2rem;
-            border-radius: 0.8rem;
-            background: var(--bg-event-general);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.06);
-            margin-bottom: 1rem;
-            overflow: hidden; color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            border: 1px solid var(--border-color);
-            transition: box-shadow .2s;
-        }
-        .content-col:hover {
-            box-shadow: 0 7px 18px rgba(0,0,0,0.08);
-        }
-
-        .content-col[data-type="טיסה"] { background: var(--bg-event-flight); border-color: #b3d7ff; }
-        .content-col[data-type="צ'ק-אין"],
-        .content-col[data-type="צ'ק-אאוט"] { background: var(--bg-event-lodging); border-color: #b3d7ff; }
-        .content-col[data-type="אטרקציה"],
-        .content-col[data-type="סיור"] { background: var(--bg-event-activity); border-color: #ffe082;}
-
-        .content-col::before {
-            content: attr(data-bg-emoji);
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: clamp(6rem, 14vh, 8rem);
-            line-height: 1;
-            color: var(--text-dark);
-            opacity: 0.05; /* עוד יותר עדין */
-            z-index: 0;
-            pointer-events: none;
-        }
-        .event-content-wrapper {
-            position: relative; z-index: 1;
-            display: flex; align-items: center;
-        }
-        .event-text-details { flex-grow: 1; line-height: 1.65; }
-        .event-text-details strong { font-weight: 600; color: var(--text-dark); }
-        .event-text-details div { margin-bottom: 0.3rem; }
-        .event-text-details div:last-child { margin-bottom: 0; }
-        .event-icon { font-size: 1.7rem; margin-right: 15px; color: var(--primary); }
-        .event-icon-flight {
-            position: absolute; left: 20px;
-            top: 50%;
-            transform: translateY(-50%); font-size: 2.2rem; color: var(--primary);
-        }
-        .event-divider {
-            border: 0; border-top: 1px dashed #e0e0e0; /* קו מרוסק עדין */
-            margin: 2rem 0; /* ריווח גדול יותר */
-        }
-        @keyframes popIn {
-            0% { opacity: 0; transform: translateY(15px) scale(0.97); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .btn-navigate {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 20px; /* עיגול מלא יותר */
-            width: 40px; height: 40px; /* גודל אחיד */
-            display: inline-flex; align-items: center; justify-content: center;
-            font-size: 1.1rem; /* אייקון גדול יותר */
-            box-shadow: 0 3px 7px rgba(0,0,0,0.15);
-            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
-            position: absolute; bottom: 15px; right: 15px; padding: 0;
-        }
-        .btn-navigate:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-        }
-
-        #noScheduleMessage {
-            text-align: center; font-size: 1.25em;
-            padding: 3.5rem;
-            background-color: #fff3e0; /* רקע מעט חם יותר */
-            border-radius: .8rem;
-            color: var(--text-muted);
-            border: 1px dashed var(--primary);
-        }
-        #noScheduleMessage p { margin-bottom: 1rem; }
-        #noScheduleMessage a { color: var(--primary); text-decoration: none; font-weight: 500; }
-        #noScheduleMessage a:hover { text-decoration: underline; color: var(--primary-dark); }
-
-        .modal-content {
-            border-radius: 1rem;
-            border: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
-        .modal-header {
-            background-color: var(--primary);
-            color: var(--text-light);
-            border-bottom: none; /* הסרת קו תחתון */
-            padding: 1.2rem 1.8rem;
-            border-top-left-radius: 1rem; /* התאמת רדיוסים */
-            border-top-right-radius: 1rem;
-        }
-        .modal-header .btn-close {
-            filter: brightness(0) invert(1); /* להפוך את צבע האיקס ללבן */
-        }
-        .modal-title {
-            font-weight: 600;
-            font-size: 1.4rem;
-        }
-        .modal-body {
-            padding: 1.8rem;
-            line-height: 1.75;
-        }
-        .modal-body p { margin-bottom: 1.1rem; }
-        #detailLodNav { margin-right: 0.5rem; } /* ריווח קטן מימין לכפתור הניווט במודל */
-
-        .modal-footer {
-            background-color: #f9f9f9;
-            border-top: 1px solid var(--border-color);
-            padding: 1.2rem 1.8rem;
-            border-bottom-left-radius: 1rem; /* התאמת רדיוסים */
-            border-bottom-right-radius: 1rem;
-        }
-        .modal-footer .btn {
-            padding: 0.6rem 1.2rem;
-            font-weight: 500;
-        }
-
-        #shareModal .btn-outline-primary,
-        #shareModal .btn-outline-secondary {
-            padding: 0.7rem 1rem;
-            font-weight: 500;
-        }
-        #shareModal .btn-outline-primary {
-            color: var(--primary);
-            border-color: var(--primary);
-        }
-        #shareModal .btn-outline-primary:hover {
-            background-color: var(--primary);
-            color: var(--text-light);
-        }
-        #shareModal .btn-outline-secondary {
-            color: #6c757d;
-            border-color: #6c757d;
-        }
-        #shareModal .btn-outline-secondary:hover {
-            background-color: #6c757d;
-            color: var(--text-light);
-        }
-        #copyShareTextBtn {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            color: var(--text-light);
-            font-weight: 500;
-            padding: 0.6rem 1.2rem;
-        }
-        #copyShareTextBtn:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-        }
-        #shareTextArea {
-            border-radius: 0.5rem;
-            border-color: var(--border-color);
-            font-size: 0.95rem;
-        }
-    </style>
+  <style>
+    :root {
+      --primary: #ff8c42;
+      --secondary: #fff0e6;
+      --bg-day: #ffffff;
+      --bg-flight: #cce0ff;
+      --bg-lodging: #e6f7ff;
+      --bg-activity: #fff9e6;
+      --text-main: #5a4f45;
+      --text-light: #ffffff;
+      --shadow-light: rgba(0,0,0,0.1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Rubik', sans-serif;
+      background: linear-gradient(135deg, var(--secondary), #ffffff);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+    header {
+      background: var(--primary);
+      padding: 1rem 1.5rem;
+      text-align: center;
+      color: var(--text-light);
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      justify-content: center;
+      padding: .75rem 1rem;
+      background: var(--secondary);
+    }
+    .action-bar .btn {
+      flex: 1 1 120px;
+      font-size: .95rem;
+    }
+    .container-schedule {
+      max-width: 600px;
+      margin: 1rem auto 2rem;
+      padding: 0 1rem;
+    }
+    .schedule-title {
+      text-align: center;
+      margin: 1.5rem 0 .5rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    #noScheduleMessage {
+      background: var(--secondary);
+      padding: 1.5rem;
+      border-radius: .5rem;
+      text-align: center;
+      font-size: 1rem;
+      box-shadow: 0 4px 10px var(--shadow-light);
+    }
+    .day-block {
+      background: var(--bg-day);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 6px 18px var(--shadow-light);
+    }
+    .day-header {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .lodging-badge {
+      background: var(--bg-lodging);
+      padding: .3rem .6rem;
+      border-radius: .75rem;
+      font-size: .85rem;
+      cursor: pointer;
+    }
+    .event-row {
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: stretch;
+      margin-bottom: 1rem;
+    }
+    .times-col {
+      width: 4.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--text-main);
+      margin-left: 1rem;
+    }
+    .content-col {
+      position: relative;
+      flex: 1;
+      padding: 1rem 1.5rem;
+      border-radius: .75rem;
+      background: var(--bg-day);
+      box-shadow: 0 4px 12px var(--shadow-light);
+      overflow: hidden;
+      font-size: .95rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .content-col[data-type="טיסה"]      { background: var(--bg-flight); }
+    .content-col[data-type="צ'ק-אין"],
+    .content-col[data-type="צ'ק-אאוט"] { background: var(--bg-lodging); }
+    .content-col[data-type="אטרקציה"],
+    .content-col[data-type="סיור"]     { background: var(--bg-activity); }
+    .content-col::before {
+      content: attr(data-bg-emoji);
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 6rem; color: var(--text-main);
+      opacity: .08; pointer-events: none;
+    }
+    .event-icon-flight {
+      position: absolute; left: 1rem; top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.6rem;
+    }
+    .event-content-wrapper {
+      position: relative; z-index: 1;
+      display: flex; align-items: center;
+    }
+    .event-text-details { flex: 1; line-height: 1.3; }
+    .btn-navigate {
+      position: absolute;
+      bottom: .5rem; right: .5rem;
+      background: var(--primary);
+      color: var(--text-light);
+      border: none;
+      border-radius: 50%;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+      box-shadow: 0 2px 6px var(--shadow-light);
+    }
+    @media (max-width: 480px) {
+      .times-col { width: 3.5rem; font-size: .85rem; }
+      header { font-size: 1.5rem; padding: .75rem 1rem; }
+      .day-block { padding: 1rem; }
+      .action-bar .btn { font-size: .9rem; padding: .5rem .75rem; }
+    }
+  </style>
 </head>
 <body>
-    <a class="navbar-brand-live" href="#">זמן זהב - חופשה 😊</a>
 
-    <div class="container">
-        <div class="action-bar d-flex justify-content-center flex-wrap gap-2"> <button id="btnEditSchedule"   class="btn">✏️ ערוך לוז</button>
-            <button id="btnShareSchedule"  class="btn">📤 שתף לוז</button>
-            <button id="btnDeleteSchedule" class="btn">🗑️ מחק לוז</button>
-            <button id="btnActivateLive"   class="btn">🔴 הפעל לייב</button>
-        </div>
+  <header>זמן זהב – חופשה 😊</header>
+  <div class="action-bar">
+    <button id="btnEditSchedule"   class="btn btn-outline-primary">✏️ ערוך לוז</button>
+    <button id="btnShareSchedule"  class="btn btn-outline-success">📤 שתף לוז</button>
+    <button id="btnDeleteSchedule" class="btn btn-outline-danger">🗑️ מחק לוז</button>
+    <button id="btnActivateLive"   class="btn btn-outline-warning">🔴 הפעל לייב</button>
+  </div>
 
-        <h2 id="displayScheduleName" class="text-center mb-4 schedule-title">טוען לו"ז...</h2>
-        <div id="scheduleContainer"></div>
-        <div id="noScheduleMessage" style="display: none;">
-            <p>לא נמצא מידע עבור לו"ז זה, או שהמידע אינו בפורמט הנדרש.</p>
-            <p><a href="my-schedules.html">חזור ללו"זים שלי</a></p>
-        </div>
+  <div class="container-schedule">
+    <h2 id="displayScheduleName" class="schedule-title">טוען לו"ז...</h2>
+    <div id="scheduleContainer"></div>
+    <div id="noScheduleMessage" style="display:none;">
+      <p>לא נמצא מידע עבור לו"ז זה.</p>
+      <p><a href="my-schedules.html">חזור ללוזים שלי</a></p>
     </div>
+  </div>
 
-    <div class="modal fade" id="lodgingDetailModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">פרטי לינה</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <p id="detailLodType"></p>
-            <p id="detailLodName"></p>
-            <p>
-              <span id="detailLodLocation"></span>
-              <button type="button" id="detailLodNav" class="btn btn-sm btn-outline-primary">🗺️ נווט</button>
-            </p>
-            <p id="detailLodCheckIn"></p>
-            <p id="detailLodCheckOut"></p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">סגור</button>
-          </div>
+  <!-- Lodging Detail Modal -->
+  <div class="modal fade" id="lodgingDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">פרטי לינה</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p id="detailLodType"></p>
+          <p id="detailLodName"></p>
+          <p>
+            <span id="detailLodLocation"></span>
+            <button type="button" id="detailLodNav" class="btn btn-sm btn-outline-primary">🗺️ נווט</button>
+          </p>
+          <p id="detailLodCheckIn"></p>
+          <p id="detailLodCheckOut"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">סגור</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="modal fade" id="shareModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">שתף לוז</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  <!-- Share Schedule Modal -->
+  <div class="modal fade" id="shareModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">שתף לוז</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>בחר כיצד לשתף את הלוז:</p>
+          <div class="d-flex gap-2 mb-3">
+            <button id="shareAsTextBtn"       class="btn btn-outline-primary">📄 שתף כטקסט</button>
+            <button id="shareAsScreenshotBtn" class="btn btn-outline-secondary">📷 שתף כצילום מסך</button>
           </div>
-          <div class="modal-body">
-            <p>בחר כיצד לשתף את הלוז:</p>
-            <div class="d-flex gap-2 mb-3">
-              <button id="shareAsTextBtn"       class="btn btn-outline-primary">📄 שתף כטקסט</button>
-              <button id="shareAsScreenshotBtn" class="btn btn-outline-secondary">📷 שתף כצילום מסך</button>
-            </div>
-            <textarea id="shareTextArea" class="form-control" rows="8" style="display:none;"></textarea>
-            <div class="text-end mt-2">
-              <button id="copyShareTextBtn" class="btn" style="display:none;">העתק טקסט</button> </div>
+          <textarea id="shareTextArea" class="form-control" rows="8" style="display:none;"></textarea>
+          <div class="text-end mt-2">
+            <button id="copyShareTextBtn" class="btn btn-primary" style="display:none;">העתק לטקסט</button>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">סגור</button>
-          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">סגור</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const weekdayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-        const emojiMap = {
-            'השקמה': '⏰','שינה': '🛏️','הליכה/נסיעה': '🚶‍♂️',
-            'רכב':'🚗','תחבורה ציבורית':'🚌','הליכה':'🚶‍♂️',
-            'אוכל':'🍴','סיור':'🏞️','אטרקציה':'🎟️',
-            'טיסה':'✈️','צ\'ק-אין':'🧳','צ\'ק-אאוט':'👋'
-        };
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const weekdayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+    const emojiMap = {
+      'השקמה': '⏰','שינה': '🛏️','הליכה/נסיעה': '🚶‍♂️',
+      'רכב':'🚗','תחבורה ציבורית':'🚌','הליכה':'🚶‍♂️',
+      'אוכל':'🍴','סיור':'🏞️','אטרקציה':'🎟️',
+      'טיסה':'✈️','צ\'ק-אין':'🧳','צ\'ק-אאוט':'👋'
+    };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const storedData = localStorage.getItem('liveVacationScheduleData');
-            const scheduleNameEl = document.getElementById('displayScheduleName');
-            const scheduleContainerEl = document.getElementById('scheduleContainer');
-            const noScheduleMessageEl = document.getElementById('noScheduleMessage');
+    document.addEventListener('DOMContentLoaded', () => {
+      const storedData = localStorage.getItem('liveVacationScheduleData');
+      const scheduleNameEl = document.getElementById('displayScheduleName');
+      const scheduleContainerEl = document.getElementById('scheduleContainer');
+      const noScheduleMessageEl = document.getElementById('noScheduleMessage');
 
-            if (!storedData) {
-                scheduleNameEl.textContent = 'שגיאה';
-                noScheduleMessageEl.style.display = 'block';
-                console.error('No schedule data found in localStorage.');
-                return;
-            }
+      if (!storedData) {
+        scheduleNameEl.textContent = 'שגיאה';
+        noScheduleMessageEl.style.display = 'block';
+        console.error('No schedule data found in localStorage.');
+        return;
+      }
 
-            let liveVacationData;
-            try {
-                liveVacationData = JSON.parse(storedData);
-            } catch (error) {
-                scheduleNameEl.textContent = 'שגיאה בעיבוד הנתונים';
-                noScheduleMessageEl.style.display = 'block';
-                console.error('Error parsing schedule data:', error);
-                return;
-            }
+      let liveVacationData;
+      try {
+        liveVacationData = JSON.parse(storedData);
+      } catch (error) {
+        scheduleNameEl.textContent = 'שגיאה בעיבוד הנתונים';
+        noScheduleMessageEl.style.display = 'block';
+        console.error('Error parsing schedule data:', error);
+        return;
+      }
 
-            if (!liveVacationData || typeof liveVacationData !== 'object' || !liveVacationData.name || !liveVacationData.scheduleEvents || !liveVacationData.lodgings) {
-                scheduleNameEl.textContent = 'שגיאה בפורמט הנתונים';
-                noScheduleMessageEl.style.display = 'block';
-                console.error('Schedule data missing fields or invalid format.', liveVacationData);
-                return;
-            }
+      if (!liveVacationData.name || !liveVacationData.scheduleEvents || !liveVacationData.lodgings) {
+        scheduleNameEl.textContent = 'שגיאה בפורמט הנתונים';
+        noScheduleMessageEl.style.display = 'block';
+        console.error('Schedule data missing fields.', liveVacationData);
+        return;
+      }
 
+      scheduleNameEl.textContent = `לוז: ${liveVacationData.name}`;
+      renderFullSchedule(liveVacationData.scheduleEvents, liveVacationData.lodgings, scheduleContainerEl);
 
-            scheduleNameEl.textContent = `לוז: ${liveVacationData.name}`;
-            renderFullSchedule(liveVacationData.scheduleEvents, liveVacationData.lodgings, scheduleContainerEl);
+      // ‼️ כפתורי פעולה ‼️
+      document.getElementById('btnEditSchedule').addEventListener('click', () => {
+        localStorage.setItem('liveVacationScheduleDataEdit', storedData);
+        window.location.href = 'חופשה.html';
+      });
 
-            // ‼️ כפתורי פעולה ‼️
-            document.getElementById('btnEditSchedule').addEventListener('click', () => {
-                localStorage.setItem('liveVacationScheduleDataEdit', storedData);
-                window.location.href = 'חופשה.html'; // לדף עריכת הלוז
+      const shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
+      document.getElementById('btnShareSchedule').addEventListener('click', () => {
+        document.getElementById('shareTextArea').style.display = 'none';
+        document.getElementById('copyShareTextBtn').style.display = 'none';
+        shareModal.show();
+      });
+      document.getElementById('shareAsTextBtn').addEventListener('click', () => {
+        let text = `לוז: ${liveVacationData.name}\n\n`;
+        const events = liveVacationData.scheduleEvents;
+        Object.keys(events).sort((a,b)=>new Date(a)-new Date(b)).forEach(date => {
+          text += `${new Date(date).toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit',year:'numeric'})}:\n`;
+          events[date].sort((a,b)=>(a.start||a.departTime).localeCompare(b.start||b.departTime))
+            .forEach(ev => {
+              let line = `  - ${ev.type}`;
+              if (ev.type==='טיסה') {
+                line += ` ${ev.number||''} ${ev.from||''}→${ev.to||''} (${ev.departTime||''}-${ev.arriveTime||''})`;
+              } else if (ev.start && ev.end) {
+                line += ` (${ev.start}-${ev.end})`;
+              }
+              if (ev.location) line += ` @ ${ev.location}`;
+              text += line + '\n';
             });
-
-            const shareModalEl = document.getElementById('shareModal');
-            if (shareModalEl) {
-                const shareModalInstance = new bootstrap.Modal(shareModalEl);
-                document.getElementById('btnShareSchedule').addEventListener('click', () => {
-                    document.getElementById('shareTextArea').style.display = 'none';
-                    document.getElementById('copyShareTextBtn').style.display = 'none';
-                    shareModalInstance.show();
-                });
-            }
-
-
-            document.getElementById('shareAsTextBtn').addEventListener('click', () => {
-                let text = `לוז: ${liveVacationData.name}\n\n`;
-                const events = liveVacationData.scheduleEvents;
-                Object.keys(events).sort((a,b)=>new Date(a)-new Date(b)).forEach(date => {
-                    const formattedDate = new Date(date).toLocaleDateString('he-IL',{weekday: 'long', day:'2-digit',month:'2-digit',year:'numeric'});
-                    text += `${formattedDate}:\n`;
-                    events[date].sort((a,b)=>(a.start||a.departTime).localeCompare(b.start||b.departTime))
-                        .forEach(ev => {
-                            let line = `  ${ev.start || ev.departTime || ''}`;
-                            if(ev.end || ev.arriveTime) line += `-${ev.end || ev.arriveTime || ''}`;
-                            line += ` - ${ev.type}`;
-
-                            if (ev.type==='טיסה') {
-                                line += ` ${ev.number||''} מ:${ev.from||''} אל:${ev.to||''}`;
-                                if(ev.airline) line += ` (${ev.airline})`;
-                            } else if (ev.type==='צ\'ק-אין' || ev.type==='צ\'ק-אאוט') {
-                                line += `: ${ev.lodgingName || ''}`;
-                                if (ev.location) line += ` (${ev.location})`;
-                            } else if (ev.type==='הליכה/נסיעה'){
-                                if(ev.mode) line += ` (${ev.mode})`;
-                                if(ev.startLocation) line += ` מ:${ev.startLocation}`;
-                                if(ev.endLocation) line += ` אל:${ev.endLocation}`;
-                            } else {
-                                if (ev.customSubjectName) line += `: ${ev.customSubjectName}`;
-                                else if (ev.type === 'אוכל' && ev.foodPlace) line += `: ${ev.foodPlace}`;
-                                if (ev.location) line += ` (${ev.location})`;
-                            }
-                            if (ev.description) line += ` - ${ev.description}`;
-                            text += line + '\n';
-                        });
-                    text += '\n';
-                });
-                const ta = document.getElementById('shareTextArea');
-                ta.value = text;
-                ta.style.display = 'block';
-                const copyBtn = document.getElementById('copyShareTextBtn');
-                copyBtn.style.display = 'inline-block';
-                copyBtn.onclick = () => {
-                    ta.select();
-                    navigator.clipboard.writeText(ta.value).then(() => {
-                        copyBtn.textContent = 'הועתק!';
-                        setTimeout(() => { copyBtn.textContent = 'העתק טקסט'; }, 2000);
-                    }).catch(err => {
-                        console.error('Failed to copy text: ', err);
-                        // Fallback for older browsers
-                        try {
-                            document.execCommand('copy');
-                            copyBtn.textContent = 'הועתק!';
-                            setTimeout(() => { copyBtn.textContent = 'העתק טקסט'; }, 2000);
-                        } catch (e) {
-                            alert('ההעתקה נכשלה. אנא העתק ידנית.');
-                        }
-                    });
-                };
-            });
-            document.getElementById('shareAsScreenshotBtn').addEventListener('click', () => {
-                if (typeof html2canvas === 'undefined') {
-                    alert('ספריית צילום המסך (html2canvas) לא נטענה. לא ניתן לצלם מסך.');
-                    const shareModalInstance = bootstrap.Modal.getInstance(document.getElementById('shareModal'));
-                    if (shareModalInstance) shareModalInstance.hide();
-                    return;
-                }
-                captureAndDownloadScheduleScreenshot(liveVacationData.name);
-                const shareModalInstance = bootstrap.Modal.getInstance(document.getElementById('shareModal'));
-                if (shareModalInstance) shareModalInstance.hide();
-            });
-
-            document.getElementById('btnDeleteSchedule').addEventListener('click', () => {
-                if (confirm('האם אתה בטוח שברצונך למחוק את הלוז? פעולה זו אינה הפיכה.')) {
-                    localStorage.removeItem('liveVacationScheduleData'); // מחיקת הלוז הנוכחי המוצג
-                    // נניח שיש מפתח נוסף שמחזיק את רשימת כל הלוזים, נצטרך לעדכן גם אותו
-                    // לדוגמה, אם הלוזים נשמרים במערך תחת מפתח 'userSchedules' ושם הלוז הוא המזהה
-                    // הקוד הבא הוא רק דוגמה ויש להתאים אותו למבנה הנתונים האמיתי שלך
-                    const scheduleId = liveVacationData.id || liveVacationData.name; // נניח שיש ID או שהשם ייחודי
-                    let allSchedules = JSON.parse(localStorage.getItem('userSchedules') || '[]');
-                    allSchedules = allSchedules.filter(s => (s.id || s.name) !== scheduleId);
-                    localStorage.setItem('userSchedules', JSON.stringify(allSchedules));
-
-                    alert('הלוז נמחק בהצלחה.');
-                    window.location.href = 'my-schedules.html'; // הפניה לדף הלוזים שלי
-                }
-            });
-
-            document.getElementById('btnActivateLive').addEventListener('click', () => {
-                alert('TODO: הפעלת לוז בלייב עדיין לא מיושמת.');
-            });
-
-            // ניווט לפרטי הלינה
-             const lodgingModalEl = document.getElementById('lodgingDetailModal');
-            if (lodgingModalEl) {
-                const lodgingModalInstance = new bootstrap.Modal(lodgingModalEl);
-                scheduleContainerEl.addEventListener('click', e => {
-                    const badge = e.target.closest('.lodging-badge');
-                    if (badge) {
-                        const id = badge.getAttribute('data-lodging-id');
-                        showLodgingDetail(id, liveVacationData.lodgings, lodgingModalInstance);
-                    }
-                });
-            }
+          text += '\n';
         });
+        const ta = document.getElementById('shareTextArea');
+        ta.value = text;
+        ta.style.display = 'block';
+        const copyBtn = document.getElementById('copyShareTextBtn');
+        copyBtn.style.display = 'inline-block';
+        copyBtn.onclick = () => {
+          ta.select();
+          document.execCommand('copy');
+        };
+      });
+      document.getElementById('shareAsScreenshotBtn').addEventListener('click', () => {
+        captureAndDownloadScheduleScreenshot(liveVacationData.name);
+        shareModal.hide();
+      });
 
-        function renderFullSchedule(scheduleEvents, lodgings, container) {
-            container.innerHTML = '';
-            if (Object.keys(scheduleEvents).length === 0) {
-                container.innerHTML = '<p class="text-center p-3">הלו"ז הזה ריק מאירועים.</p>';
-                return;
-            }
-            const sortedDates = Object.keys(scheduleEvents).sort((a,b)=>new Date(a)-new Date(b));
-            sortedDates.forEach(dateString => {
-                const dayName = weekdayNames[new Date(dateString).getDay()];
-                const dayBlockElement = createDayBlock(dayName, dateString, lodgings);
-                container.appendChild(dayBlockElement);
-                const eventsForDate = scheduleEvents[dateString] || [];
-                eventsForDate.sort((a,b)=>(a.start||a.departTime).localeCompare(b.start||b.departTime));
-                eventsForDate.forEach((eventData, idx) => {
-                    renderEventRow(dayBlockElement, dateString, eventData);
-                     // הוספת קו מפריד רק אם זה לא האירוע האחרון
-                    if (idx < eventsForDate.length - 1) {
-                        let hr = document.createElement('hr');
-                        hr.className = 'event-divider';
-                        dayBlockElement.appendChild(hr);
-                    }
-                });
-            });
+      document.getElementById('btnDeleteSchedule').addEventListener('click', () => {
+        if (confirm('האם אתה בטוח שברצונך למחוק את הלוז?')) {
+          localStorage.removeItem('liveVacationScheduleData');
+          window.location.href = 'my-schedules.html';
         }
+      });
 
-        function createDayBlock(day, date, lodgingsArray) {
-            let blk = document.createElement('div');
-            blk.className = 'day-block';
-            blk.dataset.date = date;
-            let badgesHTML = '';
-            if (Array.isArray(lodgingsArray)) {
-                const relevantLodgings = lodgingsArray
-                    .filter(l => {
-                        // בדיקה אם התאריך של הבלוק נמצא בטווח התאריכים של הלינה
-                        const eventDate = new Date(date);
-                        eventDate.setHours(0,0,0,0); // איפוס שעות לצורך השוואה תאריכית בלבד
-                        const checkIn = new Date(l.checkInDate);
-                        checkIn.setHours(0,0,0,0);
-                        const checkOut = new Date(l.checkOutDate);
-                        checkOut.setHours(0,0,0,0);
-                        return eventDate >= checkIn && eventDate <= checkOut;
-                    });
-                if (relevantLodgings.length > 0) {
-                     badgesHTML = `<div class="lodging-badges-container d-flex flex-wrap gap-2 justify-content-end">${relevantLodgings
-                        .map(l => `<span class="lodging-badge" data-lodging-id="${l.id}">${l.name} 🏨</span>`)
-                        .join('')}</div>`;
-                }
-            }
-            blk.innerHTML = `<div class="day-header"><span>${day} – ${new Date(date).toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit',year:'numeric'})}</span>${badgesHTML}</div>`;
-            return blk;
+      document.getElementById('btnActivateLive').addEventListener('click', () => {
+        alert('TODO: הפעלת לוז בלייב עדיין לא מיושמת.');
+      });
+
+      // ניווט לפרטי הלינה
+      scheduleContainerEl.addEventListener('click', e => {
+        if (e.target.classList.contains('lodging-badge')) {
+          const id = e.target.getAttribute('data-lodging-id');
+          showLodgingDetail(id);
         }
+      });
+    });
 
+    function renderFullSchedule(scheduleEvents, lodgings, container) {
+      container.innerHTML = '';
+      if (Object.keys(scheduleEvents).length === 0) {
+        container.innerHTML = '<p class="text-center p-3">הלו"ז הזה ריק מאירועים.</p>';
+        return;
+      }
+      const sortedDates = Object.keys(scheduleEvents).sort((a,b)=>new Date(a)-new Date(b));
+      sortedDates.forEach(dateString => {
+        const dayName = weekdayNames[new Date(dateString).getDay()];
+        const dayBlockElement = createDayBlock(dayName, dateString, lodgings);
+        container.appendChild(dayBlockElement);
+        const eventsForDate = scheduleEvents[dateString] || [];
+        eventsForDate.sort((a,b)=>(a.start||a.departTime).localeCompare(b.start||b.departTime));
+        eventsForDate.forEach((eventData, idx) => {
+          if (idx>0) {
+            let hr = document.createElement('hr');
+            hr.className = 'event-divider';
+            dayBlockElement.appendChild(hr);
+          }
+          renderEventRow(dayBlockElement, dateString, eventData);
+        });
+      });
+    }
 
-        function renderEventRow(dayBlockElement, date, eventData) {
-            let rowDiv = document.createElement('div');
-            rowDiv.className = 'event-row';
-            let times = document.createElement('div');
-            times.className = 'times-col';
-            const start = eventData.start || eventData.departTime || '';
-            const end   = eventData.end   || eventData.arriveTime || '';
-            times.innerHTML = `<span>${start}</span>${start && end ? '<span>|</span>' : ''}<span>${end}</span>`;
+    function createDayBlock(day, date, lodgingsArray) {
+      let blk = document.createElement('div');
+      blk.className = 'day-block';
+      blk.dataset.date = date;
+      let badgesHTML = '';
+      if (Array.isArray(lodgingsArray)) {
+        badgesHTML = lodgingsArray
+          .filter(l => date >= l.checkInDate && date <= l.checkOutDate)
+          .map(l => `<span class="lodging-badge" data-lodging-id="${l.id}">${l.name}</span>`)
+          .join('');
+      }
+      blk.innerHTML = `<div class="day-header"><span>${day} – ${new Date(date).toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit',year:'numeric'})}</span>${badgesHTML}</div>`;
+      return blk;
+    }
 
+    function renderEventRow(dayBlockElement, date, eventData) {
+      let rowDiv = document.createElement('div');
+      rowDiv.className = 'event-row';
+      let times = document.createElement('div');
+      times.className = 'times-col';
+      const start = eventData.start || eventData.departTime || '';
+      const end   = eventData.end   || eventData.arriveTime || '';
+      times.innerHTML = `<span>${start}</span><span>${end}</span>`;
 
-            let content = document.createElement('div');
-            content.className = 'content-col';
-            content.setAttribute('data-type', eventData.type);
+      let content = document.createElement('div');
+      content.className = 'content-col';
+      content.setAttribute('data-type', eventData.type);
 
-            let bgKey = eventData.type;
-            if (eventData.type==='הליכה/נסיעה' && eventData.mode) {
-                if (eventData.mode.includes('רכב')) bgKey='רכב';
-                else if (eventData.mode.includes('תחבורה ציבורית')) bgKey='תחבורה ציבורית';
-                else if (eventData.mode.includes('הליכה')) bgKey='הליכה';
-            }
-            const bgEmoji = emojiMap[bgKey] || '';
-            if (bgEmoji) content.setAttribute('data-bg-emoji', bgEmoji);
+      let bgKey = eventData.type;
+      if (eventData.type==='הליכה/נסיעה' && eventData.mode) {
+        if (eventData.mode.includes('רכב')) bgKey='רכב';
+        else if (eventData.mode.includes('תחבורה ציבורית')) bgKey='תחבורה ציבורית';
+        else if (eventData.mode.includes('הליכה')) bgKey='הליכה';
+      }
+      const bgEmoji = emojiMap[bgKey] || '';
+      if (bgEmoji) content.setAttribute('data-bg-emoji', bgEmoji);
 
-            let iconHTML='', eventHTML='';
-            const genEmoji = emojiMap[eventData.type] || '📝';
-            iconHTML = `<div class="event-icon">${genEmoji}</div>`; // ברירת מחדל לאייקון
+      let iconHTML='', eventHTML='';
+      const genEmoji = emojiMap[eventData.type] || '📝';
+      switch(eventData.type) {
+        case 'טיסה':
+          iconHTML = `<div class="event-icon-flight">✈️</div>`;
+          eventHTML = `
+            <div class="event-text-details">
+              <div><strong>טיסה מ${eventData.from||''} ⬅️ ${eventData.to||''}</strong></div>
+              <div>${eventData.number||''}${eventData.airline?` / ${eventData.airline}`:''}</div>
+              <div>המראה 🛫: ${eventData.departTime||''}</div>
+              <div>נחיתה 🛬: ${eventData.arriveTime||''}</div>
+              ${eventData.description?`<div><em>${eventData.description}</em></div>`:''}
+            </div>`;
+          if (eventData.from) {
+            eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.from.replace(/'/g,"\\'")}')" title="נווט אל ${eventData.from}">🗺️</button>`;
+          }
+          break;
+        case 'השקמה': case 'שינה':
+          iconHTML = `<div class="event-icon">${genEmoji}</div>`;
+          eventHTML = `<div class="event-text-details"><div><strong>${eventData.type}</strong></div>${eventData.description?`<div>${eventData.description}</div>`:''}</div>`;
+          break;
+        case 'הליכה/נסיעה':
+          let dispEmoji = emojiMap['הליכה/נסיעה'];
+          if (eventData.mode) {
+            if (eventData.mode.includes('רכב')) dispEmoji = emojiMap['רכב'];
+            else if (eventData.mode.includes('תחבורה ציבורית')) dispEmoji = emojiMap['תחבורה ציבורית'];
+            else if (eventData.mode.includes('הליכה')) dispEmoji = emojiMap['הליכה'];
+          }
+          iconHTML = `<div class="event-icon">${dispEmoji}</div>`;
+          eventHTML = `
+            <div class="event-text-details">
+              <div><strong>${eventData.mode||'הליכה/נסיעה'}</strong></div>
+              ${eventData.startLocation?`<div>מ: ${eventData.startLocation}</div>`:''}
+              <div>אל: ${eventData.endLocation||''}</div>
+              ${eventData.description?`<div>${eventData.description}</div>`:''}
+            </div>`;
+          if (eventData.endLocation) {
+            eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.endLocation.replace(/'/g,"\\'")}')" title="נווט אל ${eventData.endLocation}">🗺️</button>`;
+          }
+          break;
+        case "צ'ק-אין": case "צ'ק-אאוט":
+          iconHTML = `<div class="event-icon">${genEmoji}</div>`;
+          eventHTML = `<div class="event-text-details"><div><strong>${eventData.type}: ${eventData.lodgingName||''}</strong></div>${eventData.location?`<div>${eventData.location}</div>`:''}</div>`;
+          if (eventData.type==="צ'ק-אין" && eventData.location) {
+            eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.location.replace(/'/g,"\\'")}')" title="נווט אל ${eventData.location}">🗺️</button>`;
+          }
+          break;
+        default:
+          iconHTML = `<div class="event-icon">${genEmoji}</div>`;
+          let title = eventData.customSubjectName||eventData.type;
+          if (eventData.type==='אוכל' && eventData.foodPlace) title = eventData.foodPlace;
+          eventHTML = `<div class="event-text-details"><div><strong>${title}</strong></div>${eventData.location?`<div>מיקום: ${eventData.location}</div>`:''}${eventData.description?`<div>${eventData.description}</div>`:''}</div>`;
+          if (eventData.location) {
+            eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.location.replace(/'/g,"\\'")}')" title="נווט אל ${eventData.location}">🗺️</button>`;
+          }
+      }
 
-            switch(eventData.type) {
-                case 'טיסה':
-                    iconHTML = `<div class="event-icon-flight">✈️</div>`;
-                    eventHTML = `
-                        <div class="event-text-details">
-                            <div><strong>טיסה ${eventData.number||''} מ${eventData.from||''} ⬅️ ${eventData.to||''}</strong></div>
-                            ${eventData.airline?`<div>חברת תעופה: ${eventData.airline}</div>`:''}
-                            <div>המראה 🛫: ${eventData.departTime||''}</div>
-                            <div>נחיתה 🛬: ${eventData.arriveTime||''}</div>
-                            ${eventData.description?`<div><em>${eventData.description}</em></div>`:''}
-                        </div>`;
-                    if (eventData.fromAirportLocation || eventData.from) { // בדיקה אם יש מיקום לשדה התעופה
-                        const departureLocation = eventData.fromAirportLocation || eventData.from;
-                        eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${departureLocation.replace(/'/g,"\\'")}')" title="נווט אל ${departureLocation}">🗺️</button>`;
-                    }
-                    break;
-                case 'השקמה': case 'שינה':
-                    eventHTML = `<div class="event-text-details"><div><strong>${eventData.type}</strong></div>${eventData.description?`<div>${eventData.description}</div>`:''}</div>`;
-                    break;
-                case 'הליכה/נסיעה':
-                    let dispEmoji = emojiMap['הליכה/נסיעה'];
-                    if (eventData.mode) {
-                        if (eventData.mode.includes('רכב')) dispEmoji = emojiMap['רכב'];
-                        else if (eventData.mode.includes('תחבורה ציבורית')) dispEmoji = emojiMap['תחבורה ציבורית'];
-                        else if (eventData.mode.includes('הליכה')) dispEmoji = emojiMap['הליכה'];
-                    }
-                    iconHTML = `<div class="event-icon">${dispEmoji}</div>`;
-                    eventHTML = `
-                        <div class="event-text-details">
-                            <div><strong>${eventData.mode||'הליכה/נסיעה'}</strong></div>
-                            ${eventData.startLocation?`<div>מ: ${eventData.startLocation}</div>`:''}
-                            <div>אל: ${eventData.endLocation||''}</div>
-                            ${eventData.description?`<div>${eventData.description}</div>`:''}
-                        </div>`;
-                    if (eventData.endLocation) {
-                        eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.endLocation.replace(/'/g,"\\'")}')" title="נווט אל ${eventData.endLocation}">🗺️</button>`;
-                    }
-                    break;
-                case "צ'ק-אין": case "צ'ק-אאוט":
-                    eventHTML = `<div class="event-text-details"><div><strong>${eventData.type}: ${eventData.lodgingName||''}</strong></div>${eventData.location?`<div>${eventData.location}</div>`:''}${eventData.description?`<div>${eventData.description}</div>`:''}</div>`;
-                    if (eventData.location) { // כפתור ניווט גם לצ'ק-אאוט אם יש מיקום (למשל, אם זה מלון אחר)
-                        eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.location.replace(/'/g,"\\'")}')" title="נווט אל ${eventData.location}">🗺️</button>`;
-                    }
-                    break;
-                default: // כולל אוכל, סיור, אטרקציה וכו'
-                    let title = eventData.customSubjectName||eventData.type;
-                    if (eventData.type==='אוכל' && eventData.foodPlace) title = eventData.foodPlace;
+      content.innerHTML = `<div class="event-content-wrapper">${iconHTML}${eventHTML}</div>`;
+      rowDiv.append(times, content);
+      dayBlockElement.appendChild(rowDiv);
+    }
 
-                    eventHTML = `<div class="event-text-details"><div><strong>${title}</strong></div>${eventData.location?`<div>מיקום: ${eventData.location}</div>`:''}${eventData.description?`<div>${eventData.description}</div>`:''}</div>`;
-                    if (eventData.location) {
-                        eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.location.replace(/'/g,"\\'")}')" title="נווט אל ${eventData.location}">🗺️</button>`;
-                    }
-            }
+    function openMapForNavigation(addr) {
+      if (addr) window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}`, '_blank');
+    }
 
-            content.innerHTML = `<div class="event-content-wrapper">${iconHTML}${eventHTML}</div>`;
-            rowDiv.append(times, content);
-            dayBlockElement.appendChild(rowDiv);
-        }
+    function captureAndDownloadScheduleScreenshot(scheduleName) {
+      const scheduleContainerElement = document.getElementById('scheduleContainer');
+      if (!scheduleContainerElement || !scheduleContainerElement.children.length) {
+        alert("אין תוכן לצלם בלוז.");
+        return;
+      }
+      const wrapper = document.createElement('div');
+      wrapper.style.padding = '20px';
+      wrapper.style.backgroundColor = '#FFFFFF';
+      wrapper.style.display = 'inline-block';
+      const titleElement = document.getElementById('displayScheduleName');
+      if (titleElement) {
+        const clonedTitle = titleElement.cloneNode(true);
+        clonedTitle.style.textAlign = 'center';
+        clonedTitle.style.marginBottom = '20px';
+        wrapper.appendChild(clonedTitle);
+      }
+      const clone = scheduleContainerElement.cloneNode(true);
+      wrapper.appendChild(clone);
+      wrapper.style.position = 'absolute';
+      wrapper.style.left = '-9999px';
+      wrapper.style.top = '-9999px';
+      document.body.appendChild(wrapper);
 
-        function showLodgingDetail(lodgingId, lodgings, modalInstance) {
-            const lodging = lodgings.find(l => l.id === lodgingId);
-            if (!lodging || !modalInstance) return;
-
-            document.getElementById('detailLodType').textContent = `סוג לינה: ${lodging.type || 'לא צוין'}`;
-            document.getElementById('detailLodName').textContent = `שם: ${lodging.name || 'לא צוין'}`;
-            document.getElementById('detailLodLocation').textContent = lodging.address || 'לא צוין מיקום';
-
-            const navButton = document.getElementById('detailLodNav');
-            if (lodging.address) {
-                navButton.style.display = 'inline-block';
-                navButton.onclick = () => openMapForNavigation(lodging.address);
-            } else {
-                navButton.style.display = 'none';
-            }
-
-            const checkInDate = lodging.checkInDate ? new Date(lodging.checkInDate).toLocaleDateString('he-IL') : 'לא צוין';
-            const checkInTime = lodging.checkInTime || '';
-            document.getElementById('detailLodCheckIn').textContent = `צ'ק-אין: ${checkInDate} ${checkInTime}`;
-
-            const checkOutDate = lodging.checkOutDate ? new Date(lodging.checkOutDate).toLocaleDateString('he-IL') : 'לא צוין';
-            const checkOutTime = lodging.checkOutTime || '';
-            document.getElementById('detailLodCheckOut').textContent = `צ'ק-אאוט: ${checkOutDate} ${checkOutTime}`;
-
-            modalInstance.show();
-        }
-
-
-        function openMapForNavigation(addr) {
-            if (addr) window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`, '_blank');
-        }
-
-        function captureAndDownloadScheduleScreenshot(scheduleName) {
-            const scheduleContainerElement = document.getElementById('scheduleContainer');
-            if (!scheduleContainerElement || !scheduleContainerElement.children.length) {
-                alert("אין תוכן לצלם בלוז.");
-                return;
-            }
-
-            // יצירת עטיפה שתכיל את הכותרת והתוכן של הלו"ז
-            const wrapper = document.createElement('div');
-            wrapper.style.padding = '30px'; // ריווח פנימי גדול יותר
-            wrapper.style.backgroundColor = getComputedStyle(document.body).getPropertyValue('--holiday-bg').trim() || '#fef7ef'; // רקע מהמשתנים
-            wrapper.style.display = 'inline-block'; // כדי שהרוחב יתאים לתוכן
-            wrapper.style.direction = 'rtl'; // לוודא כיווניות נכונה גם בצילום
-
-            // שכפול והוספת כותרת הלו"ז
-            const titleElement = document.getElementById('displayScheduleName');
-            if (titleElement) {
-                const clonedTitle = titleElement.cloneNode(true);
-                clonedTitle.style.color = getComputedStyle(document.body).getPropertyValue('--text-dark').trim();
-                clonedTitle.style.textAlign = 'center';
-                clonedTitle.style.marginBottom = '25px';
-                clonedTitle.style.fontSize = '1.8em'; // התאמת גודל פונט אם צריך
-                wrapper.appendChild(clonedTitle);
-            }
-
-            // שכפול והוספת תוכן הלו"ז
-            const clone = scheduleContainerElement.cloneNode(true);
-            // הסרת צל ואנימציות מרחפות מהאלמנטים המשוכפלים
-             clone.querySelectorAll('.day-block, .content-col, .lodging-badge, .btn-navigate').forEach(el => {
-                el.style.transition = 'none';
-                el.style.animation = 'none';
-                // אם יש hover effects שמפריעים, אולי כדאי להסיר אותם ספציפית או להגדיר להם סגנון בסיס
-            });
-            wrapper.appendChild(clone);
-
-            // מיקום העטיפה מחוץ למסך הנראה
-            wrapper.style.position = 'absolute';
-            wrapper.style.left = '-9999px';
-            wrapper.style.top = '-9999px';
-            document.body.appendChild(wrapper);
-
-            html2canvas(wrapper, {
-                scale: 1.5, // אפשר לשחק עם הסקייל לאיכות טובה יותר
-                useCORS: true,
-                backgroundColor: wrapper.style.backgroundColor, // שימוש בצבע הרקע של העטיפה
-                logging: true, // הפעלת לוגים לדיבוג אם יש בעיות
-                width: wrapper.offsetWidth, // הגדרת רוחב וגובה מפורשים
-                height: wrapper.offsetHeight,
-                windowWidth: wrapper.scrollWidth,
-                windowHeight: wrapper.scrollHeight
-            }).then(canvas => {
-                document.body.removeChild(wrapper); // הסרת העטיפה מה-DOM
-                const image = canvas.toDataURL("image/png", 0.95); // איכות PNG מעט גבוהה יותר
-                const link = document.createElement('a');
-                const safeName = (scheduleName || 'לוז-חופשה').replace(/[^a-z0-9א-ת_\-\s]/gi, '').replace(/\s+/g, '_');
-                link.download = `${safeName}_${new Date().toISOString().slice(0,10)}.png`; // הוספת תאריך לשם הקובץ
-                link.href = image;
-                link.click();
-                // אין צורך ב-revokeObjectURL עבור dataURL
-            }).catch(err => {
-                if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
-                console.error('שגיאה בצילום מסך:', err);
-                alert('אירעה שגיאה במהלך צילום המסך. נסו שוב, ואם הבעיה נמשכת בדקו את הקונסול.');
-            });
-        }
-    </script>
+      html2canvas(wrapper, {
+        scale: 1.5,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        logging: false
+      }).then(canvas => {
+        document.body.removeChild(wrapper);
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement('a');
+        const safeName = (scheduleName || 'לוז-חופשה').replace(/[^a-z0-9א-ת_\-\s]/gi, '').replace(/\s+/g, '_');
+        link.download = `${safeName}.png`;
+        link.href = image;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 100);
+      }).catch(err => {
+        if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
+        console.error('שגיאה בצילום מסך:', err);
+        alert('אירעה שגיאה במהלך צילום המסך.');
+      });
+    }
+  </script>
 </body>
 </html>
