@@ -18,7 +18,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-  <!-- כלול את הקובץ המשותף של Firebase -->
   <script src="firebase-config.js"></script>
 
   <script>
@@ -651,9 +650,9 @@
             // קביעת/וידוא קטגוריה לכל לו"ז
             savedSchedules.forEach(sch => {
               if (!sch.category) {
-                   if (sch.name.toLowerCase().includes("חופשה")) sch.category = "חופשה"; // Case insensitive check
-                   else if (sch.name.toLowerCase().includes("ניהול") || sch.name.toLowerCase().includes("יומי")) sch.category = "ניהול יום";
-                   else sch.category = "למידה";
+                   if (sch.name && sch.name.toLowerCase().includes("חופשה")) sch.category = "חופשה"; // Case insensitive check and check for sch.name
+                   else if (sch.name && (sch.name.toLowerCase().includes("ניהול") || sch.name.toLowerCase().includes("יומי"))) sch.category = "ניהול יום";
+                   else sch.category = "למידה"; // ברירת מחדל אם אין שם או קטגוריה אחרת מתאימה
               }
             });
             renderCategoriesAndSchedules(); // קריאה לפונקציה שמציגה הכל
@@ -679,18 +678,19 @@
 
         const schedulesByCategory = { "למידה": [], "חופשה": [], "ניהול יום": [] };
         savedSchedules.forEach((sch, originalIndex) => {
-            const category = sch.category || "למידה";
-            if (category in schedulesByCategory) {
+            const category = sch.category || "למידה"; // אם אין קטגוריה, שייך ל"למידה"
+            if (schedulesByCategory.hasOwnProperty(category)) { // ודא שהקטגוריה קיימת במבנה שלנו
                 schedulesByCategory[category].push({ schedule: sch, index: originalIndex });
             } else {
-                schedulesByCategory["למידה"].push({ schedule: sch, index: originalIndex }); // ברירת מחדל
+                schedulesByCategory["למידה"].push({ schedule: sch, index: originalIndex }); // ברירת מחדל אם הקטגוריה לא מוכרת
             }
         });
+
 
         const categoryOrder = ["למידה", "חופשה", "ניהול יום"]; // סדר תצוגה רצוי
         const categoryDetails = {
             "למידה": { icon: "📖", emptyMsg: "עדיין לא שמרת לוז למידה.", createLink: "learning-schedule.html" },
-            "חופשה": { icon: "🏖️", emptyMsg: "עדיין לא שמרת לוז חופשה.", createLink: "חופשה.html" },
+            "חופשה": { icon: "🏖️", emptyMsg: "עדיין לא שמרת לוז חופשה.", createLink: "חופשה.html" }, // שים לב לשם הקובץ כאן
             "ניהול יום": { icon: "📅", emptyMsg: "עדיין לא שמרת לוז ניהול יום.", createLink: "יומי.html" }
         };
 
@@ -727,7 +727,6 @@
                 } else {
                     listHtml += "<ul style='list-style: none; padding:0;'>";
                     schedulesList.forEach(item => {
-                        // Added check for item.schedule before accessing name
                         const scheduleName = item.schedule ? (item.schedule.name || 'לו"ז ללא שם') : 'לו"ז לא תקין';
                         listHtml += `<li class="saved-schedule-item" onclick="viewSavedSchedule(${item.index})" title="לחץ לצפייה בפרטי הלוז">
                                        <h3>${scheduleName}</h3>
@@ -806,71 +805,102 @@
       }
     }
 
-    // הצגת לוז ספציפי שנבחר
+    // *************** הקוד המעודכן מתחיל כאן ***************
     function viewSavedSchedule(idx) {
-       if (idx < 0 || idx >= savedSchedules.length || !savedSchedules[idx]) { // Added check for existence
-           console.error("Invalid index or schedule for viewing:", idx);
-           alert("שגיאה: אינדקס לא תקין או לו\"ז לא קיים לצפייה.");
-           goBackToCategoriesView(); // חזרה לתצוגת הקטגוריות
-           return;
-       }
+        if (idx < 0 || idx >= savedSchedules.length || !savedSchedules[idx]) {
+            console.error("Invalid index or schedule for viewing:", idx);
+            alert("שגיאה: אינדקס לא תקין או לו\"ז לא קיים לצפייה.");
+            goBackToCategoriesView();
+            return;
+        }
 
-      const sch = savedSchedules[idx];
-      const contentElement = document.getElementById('content');
-       if (!contentElement) return;
+        const sch = savedSchedules[idx];
+        const contentElement = document.getElementById('content');
+        if (!contentElement) return;
 
-       // שימור הכותרת הראשית של הדף
-       const mainTitleHTML = `<h2 id="main-title">הלוזי״ם שלי</h2>`;
-
-      let finalHtml = "";
-      // Added check for scheduleItems existence and type
-      if (sch.scheduleItems && Array.isArray(sch.scheduleItems) && sch.scheduleItems.length > 0) {
-          finalHtml += `<div id="finalScheduleDisplay">`; // עטיפה לתצוגת הלוז
-          sch.scheduleItems.forEach(item => {
-             // Basic check if item is valid
-             if (item && item.subject) {
-                 const emoji = getBackgroundEmoji(item.subject || '');
-                 const startTime = item.startTime || '??:??';
-                 const endTime = item.endTime || '??:??';
-                 const subject = item.subject || 'ללא נושא';
-                 const description = item.description ? `<p>${item.description}</p>` : '';
-
-                 finalHtml += `<div class="saved-schedule-item">
-                                <div class="emoji-background">${emoji}</div>
-                                <h3>${startTime} - ${endTime} : ${subject}</h3>
-                                ${description}
-                              </div>`;
-             }
-          });
-           finalHtml += `</div>`;
-      } else {
-           finalHtml = `<div id="finalScheduleDisplay"><p style="margin-top: 20px; color: #6c757d;">לו"ז זה ריק מפעילויות.</p></div>`;
-      }
-
-       const scheduleName = sch.name || 'לו"ז ללא שם';
-       const safeScheduleName = scheduleName.replace(/'/g, "\\'"); // Escape single quotes for JS string
-
-       // עדכון ה-DOM עם הכותרת, שם הלוז, התוכן והכפתורים
-       contentElement.innerHTML = `
-          ${mainTitleHTML}
-          <h3 style="font-size: 1.6em; color: #34495e; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px;">${scheduleName}</h3>
-          ${finalHtml}
-          <div class="button-group">
-             <button class="btn" onclick="captureScreenshotFromElement('finalScheduleDisplay', '${safeScheduleName}')">
-                 <i class="fas fa-camera"></i> צילום מסך
-             </button>
-             <button class="btn" onclick="copyScheduleToClipboardFromSchedule(${idx})">
-                 <i class="fas fa-copy"></i> העתק כטקסט
-             </button>
-             <button class="btn" onclick="editSchedule(${idx})">
-                 <i class="fas fa-edit"></i> ערוך לו"ז
-             </button>
-             <button class="btn" onclick="goBackToCategoriesView()">
-                 <i class="fas fa-arrow-right"></i> חזור לרשימה
-             </button>
-          </div>
-       `;
+        if (sch.category === "חופשה") {
+            try {
+                // ודא ש-sch.scheduleEvents ו-sch.lodgings קיימים והם בפורמט הנכון
+                // sch.scheduleEvents צריך להיות אובייקט (מפת תאריכים למערכי אירועים)
+                // sch.lodgings צריך להיות מערך
+                if (sch.name && sch.scheduleEvents && typeof sch.scheduleEvents === 'object' && !Array.isArray(sch.scheduleEvents) && sch.lodgings && Array.isArray(sch.lodgings)) {
+                    const dataToPass = {
+                        name: sch.name,
+                        scheduleEvents: sch.scheduleEvents,
+                        lodgings: sch.lodgings
+                    };
+                    localStorage.setItem('liveVacationScheduleData', JSON.stringify(dataToPass));
+                    window.location.href = 'חופשה-לייב.html';
+                } else {
+                    console.warn("לו\"ז חופשה אינו מכיל את הנתונים המפורטים הנדרשים (name, scheduleEvents as object, lodgings as array) לתצוגה חיה. מציג גרסה פשוטה.", sch);
+                    displaySimpleScheduleInPage(sch, contentElement, idx);
+                }
+            } catch (e) {
+                console.error("Error preparing data for live view:", e);
+                alert("שגיאה בהכנת הנתונים לתצוגה חיה.");
+                displaySimpleScheduleInPage(sch, contentElement, idx); // Fallback
+            }
+            return;
+        }
+        displaySimpleScheduleInPage(sch, contentElement, idx);
     }
+
+    function displaySimpleScheduleInPage(sch, contentElement, originalIndex) {
+        const mainTitleHTML = `<h2 id="main-title">הלוזי״ם שלי</h2>`;
+        let finalHtml = "";
+
+        // עכשיו נשתמש ב-sch.scheduleItems אם קיים, כי זה לו"ז לא-חופשה או חופשה ללא פירוט
+        const itemsToDisplay = sch.scheduleItems || [];
+
+        if (itemsToDisplay.length > 0) {
+            finalHtml += `<div id="finalScheduleDisplay">`;
+            itemsToDisplay.forEach(item => {
+                if (item && item.subject) {
+                    const emoji = getBackgroundEmoji(item.subject || '');
+                    const startTime = item.startTime || '??:??';
+                    const endTime = item.endTime || '??:??';
+                    const subject = item.subject || 'ללא נושא';
+                    const description = item.description ? `<p>${item.description}</p>` : '';
+
+                    finalHtml += `<div class="saved-schedule-item">
+                                    <div class="emoji-background">${emoji}</div>
+                                    <h3>${startTime} - ${endTime} : ${subject}</h3>
+                                    ${description}
+                                 </div>`;
+                }
+            });
+            finalHtml += `</div>`;
+        } else {
+            finalHtml = `<div id="finalScheduleDisplay"><p style="margin-top: 20px; color: #6c757d;">לו"ז זה ריק מפעילויות.</p></div>`;
+        }
+
+        const scheduleName = sch.name || 'לו"ז ללא שם';
+        const safeScheduleName = scheduleName.replace(/'/g, "\\'");
+        const currentIndex = savedSchedules.findIndex(s => s === sch); // מצא את האינדקס הנוכחי, חשוב אם savedSchedules השתנה
+
+
+        contentElement.innerHTML = `
+           ${mainTitleHTML}
+           <h3 style="font-size: 1.6em; color: #34495e; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px;">${scheduleName}</h3>
+           ${finalHtml}
+           <div class="button-group">
+              <button class="btn" onclick="captureScreenshotFromElement('finalScheduleDisplay', '${safeScheduleName}')">
+                  <i class="fas fa-camera"></i> צילום מסך
+              </button>
+              <button class="btn" onclick="copyScheduleToClipboardFromSchedule(${currentIndex})">
+                  <i class="fas fa-copy"></i> העתק כטקסט
+              </button>
+              <button class="btn" onclick="editSchedule(${currentIndex})">
+                  <i class="fas fa-edit"></i> ערוך לו"ז
+              </button>
+              <button class="btn" onclick="goBackToCategoriesView()">
+                  <i class="fas fa-arrow-right"></i> חזור לרשימה
+              </button>
+           </div>
+        `;
+    }
+    // *************** סוף הקוד המעודכן ***************
+
 
      // פונקציה לחזרה לתצוגת הקטגוריות
      function goBackToCategoriesView() {
@@ -914,26 +944,25 @@
         // Enhanced filtering for valid schedules
         const validSchedules = savedSchedules.filter(sch =>
              sch && typeof sch === 'object' && sch.name && typeof sch.name === 'string' &&
-             Array.isArray(sch.scheduleItems) &&
-             // Optional: check if items inside scheduleItems are valid too
-             sch.scheduleItems.every(item => item && typeof item === 'object' && item.subject)
+             (
+                (sch.scheduleItems && Array.isArray(sch.scheduleItems) && sch.scheduleItems.every(item => item && typeof item === 'object' && item.subject)) || // לו"ז פשוט
+                (sch.scheduleEvents && typeof sch.scheduleEvents === 'object' && sch.lodgings && Array.isArray(sch.lodgings)) // לו"ז חופשה מפורט
+             )
         );
+
 
         db.collection("schedules").doc(user.uid).set({ schedules: validSchedules })
         .then(() => { console.log("Schedules saved successfully to Firestore"); })
         .catch((error) => {
              console.error("Error saving schedules to Firestore: ", error);
-             // Provide more specific feedback if possible, e.g., based on error code
              alert(`אירעה שגיאה בשמירת הלו"זים: ${error.message}`);
         });
       } else {
            console.warn("Cannot save schedules. User not logged in.");
-           // Maybe alert the user they need to log in again
-           // alert("אינך מחובר. לא ניתן לשמור את השינויים.");
       }
     }
 
-    // מילון אמוג'י ומציאת אמוג'י מתאים (נשאר זהה לגרסה הקודמת)
+    // מילון אמוג'י ומציאת אמוג'י מתאים
     const subjectEmojis = {
       "קריאה": "📖", "קריאת חומר": "📖", "חומר לימוד": "📖",
       "תרגול": "📝", "תרגילים": "📝",
@@ -954,26 +983,19 @@
     };
 
     function getBackgroundEmoji(subject) {
-      if (!subject || typeof subject !== 'string') return subjectEmojis["כללי"]; // Added type check
+      if (!subject || typeof subject !== 'string') return subjectEmojis["כללי"];
       const lowerSubject = subject.toLowerCase();
-
-       // חיפוש מדויק יותר של אמוג'י בסוף או בתחילת המחרוזת
        const trimmedSubject = subject.trim();
-       // Use regex for more robust emoji detection at start/end
        const emojiAtEnd = trimmedSubject.match(/\p{Emoji_Presentation}$/u);
        if (emojiAtEnd) return emojiAtEnd[0];
        const emojiAtStart = trimmedSubject.match(/^\p{Emoji_Presentation}/u);
        if (emojiAtStart) return emojiAtStart[0];
 
-
-      // חיפוש מילה במילון
       for (const key in subjectEmojis) {
-        // Ensure key exists and is a string before calling toLowerCase
         if (subjectEmojis.hasOwnProperty(key) && typeof key === 'string' && lowerSubject.includes(key.toLowerCase())) {
           return subjectEmojis[key];
         }
       }
-      // חיפוש אמוג'י כלשהו בתוך המחרוזת
        const emojiMatch = subject.match(/\p{Emoji_Presentation}/u);
        if (emojiMatch) return emojiMatch[0];
 
@@ -988,45 +1010,35 @@
           alert("שגיאה: לא נמצא האלמנט לצילום.");
           return;
       }
-
-      // יצירת עטיפה זמנית עם רקע לבן לצילום נקי יותר
        const wrapper = document.createElement('div');
        wrapper.style.padding = '20px';
        wrapper.style.backgroundColor = '#ffffff';
        wrapper.style.display = 'inline-block';
-       wrapper.style.minWidth = elem.offsetWidth + 'px'; // Ensure wrapper is at least as wide
-
-       // שכפול האלמנט לתוך העטיפה
+       wrapper.style.minWidth = elem.offsetWidth + 'px';
        const clone = elem.cloneNode(true);
        wrapper.appendChild(clone);
-
-       // הוספת העטיפה ל-body באופן זמני ובלתי נראה
        wrapper.style.position = 'absolute';
        wrapper.style.left = '-9999px';
        wrapper.style.top = '-9999px';
        document.body.appendChild(wrapper);
 
-
       html2canvas(wrapper, {
           backgroundColor: "#ffffff",
           useCORS: true,
-           scale: 1.5, // Slightly higher resolution
-           logging: false // Disable html2canvas logging to console
+           scale: 1.5,
+           logging: false
       }).then(canvas => {
-        document.body.removeChild(wrapper); // הסרת העטיפה הזמנית
-
+        document.body.removeChild(wrapper);
         canvas.toBlob(function(blob) {
           if (blob) {
               const link = document.createElement("a");
-              // Sanitize filename more thoroughly
               const safeName = (name || 'לוז')
-                 .replace(/[\s]/g, '_') // Replace spaces with underscore
-                 .replace(/[^a-z0-9א-ת_\-]/gi, '') // Remove invalid characters
-                 || 'לוז'; // Fallback name
+                 .replace(/[\s]/g, '_')
+                 .replace(/[^a-z0-9א-ת_\-]/gi, '')
+                 || 'לוז';
               link.download = safeName + ".png";
               link.href = URL.createObjectURL(blob);
               link.click();
-              // Clean up the object URL after a short delay
               setTimeout(() => URL.revokeObjectURL(link.href), 100);
           } else {
                console.error("Failed to create blob from canvas.");
@@ -1044,16 +1056,17 @@
 
     // העתקת לוז ללוח כטקסט מעוצב
     function copyScheduleToClipboardFromSchedule(idx) {
-        if (idx < 0 || idx >= savedSchedules.length || !savedSchedules[idx]) { // Added existence check
+        if (idx < 0 || idx >= savedSchedules.length || !savedSchedules[idx]) {
             alert("שגיאה: לא ניתן להעתיק לו\"ז לא קיים.");
             return;
          }
       const sch = savedSchedules[idx];
       let text = `*${sch.name || 'לו"ז ללא שם'}*\n\n`;
+      const itemsToCopy = sch.scheduleItems || []; // השתמש ב-scheduleItems אם קיים
 
-      if (sch.scheduleItems && Array.isArray(sch.scheduleItems) && sch.scheduleItems.length > 0) {
-          sch.scheduleItems.forEach(item => {
-             if (item && item.subject) { // Check item validity
+      if (itemsToCopy.length > 0) {
+          itemsToCopy.forEach(item => {
+             if (item && item.subject) {
                  const emoji = getBackgroundEmoji(item.subject || '');
                  const startTime = item.startTime || '??:??';
                  const endTime = item.endTime || '??:??';
@@ -1069,28 +1082,23 @@
            text += "(לו\"ז ריק)\n";
       }
 
-       const finalText = text.trim(); // Trim final text
+       const finalText = text.trim();
 
-       // Use Clipboard API first
        if (navigator.clipboard && navigator.clipboard.writeText) {
            navigator.clipboard.writeText(finalText).then(() => {
              alert("הלו״ז הועתק ללוח בהצלחה!");
            }).catch(err => {
              console.error("Clipboard API error:", err);
-             // Fallback to execCommand if Clipboard API fails
              copyUsingExecCommand(finalText);
            });
        } else {
-           // Fallback immediately if Clipboard API is not available
            copyUsingExecCommand(finalText);
        }
     }
 
-     // Fallback copy function using execCommand
      function copyUsingExecCommand(textToCopy) {
          const textArea = document.createElement("textarea");
          textArea.value = textToCopy;
-         // Make textarea non-editable and visually hidden
          textArea.style.position = "fixed";
          textArea.style.top = "-9999px";
          textArea.style.left = "-9999px";
@@ -1112,10 +1120,7 @@
              document.body.removeChild(textArea);
          }
      }
-
-
     // --- סוף פונקציות ספציפיות ---
-
   </script>
 </body>
 </html>
