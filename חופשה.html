@@ -662,9 +662,9 @@
               <div>נחיתה 🛬: ${eventData.arriveTime}</div>
               ${eventData.description?`<div><em>${eventData.description}</em></div>`:''}
             </div>`;
-          if(eventData.from){
-            eventHTML+=`<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.from.replace(/'/g, "\\'")}')" title="נווט אל ${eventData.from}">🗺️</button>`;
-          }
+       if (eventData.from) {  
+    eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.from}')" title="נווט אל ${eventData.from}">🗺️</button>`;  
+}
           break;
         case 'השקמה': case 'שינה':
           iconHTML=`<div class="event-icon">${genEmoji}</div>`;
