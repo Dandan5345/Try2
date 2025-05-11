@@ -101,7 +101,12 @@
         }
         .content-col {
             position: relative; flex: 1;
-            padding: 1rem 1.5rem;
+            .content-col {
+    /* … */
+    /* ריווח רגיל מלמעלה/ימין/למטה/שמאל */
+    padding: 1rem 4rem 1rem 1.5rem;
+    /* … */
+}
             border-radius: 1rem;
             background: var(--bg-event-general);
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
