@@ -194,7 +194,7 @@
     .content-col[data-type="צ'ק-אין"],
     .content-col[data-type="צ'ק-אאוט"] { background: var(--bg-event-lodging); }
     .content-col[data-type="אטרקציה"],
-    .content-col[data-type="סיור"]      { background: var(--bg-event-activity); }
+    .content-col[data-type="סיור"]     { background: var(--bg-event-activity); }
 
     .content-col::before {
       content: attr(data-bg-emoji);
@@ -527,7 +527,7 @@
           'טיסה': '✈️', 'צ\'ק-אין': '🧳', 'צ\'ק-אאוט': '👋'
         },
         lodgings=[], editingLodgingId=null, lodgingIdCounter=0,
-        scheduleEvents = {}, eventIdCounter = 0,
+        scheduleEvents = {}, // אובייקט לאירועים, מקובצים לפי תאריך
         flightDataTmp=null, currentEditingEventId = null,
         currentVacationName = ''; // שם הלוז הנוכחי (מהאינפוט)
 
@@ -538,7 +538,7 @@
       while(d<=l){ a.push(d.toISOString().split('T')[0]); d.setDate(d.getDate()+1); }
       return a;
     }
-    function generateEventId(){ return `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; } // ID ייחודי יותר
+    function generateEventId(){ return `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; }
 
 
     // --- EVENT RENDERING AND MANAGEMENT ---
@@ -551,11 +551,9 @@
             t2=y.querySelector('.times-col span:first-child').textContent;
         return t1.localeCompare(t2);
       });
-      // הסרת כל ה-rows וה-dividers הקיימים
       b.querySelectorAll('.event-row, .event-divider').forEach(el=>el.remove());
-      // הוספת ה-rows הממוינים עם dividers ביניהם
       rows.forEach((r,i)=>{
-        if(i>0 && rows.length > 1){ // הוסף קו מפריד רק אם יש יותר מפריט אחד ויש פריט קודם
+        if(i>0 && rows.length > 1){
           let hr=document.createElement('hr'); hr.className='event-divider'; b.append(hr);
         }
         b.append(r);
@@ -594,41 +592,36 @@
 
     function renderEventRow(date,eventData){
       let blk=document.querySelector(`[data-date="${date}"]`);
-      if(!blk){ // אם הבלוק לא קיים, צור אותו והוסף למקום הנכון
+      if(!blk){
         let wd=new Date(date).getDay();
         blk=createDayBlock(weekdayNames[wd],date);
         const container=document.getElementById('scheduleContainer');
         const blocks=Array.from(container.children);
         blocks.push(blk);
-        // מיין את הבלוקים לפי תאריך לפני הוספה
         blocks.sort((a,b)=>new Date(a.dataset.date) - new Date(b.dataset.date));
-        // נקה את הקונטיינר והוסף את הבלוקים הממוינים
         container.innerHTML = '';
         blocks.forEach(b=>container.appendChild(b));
-      } else { // אם הבלוק קיים, עדכן את הכותרת שלו
+      } else {
         let wd=new Date(date).getDay(),
             nh=createDayBlock(weekdayNames[wd],date).querySelector('.day-header');
         if(blk.querySelector('.day-header')) blk.querySelector('.day-header').replaceWith(nh);
         else blk.prepend(nh);
       }
 
-      // הסר שורה קיימת אם האירוע נערך
       const existingRow=document.getElementById(eventData.id);
       if(existingRow){
         const prevDivider = existingRow.previousElementSibling;
         const nextDivider = existingRow.nextElementSibling;
         existingRow.remove();
-        // הסר קווים מפרידים מיותרים
         if (prevDivider && prevDivider.classList.contains('event-divider') && (!nextDivider || !nextDivider.classList.contains('event-row'))) {
             prevDivider.remove();
         }
-         // אם זו השורה היחידה שנשארה, והיה אחריה קו מפריד, הסר גם אותו
         if (nextDivider && nextDivider.classList.contains('event-divider') && blk.querySelectorAll('.event-row').length === 0) {
             nextDivider.remove();
         }
       }
 
-      let rowDiv=document.createElement('div'); // שונה מ-row כדי למנוע התנגשות עם משתנה גלובלי פוטנציאלי
+      let rowDiv=document.createElement('div');
       rowDiv.className='event-row';
       rowDiv.id=eventData.id;
       if(eventData.type!=="צ'ק-אין"&&eventData.type!=="צ'ק-אאוט"){
@@ -670,7 +663,7 @@
               ${eventData.description?`<div><em>${eventData.description}</em></div>`:''}
             </div>`;
           if(eventData.from){
-            eventHTML+=`<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.from}')" title="נווט אל ${eventData.from}">🗺️</button>`;
+            eventHTML+=`<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.from.replace(/'/g, "\\'")}')" title="נווט אל ${eventData.from}">🗺️</button>`;
           }
           break;
         case 'השקמה': case 'שינה':
@@ -697,7 +690,7 @@
               ${eventData.description?`<div>${eventData.description}</div>`:''}
             </div>`;
           if(eventData.endLocation){
-            eventHTML+=`<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.endLocation}')" title="נווט אל ${eventData.endLocation}">🗺️</button>`;
+            eventHTML+=`<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.endLocation.replace(/'/g, "\\'")}')" title="נווט אל ${eventData.endLocation}">🗺️</button>`;
           }
           break;
         case "צ'ק-אין": case "צ'ק-אאוט":
@@ -708,7 +701,7 @@
               ${eventData.location?`<div>${eventData.location}</div>`:''}
             </div>`;
           if(eventData.type==="צ'ק-אין"&&eventData.location){
-            eventHTML+=`<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.location}')" title="נווט אל ${eventData.location}">🗺️</button>`;
+            eventHTML+=`<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.location.replace(/'/g, "\\'")}')" title="נווט אל ${eventData.location}">🗺️</button>`;
           }
           break;
         default:
@@ -722,21 +715,18 @@
               ${eventData.description?`<div>${eventData.description}</div>`:''}
             </div>`;
           if(eventData.location){
-            eventHTML+=`<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.location}')" title="נווט אל ${eventData.location}">🗺️</button>`;
+            eventHTML+=`<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.location.replace(/'/g, "\\'")}')" title="נווט אל ${eventData.location}">🗺️</button>`;
           }
       }
 
       content.innerHTML=`<div class="event-content-wrapper">${iconHTML}${eventHTML}</div>`;
-
-      // הוספת קו מפריד רק אם יש כבר אירועים בבלוק הזה
       const existingEventsCount = blk.querySelectorAll('.event-row').length;
       if(existingEventsCount > 0){
         let hr=document.createElement('hr'); hr.className='event-divider'; blk.append(hr);
       }
-
       rowDiv.append(times,content);
       blk.append(rowDiv);
-      sortDayEvents(date); // מיין מחדש את האירועים בבלוק לאחר הוספה/עדכון
+      sortDayEvents(date);
     }
 
 
@@ -959,7 +949,7 @@
           const blocks=Array.from(cont.children);
           blocks.push(blk);
           blocks.sort((a,b)=>new Date(a.dataset.date)-new Date(b.dataset.date));
-          cont.innerHTML = ''; // נקה לפני הוספה מחדש
+          cont.innerHTML = '';
           blocks.forEach(b=>cont.appendChild(b));
         }
         if(blk){
@@ -984,7 +974,7 @@
       if(!num||!date){alert('אנא מלא תאריך ומספר טיסה.');return;}
       let loader=document.getElementById('loader'); loader.style.display='flex';
 
-      const apiKey='33d4ecb375mshcf029fba766af44p17668djsnaef3c36cb209'; // מפתח API ישן, יש להחליף
+      const apiKey='33d4ecb375mshcf029fba766af44p17668djsnaef3c36cb209';
       fetch(`https://aerodatabox.p.rapidapi.com/flights/number/${encodeURIComponent(num)}/${encodeURIComponent(date)}`,{
         method:'GET',
         headers:{
@@ -1127,7 +1117,6 @@
           if (prevDivider && prevDivider.classList.contains('event-divider') && (!nextDivider || !nextDivider.classList.contains('event-row'))) {
               prevDivider.remove();
           } else if (nextDivider && nextDivider.classList.contains('event-divider') && dayBlock && dayBlock.querySelectorAll('.event-row').length === 0) {
-              // אם זה היה האירוע האחרון ביום, והיה קו מפריד אחריו
               nextDivider.remove();
           }
         }
@@ -1137,7 +1126,7 @@
           const hasEv=scheduleEvents[ev.date]&&scheduleEvents[ev.date].length;
           const hasL=lodgings.some(l=>ev.date>=l.checkInDate&&ev.date<=l.checkOutDate);
           if(!hasEv&&!hasL) blk.remove();
-          else sortDayEvents(ev.date); // מיין מחדש אם נשארו אירועים
+          else sortDayEvents(ev.date);
         }
       }
       bootstrap.Modal.getInstance(document.getElementById('eventActionModal')).hide();
@@ -1167,9 +1156,9 @@
         document.getElementById('editingEventId').value=ev.id;
         buildSubjectOptions();
         document.getElementById('eventType').value=ev.customSubjectName||ev.type;
-        document.getElementById('eventType').dispatchEvent(new Event('change')); // הפעלת אירוע change
+        document.getElementById('eventType').dispatchEvent(new Event('change'));
 
-        setTimeout(()=>{ // Timeout קטן כדי לאפשר לשדות הדינמיים להיווצר
+        setTimeout(()=>{
           if(document.getElementById('evDate')) document.getElementById('evDate').value=ev.date;
           if(document.getElementById('evStart')) document.getElementById('evStart').value=ev.start;
           if(document.getElementById('evEnd')) document.getElementById('evEnd').value=ev.end;
@@ -1181,16 +1170,16 @@
             if(document.getElementById('walkEndLoc')) document.getElementById('walkEndLoc').value=ev.endLocation||'';
           } else if(ev.type==='אוכל'){
             if(document.getElementById('foodPlace')) document.getElementById('foodPlace').value=ev.foodPlace||'';
-            if(document.getElementById('foodPlace')) document.getElementById('foodPlace').dispatchEvent(new Event('change')); // הפעל change
-            setTimeout(()=>{ // Timeout נוסף אם השדה של המיקום תלוי ב-change הקודם
-                if(document.getElementById('foodLocation') && document.getElementById('foodLocationGroup') && document.getElementById('foodLocationGroup').style.display!=='none'){
-                     document.getElementById('foodLocation').value=ev.location||'';
-                }
+            if(document.getElementById('foodPlace')) document.getElementById('foodPlace').dispatchEvent(new Event('change'));
+            setTimeout(()=>{
+              if(document.getElementById('foodLocation') && document.getElementById('foodLocationGroup') && document.getElementById('foodLocationGroup').style.display!=='none'){
+                   document.getElementById('foodLocation').value=ev.location||'';
+              }
             }, 50);
           } else if(document.getElementById('eventLocation')&&ev.location){
             document.getElementById('eventLocation').value=ev.location;
           }
-        },100); // הגדלת ה-timeout במקצת
+        },100);
 
         new bootstrap.Modal(document.getElementById('modalAddEvent')).show();
       }
@@ -1198,23 +1187,25 @@
     });
 
     // --- SAVE SCHEDULE AND SCREENSHOT FUNCTIONS ---
-    function convertVacationEventsToScheduleItems(vacationScheduleEvents, lodgingsArray) {
+    // הפונקציה הזו יוצרת מערך פשוט של פריטים עבור תאימות עם my-schedules.html הישן יותר,
+    // אבל אנחנו נשמור את הנתונים המלאים בנוסף.
+    function convertVacationEventsToScheduleItems(currentScheduleEvents, currentLodgings) {
         const items = [];
-        const sortedDates = Object.keys(vacationScheduleEvents).sort((a, b) => new Date(a) - new Date(b));
+        const sortedDates = Object.keys(currentScheduleEvents).sort((a, b) => new Date(a) - new Date(b));
 
         for (const date of sortedDates) {
-            const dayEvents = [...vacationScheduleEvents[date]]; // צור עותק כדי למנוע שינוי המקור
+            const dayEvents = [...currentScheduleEvents[date]];
             dayEvents.sort((a,b) => (a.start || a.departTime).localeCompare(b.start || b.departTime));
 
             for (const event of dayEvents) {
                 let subject = '';
                 let desc = event.description || '';
                 let locationInfo = event.location || '';
+                let itemDate = date; // *** הוספנו את התאריך לפריט ***
 
                 switch (event.type) {
                     case 'טיסה':
                         subject = `טיסה ${event.number || ''}: מ-${event.from} ל-${event.to}`;
-                        // מידע נוסף כמו חברת תעופה יכול להתווסף לתיאור אם רוצים
                         if (event.airline) desc = `${event.airline}${desc ? ' - ' + desc : ''}`;
                         break;
                     case "צ'ק-אין":
@@ -1226,26 +1217,26 @@
                         subject = `${event.mode || 'נסיעה/הליכה'}`;
                         if (event.startLocation) subject += ` מ-${event.startLocation}`;
                         subject += ` אל ${event.endLocation}`;
-                        // מיקום ספציפי יכול להיות חלק מהנושא או התיאור
                         break;
                     case 'אוכל':
                         subject = event.foodPlace || event.type;
                         if (locationInfo && (event.foodPlace === '🍽️ מסעדה' || event.foodPlace === '🍔 אוכל מהיר')) {
-                             desc = `מיקום: ${locationInfo}${desc ? ' - ' + desc : ''}`;
+                            desc = `מיקום: ${locationInfo}${desc ? ' - ' + desc : ''}`;
                         }
                         break;
-                    default: // אירועים כלליים, פעילויות וכו'
+                    default:
                         subject = event.customSubjectName || event.type;
                         if (locationInfo) desc = `מיקום: ${locationInfo}${desc ? ' - ' + desc : ''}`;
                 }
 
                 items.push({
+                    date: itemDate, // *** שומרים את התאריך ***
                     subject: subject.trim(),
                     startTime: event.start || event.departTime,
                     endTime: event.end || event.arriveTime,
                     description: desc.trim(),
-                    // ניתן להוסיף את התאריך המקורי אם רוצים למיין אחרת ב"הלוזים שלי",
-                    // אך כרגע הפורמט שם מסתמך על סדר הפריטים במערך
+                    // שומרים גם את הנתונים המקוריים של האירוע אם נרצה גמישות בעתיד, אך זה ינפח את האובייקט
+                    // originalEventData: { ...event } // אפשרות
                 });
             }
         }
@@ -1256,30 +1247,36 @@
         const user = firebase.auth().currentUser;
         if (!user) {
             alert("עליך להתחבר כדי לשמור את הלוז באתר.");
-            // אפשר להפנות לדף התחברות או לפתוח מודל התחברות
             return false;
         }
 
         if (!currentVacationName.trim()) {
             alert("אנא צור שם ללוז לפני השמירה.");
-            // אפשר לפתוח את מודל שם הלוז
             return false;
         }
 
-        if (Object.keys(scheduleEvents).length === 0) {
-            alert("הלוז ריק. אנא הוסף אירועים לפני השמירה.");
+        // בדוק אם יש אירועים או פרטי לינה לשמור
+        if (Object.keys(scheduleEvents).length === 0 && lodgings.length === 0) {
+            alert("הלוז ריק. אנא הוסף אירועים או פרטי לינה לפני השמירה.");
             return false;
         }
 
         const db = firebase.firestore();
         const scheduleDocRef = db.collection("schedules").doc(user.uid);
-        const itemsToSave = convertVacationEventsToScheduleItems(scheduleEvents, lodgings);
+        
+        // יצירת גרסה פשוטה של scheduleItems (אם יש צורך בתאימות לאחור או שימוש אחר)
+        // וגם הוספנו את התאריך לכל פריט ב-convertVacationEventsToScheduleItems
+        const flatScheduleItems = convertVacationEventsToScheduleItems(scheduleEvents, lodgings);
 
+        // ******** זה השינוי המרכזי - שמירת הנתונים המלאים ********
         const newScheduleData = {
             name: currentVacationName,
             category: "חופשה", // קטגוריה קבועה לדף זה
-            scheduleItems: itemsToSave
+            scheduleEvents: scheduleEvents, // אובייקט האירועים המקורי, מקובץ לפי תאריכים
+            lodgings: lodgings,             // מערך פרטי הלינה המקורי
+            scheduleItems: flatScheduleItems // אופציונלי: גרסה שטוחה של האירועים, כעת עם תאריך לכל פריט
         };
+        // ******** סוף השינוי המרכזי ********
 
         try {
             await db.runTransaction(async (transaction) => {
@@ -1289,16 +1286,13 @@
                     existingSchedules = doc.data().schedules;
                 }
 
-                // בדוק אם לוז עם אותו שם וקטגוריה כבר קיים (לצורך עדכון או מניעת כפילות)
                 const existingIndex = existingSchedules.findIndex(s => s.name === newScheduleData.name && s.category === "חופשה");
                 if (existingIndex > -1) {
-                    // אם קיים, עדכן אותו (מחליף את הקיים)
                     if (!confirm(`לוז בשם "${newScheduleData.name}" כבר קיים. האם לעדכן אותו?`)) {
                         throw new Error("השמירה בוטלה על ידי המשתמש.");
                     }
                     existingSchedules[existingIndex] = newScheduleData;
                 } else {
-                    // אם לא קיים, הוסף חדש
                     existingSchedules.push(newScheduleData);
                 }
                 transaction.set(scheduleDocRef, { schedules: existingSchedules });
@@ -1319,50 +1313,40 @@
             alert("אין תוכן לצלם בלוז.");
             return;
         }
-
-        // יצירת עטיפה זמנית עם רקע לבן וריווח
         const wrapper = document.createElement('div');
         wrapper.style.padding = '20px';
-        wrapper.style.backgroundColor = '#FFFFFF'; // רקע לבן לצילום נקי
-        wrapper.style.display = 'inline-block'; // כדי שהרוחב יתאים לתוכן
-
-        // שכפול הכותרת של הלוז
+        wrapper.style.backgroundColor = '#FFFFFF';
+        wrapper.style.display = 'inline-block';
         const titleElement = document.getElementById('displayScheduleName');
         if (titleElement) {
             const clonedTitle = titleElement.cloneNode(true);
-            clonedTitle.style.textAlign = 'center'; // וודא שהכותרת ממורכזת
+            clonedTitle.style.textAlign = 'center';
             clonedTitle.style.marginBottom = '20px';
             wrapper.appendChild(clonedTitle);
         }
-        
-        // שכפול הקונטיינר של הלוז
         const clone = scheduleContainerElement.cloneNode(true);
         wrapper.appendChild(clone);
-
-        // הוספת העטיפה ל-body באופן זמני ובלתי נראה
         wrapper.style.position = 'absolute';
-        wrapper.style.left = '-9999px'; // מקם מחוץ למסך
+        wrapper.style.left = '-9999px';
         wrapper.style.top = '-9999px';
         document.body.appendChild(wrapper);
 
-
         html2canvas(wrapper, {
-            scale: 1.5, // הגדלת הרזולוציה של התמונה
-            useCORS: true, // אם יש תמונות חיצוניות
+            scale: 1.5,
+            useCORS: true,
             backgroundColor: "#ffffff",
             logging: false
         }).then(canvas => {
-            document.body.removeChild(wrapper); // הסר את העטיפה הזמנית
+            document.body.removeChild(wrapper);
             const image = canvas.toDataURL("image/png");
             const link = document.createElement('a');
             const safeName = (scheduleName || 'לוז-חופשה').replace(/[^a-z0-9א-ת_\-\s]/gi, '').replace(/\s+/g, '_');
             link.download = `${safeName}.png`;
             link.href = image;
             link.click();
-             // ניקוי ה-URL לאחר זמן קצר
             setTimeout(() => URL.revokeObjectURL(link.href), 100);
         }).catch(err => {
-            if (document.body.contains(wrapper)) { // ודא שהעטיפה מוסרת גם במקרה של שגיאה
+            if (document.body.contains(wrapper)) {
                  document.body.removeChild(wrapper);
             }
             console.error('שגיאה בצילום מסך:', err);
@@ -1383,7 +1367,7 @@
         }
         let [h,m]=base.split(':').map(Number);
         let s=new Date(1970,0,1,h,m);
-        if(scheduleEvents[d]&&scheduleEvents[d].length) s.setMinutes(s.getMinutes()+10); // הוסף 10 דקות אם יש אירוע קודם
+        if(scheduleEvents[d]&&scheduleEvents[d].length) s.setMinutes(s.getMinutes()+10);
         let e=new Date(s.getTime()); e.setHours(s.getHours()+1);
         sField.value=`${String(s.getHours()).padStart(2,'0')}:${String(s.getMinutes()).padStart(2,'0')}`;
         eField.value=`${String(e.getHours()).padStart(2,'0')}:${String(e.getMinutes()).padStart(2,'0')}`;
@@ -1393,19 +1377,17 @@
     document.addEventListener('DOMContentLoaded',()=>{
       let nameModal=new bootstrap.Modal(document.getElementById('modalScheduleName'));
       nameModal.show();
-
-      // השבתת כפתורי פעולה עד ליצירת שם לוז
       const actionButtons = ['btnAddEvent','btnLodging','btnFlight', 'btnSaveSchedule'];
       actionButtons.forEach(id => {
-          const btn = document.getElementById(id);
-          if (btn) btn.setAttribute('disabled', 'true');
+        const btn = document.getElementById(id);
+        if (btn) btn.setAttribute('disabled', 'true');
       });
 
 
       document.getElementById('btnCreateSchedule').onclick=()=>{
         let v=document.getElementById('inputScheduleName').value.trim();
         if(!v){alert('אנא הזן שם ללוז');return;}
-        currentVacationName = v; // שמירת שם הלוז הגולמי
+        currentVacationName = v;
         document.getElementById('displayScheduleName').textContent=`לוז: ${v}`;
         actionButtons.forEach(id=>document.getElementById(id).removeAttribute('disabled'));
         nameModal.hide();
@@ -1520,7 +1502,6 @@
       });
       document.getElementById('btnSaveLodging').addEventListener('click',saveLodging);
 
-      // Event listeners for Save Options Modal
       document.getElementById('btnSaveToSiteOnly').addEventListener('click', async () => {
           const success = await saveScheduleToFirebase();
           if (success) {
@@ -1554,8 +1535,8 @@
         let greet = h < 12 ? "בוקר טוב" : h < 18 ? "צהריים טובים" : "ערב טוב";
 
         let name = user.displayName
-                     ? user.displayName.split(" ")[0]
-                     : user.email ? user.email.split("@")[0] : "משתמש";
+                         ? user.displayName.split(" ")[0]
+                         : user.email ? user.email.split("@")[0] : "משתמש";
         name = name.charAt(0).toUpperCase() + name.slice(1);
 
         authLink.innerHTML = `${greet}<br>${name}!`;
@@ -1577,7 +1558,7 @@
         authLink.innerHTML = "התחברות";
         authLink.title = "התחבר / הירשם";
         authLink.href = "auth.html";
-        authLink.onclick = null; // הסר את האירוע הקודם אם קיים
+        authLink.onclick = null;
         if (offcanvasUserGreeting) {
             offcanvasUserGreeting.innerHTML = `<h6>ברוך הבא!</h6><small>התחבר כדי לשמור לו"זים</small>`;
         }
