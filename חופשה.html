@@ -662,7 +662,7 @@
               <div>נחיתה 🛬: ${eventData.arriveTime}</div>
               ${eventData.description?`<div><em>${eventData.description}</em></div>`:''}
             </div>`;
-       if (eventData.from) {  
+          if (eventData.from) {  
     eventHTML += `<button class="btn-navigate" onclick="event.stopPropagation(); openMapForNavigation('${eventData.from}')" title="נווט אל ${eventData.from}">🗺️</button>`;  
 }
           break;
@@ -1374,50 +1374,14 @@
       });
     }
 
-   document.addEventListener('DOMContentLoaded', () => {
-  // — 1. בדיקה אם הגענו לעריכה מדף התצוגה
-  const editJson = localStorage.getItem('liveVacationScheduleDataEdit');
-  if (editJson) {
-    const editData = JSON.parse(editJson);
-
-    // 1.1. אתחול ה־state מהעריכה
-    currentVacationName = editData.name;
-    scheduleEvents      = editData.scheduleEvents;
-    lodgings            = editData.lodgings;
-
-    // 1.2. עדכון הכותרת והפעלת הכפתורים
-    document.getElementById('displayScheduleName').textContent = 
-      `לוז: ${currentVacationName}`;
-    ['btnAddEvent','btnLodging','btnFlight','btnSaveSchedule']
-      .forEach(id => document.getElementById(id).removeAttribute('disabled'));
-
-    // 1.3. רינדור כל האירועים שב־scheduleEvents
-    Object.keys(scheduleEvents)
-      .sort((a,b)=>new Date(a)-new Date(b))
-      .forEach(date => {
-        scheduleEvents[date].forEach(ev => {
-          renderEventRow(date, ev);
-        });
+    document.addEventListener('DOMContentLoaded',()=>{
+      let nameModal=new bootstrap.Modal(document.getElementById('modalScheduleName'));
+      nameModal.show();
+      const actionButtons = ['btnAddEvent','btnLodging','btnFlight', 'btnSaveSchedule'];
+      actionButtons.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.setAttribute('disabled', 'true');
       });
-
-    // 1.4. מחיקת המפתח כדי שלא יחזור למצב עריכה אוטומטי
-    localStorage.removeItem('liveVacationScheduleDataEdit');
-
-  } else {
-    // — אם זה לא עריכה, מציגים את המודאל להכניס שם חדש
-    const nameModal = new bootstrap.Modal(
-      document.getElementById('modalScheduleName')
-    );
-    nameModal.show();
-
-    // מנע את הכפתורים עד שמכניסים שם
-    ['btnAddEvent','btnLodging','btnFlight','btnSaveSchedule']
-      .forEach(id => document.getElementById(id)
-        .setAttribute('disabled','true'));
-  }
-
-  // — מכאן ממשיך שאר הקוד הקיים שלך (האזנות ל־click, buildSubjectOptions וכד׳)
-});
 
 
       document.getElementById('btnCreateSchedule').onclick=()=>{
